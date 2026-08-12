@@ -3,10 +3,10 @@ import { InfiniteSlider } from "@/components/motion-primitives/infinite-slider";
 export function LogoCloud() {
   return (
     <div 
-      className="w-full max-w-6xl mx-auto overflow-hidden py-8"
+      className="w-full max-w-5xl mx-auto overflow-hidden py-4"
       style={{
-        WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
-        maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)"
+        maskImage: "linear-gradient(to right, transparent, black, transparent)",
+        WebkitMaskImage: "linear-gradient(to right, transparent, black, transparent)",
       }}
     >
       <InfiniteSlider gap={56} reverse speed={60} speedOnHover={20}>
