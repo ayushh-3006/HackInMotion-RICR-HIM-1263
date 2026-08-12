@@ -74,10 +74,10 @@ export default function NavbarDemo() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex flex-1 items-center justify-end gap-2">
-            <NavbarButton href="#" variant="secondary" className="rounded-full px-6">
+            <NavbarButton href="/login" variant="secondary" className="rounded-full px-6">
               Login
             </NavbarButton>
-            <NavbarButton href="#" variant="primary" className="rounded-full px-6">
+            <NavbarButton href="/register" variant="primary" className="rounded-full px-6">
               Get Started
             </NavbarButton>
           </div>
@@ -109,7 +109,7 @@ export default function NavbarDemo() {
             ))}
             <div className="flex w-full flex-col gap-4">
               <NavbarButton
-                href="#"
+                href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
                 className="w-full"
@@ -117,7 +117,7 @@ export default function NavbarDemo() {
                 Login
               </NavbarButton>
               <NavbarButton
-                href="#"
+                href="/register"
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
                 className="w-full"
