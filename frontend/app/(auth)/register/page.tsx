@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -88,34 +88,6 @@ function Input({
   );
 }
 
-// ── Password strength indicator ───────────────────────────────
-function PasswordStrength({ password }: { password: string }) {
-  const rules = [
-    { label: "At least 8 characters", pass: password.length >= 8 },
-    { label: "Contains a number", pass: /\d/.test(password) },
-    { label: "Contains a letter", pass: /[a-zA-Z]/.test(password) },
-  ];
-  if (!password) return null;
-  return (
-    <div className="flex flex-col gap-1 mt-1">
-      {rules.map((r, i) => (
-        <div key={i} className="flex items-center gap-1.5">
-          {r.pass ? (
-            <CheckCircle2 size={11} className="text-emerald-400 shrink-0" />
-          ) : (
-            <XCircle size={11} className="text-zinc-600 shrink-0" />
-          )}
-          <span
-            className={`text-[11px] ${r.pass ? "text-emerald-400" : "text-zinc-600"}`}
-          >
-            {r.label}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 // ── Main Register Page ────────────────────────────────────────
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -131,7 +103,7 @@ export default function RegisterPage() {
   const clerk = useClerk();
 
   const isFormValid = Boolean(
-    fullName && email && password && password.length >= 8,
+    fullName && email && password && password.length >= 6,
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -156,14 +128,10 @@ export default function RegisterPage() {
       return;
     }
 
-    if (
-      password.length < 8 ||
-      !/\d/.test(password) ||
-      !/[a-zA-Z]/.test(password)
-    ) {
+    if (password.length < 6) {
       add({
         title: "Weak password",
-        description: "Password must meet all strength requirements.",
+        description: "Password must be at least 6 characters.",
         type: "error",
       });
       return;
@@ -319,7 +287,7 @@ export default function RegisterPage() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={setPassword}
-                placeholder="Create a strong password"
+                placeholder="Create a password"
                 suffix={
                   <button
                     type="button"
@@ -331,7 +299,6 @@ export default function RegisterPage() {
                   </button>
                 }
               />
-              <PasswordStrength password={password} />
             </div>
 
             {/* Submit button */}
