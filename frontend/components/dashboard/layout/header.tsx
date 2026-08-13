@@ -1,10 +1,9 @@
-'use client';
-
-import { Search, Moon, Bell, Share } from 'lucide-react';
+import { Search, Bell, Share } from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
 
 export function Header() {
   return (
-    <header className="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-6 sticky top-0 z-10">
+    <header className="h-16 border-b border-slate-200 bg-white flex items-center justify-between pl-6 pr-4 sticky top-0 z-10">
       {/* Search Bar */}
       <div className="flex-1 max-w-xl">
         <div className="relative group">
@@ -18,7 +17,6 @@ export function Header() {
           />
         </div>
       </div>
-
       {/* Right Actions */}
       <div className="flex items-center gap-4 ml-4">
         {/* Notifications */}
@@ -28,10 +26,21 @@ export function Header() {
         </button>
 
         {/* Share Feedback Report */}
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all">
+        <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all hidden md:flex">
           <Share className="w-4 h-4 text-indigo-600" />
           Share Feedback Report
         </button>
+
+        <div className="w-px h-6 bg-slate-200 mx-1"></div>
+
+        {/* User Profile & Logout */}
+        <UserButton
+          appearance={{
+            elements: {
+              avatarBox: "w-10 h-10 shadow-sm border border-slate-200",
+            }
+          }}
+        />
       </div>
     </header>
   );

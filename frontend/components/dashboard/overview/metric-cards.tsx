@@ -2,52 +2,63 @@
 
 import { Rocket, Target, ShieldCheck, Mic } from 'lucide-react';
 
-export function MetricCards() {
+export function MetricCards({ stats, atsHistory }: { stats?: any; atsHistory?: any[] }) {
+  
+  // Example wiring for stats:
+  // If stats.avgATSScore exists, use it, else default to 0
+  const avgAtsScore = stats?.avgATSScore || 0;
+  
+  // Since the backend doesn't provide JD match or Interview stats yet, we'll
+  // safely fallback or compute simple values.
+  const readinessScore = Math.min(100, Math.round(avgAtsScore * 0.8 + 20)); // Dummy derivation for readiness
+  const totalDrafts = stats?.totalDrafts || 0;
+  const mockSessions = 0; // Backend doesn't support this yet
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {/* Overall Readiness Score */}
       <MetricCard 
         title="Overall Readiness Score"
-        value="82%"
-        status="On Track"
-        statusColor="bg-emerald-100 text-emerald-700"
+        value={`${readinessScore}%`}
+        status={readinessScore >= 80 ? "On Track" : readinessScore >= 50 ? "Needs Attention" : "Action Needed"}
+        statusColor={readinessScore >= 80 ? "bg-emerald-100 text-emerald-700" : readinessScore >= 50 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}
         ringColor="text-indigo-600"
-        progress={82}
+        progress={readinessScore}
         icon={<Rocket className="w-5 h-5 text-indigo-600" />}
       />
 
-      {/* Latest JD Match */}
+      {/* Latest JD Match (Fallback to Total Drafts since JD isn't on backend) */}
       <MetricCard 
-        title="Latest JD Match"
-        value="74%"
-        status="Needs Attention"
+        title="Total Resumes Created"
+        value={totalDrafts.toString()}
+        status={totalDrafts > 0 ? "Active Builder" : "No Drafts Yet"}
         statusColor="bg-amber-100 text-amber-700"
-        subtext="Missing 3 Skills >"
+        subtext="Manage your drafts >"
         ringColor="text-amber-500"
-        progress={74}
+        progress={totalDrafts > 0 ? 100 : 0}
         icon={<Target className="w-5 h-5 text-amber-500" />}
       />
 
       {/* ATS Pass Rating */}
       <MetricCard 
-        title="ATS Pass Rating"
-        value={<span className="flex items-baseline gap-1">88<span className="text-sm text-slate-400 font-medium">/100</span></span>}
-        status="Format Passed"
-        statusColor="bg-emerald-100 text-emerald-700"
+        title="Avg ATS Rating"
+        value={<span className="flex items-baseline gap-1">{avgAtsScore}<span className="text-sm text-slate-400 font-medium">/100</span></span>}
+        status={avgAtsScore >= 75 ? "Format Passed" : "Needs Review"}
+        statusColor={avgAtsScore >= 75 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}
         ringColor="text-emerald-500"
-        progress={88}
+        progress={avgAtsScore}
         icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
       />
 
       {/* Mock Interview Stats */}
       <MetricCard 
         title="Mock Interview Stats"
-        value="5"
-        status="+2 this week"
+        value={mockSessions.toString()}
+        status="Available Soon"
         statusColor="bg-purple-100 text-purple-700"
         subtext="Sessions Completed"
         ringColor="text-purple-500"
-        progress={100}
+        progress={0}
         icon={<Mic className="w-5 h-5 text-purple-500" />}
       />
     </div>
@@ -61,7 +72,7 @@ function MetricCard({
 }) {
   const radius = 36;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
+  const strokeDashoffset = circumference - ((progress || 0) / 100) * circumference;
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
