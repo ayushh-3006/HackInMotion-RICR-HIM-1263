@@ -13,6 +13,7 @@ export const protectRoute = requireAuth();
 export const syncUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authReq = req as any;
+    console.log("syncUser middleware hit. req.auth:", authReq.auth);
     if (!authReq.auth?.userId) return next();
 
     const clerkId = authReq.auth.userId;
