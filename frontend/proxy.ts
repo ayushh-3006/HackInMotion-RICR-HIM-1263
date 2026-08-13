@@ -9,13 +9,17 @@ const isAuthRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  const authState = await auth();
+  try {
+    const authState = await auth();
 
-  // If user is already logged in and tries to access an auth route,
-  // redirect them to the dashboard.
-  if (authState.userId && isAuthRoute(req)) {
-    const dashboardUrl = new URL('/dashboard', req.url);
-    return NextResponse.redirect(dashboardUrl);
+    // If user is already logged in and tries to access an auth route,
+    // redirect them to the dashboard.
+    if (authState?.userId && isAuthRoute(req)) {
+      const dashboardUrl = new URL('/dashboard', req.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
+  } catch (error) {
+    // Catch Clerk secretKey authentication errors so local dev server does not crash
   }
 });
 
