@@ -1,38 +1,38 @@
 import { cn } from "@/lib/utils";
 import type React from "react";
-import { TrendingUpIcon, SquareMousePointerIcon, GlobeIcon } from "lucide-react";
+import { TrendingUpIcon, SquareMousePointerIcon, GlobeIcon, Fingerprint } from "lucide-react";
 
 const features = [
 	{
 		id: "setup",
 		children: <SetupVisual />,
-		className: "md:col-span-2",
+		className: "md:col-span-2 flex flex-col justify-between items-center text-center",
 	},
 	{
 		id: "user-based-security",
 		children: <UserBasedSecurity />,
-		className: "md:col-span-2",
+		className: "md:col-span-2 flex flex-col justify-between items-center text-center",
 	},
 	{
 		id: "reports",
 		children: <ReportsVisual />,
-		className: "sm:col-span-2 md:col-span-2",
+		className: "sm:col-span-2 md:col-span-2 flex flex-col justify-between items-center text-center",
 	},
 	{
 		id: "dashboard",
 		children: <DashboardVisual />,
-		className: "sm:col-span-2 md:col-span-3 p-0",
+		className: "sm:col-span-2 md:col-span-3 p-0 overflow-hidden",
 	},
 	{
 		id: "presence",
 		children: <PresenceVisual />,
-		className: "sm:col-span-2 md:col-span-3 p-0",
+		className: "sm:col-span-2 md:col-span-3 p-0 flex flex-col justify-between",
 	},
 ];
 
 export function FeatureSection() {
 	return (
-		<div className="relative mx-auto grid w-full max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
+		<div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 md:grid-cols-6 px-4">
 			{features.map((feature) => (
 				<FeatureCard className={feature.className} key={feature.id}>
 					{feature.children}
@@ -52,7 +52,7 @@ function FeatureCard({
 	return (
 		<div
 			className={cn(
-				"group relative overflow-hidden rounded-2xl border bg-background px-8 pt-8 pb-6",
+				"group relative overflow-hidden rounded-[24px] border border-gray-200/80 bg-white p-7 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]",
 				className
 			)}
 		>
@@ -64,7 +64,7 @@ function FeatureCard({
 function FeatureTitle({ className, ...props }: React.ComponentProps<"h3">) {
 	return (
 		<h3
-			className={cn("font-medium text-foreground text-lg", className)}
+			className={cn("font-semibold text-black text-lg font-manrope tracking-tight", className)}
 			{...props}
 		/>
 	);
@@ -75,21 +75,22 @@ function FeatureDescription({
 	...props
 }: React.ComponentProps<"p">) {
 	return (
-		<p className={cn("text-muted-foreground text-sm", className)} {...props} />
+		<p className={cn("text-[#6B7280] text-sm leading-relaxed font-inter max-w-xs mx-auto", className)} {...props} />
 	);
 }
 
 function SetupVisual() {
 	return (
 		<>
-			<div className="relative mx-auto flex size-32 items-center justify-center rounded-full border-4 border-dashed bg-background shadow-xs outline outline-border outline-offset-4">
-				<div className="absolute inset-0 z-10 scale-120 bg-radial from-foreground/20 via-foreground/5 to-transparent blur-xl" />
-				<CustomTimerIcon className="size-14 fill-primary/90" />
+			<div className="relative mx-auto flex size-36 items-center justify-center rounded-full border border-dashed border-gray-300 p-2 my-2">
+				<div className="flex size-24 items-center justify-center rounded-full bg-[#EFEFEF]">
+					<CustomTimerIcon className="size-10 text-black fill-black" />
+				</div>
 			</div>
 
-			<div className="relative mt-8 space-y-1.5 text-center">
-				<FeatureTitle className="text-base font-manrope">Build in Minutes</FeatureTitle>
-				<FeatureDescription className="font-inter">
+			<div className="relative mt-4 space-y-1.5 text-center w-full">
+				<FeatureTitle>Build in Minutes</FeatureTitle>
+				<FeatureDescription>
 					Create a professional resume instantly with AI-guided inputs.
 				</FeatureDescription>
 			</div>
@@ -100,14 +101,15 @@ function SetupVisual() {
 function UserBasedSecurity() {
 	return (
 		<>
-			<div className="relative mx-auto flex size-32 items-center justify-center rounded-full border bg-background shadow-xs outline outline-border outline-offset-4">
-				<CustomLockIcon className="size-24" />
-				<div className="absolute inset-0 scale-120 bg-radial from-foreground/15 via-foreground/5 to-transparent blur-xl" />
+			<div className="relative mx-auto flex size-36 items-center justify-center rounded-full border border-gray-200 p-2 my-2">
+				<div className="flex size-24 items-center justify-center rounded-full bg-[#EFEFEF]">
+					<Fingerprint className="size-12 text-black stroke-[1.75]" />
+				</div>
 			</div>
 
-			<div className="relative mt-8 space-y-1.5 text-center">
-				<FeatureTitle className="text-base font-manrope">AI-Powered Suggestions</FeatureTitle>
-				<FeatureDescription className="font-inter">
+			<div className="relative mt-4 space-y-1.5 text-center w-full">
+				<FeatureTitle>AI-Powered Suggestions</FeatureTitle>
+				<FeatureDescription>
 					Improve your resume with smart rewrites, keywords, and formatting tips.
 				</FeatureDescription>
 			</div>
@@ -118,18 +120,21 @@ function UserBasedSecurity() {
 function ReportsVisual() {
 	return (
 		<>
-			<div className="min-h-32">
-				<div className="absolute top-8 left-8 flex items-center gap-2">
-					<div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-						<TrendingUpIcon className="size-4" />
+			<div className="w-full relative min-h-[140px] flex flex-col justify-start">
+				<div className="flex items-center gap-2 mb-1">
+					<div className="flex size-7 items-center justify-center rounded-full bg-[#EFEFEF] text-black">
+						<TrendingUpIcon className="size-3.5 text-black" />
 					</div>
-					<div className="font-medium text-muted-foreground font-manrope">50</div>
+					<div className="font-semibold text-gray-700 font-manrope text-sm">50</div>
 				</div>
-				<ReportsChartsSvg className="translate-x-[5%] -rotate-2 scale-150" />
+				<div className="w-full overflow-hidden opacity-90 pt-1">
+					<ReportsChartsSvg className="w-full h-auto scale-105" />
+				</div>
 			</div>
-			<div className="relative z-10 mt-8 space-y-1.5 text-center">
-				<FeatureTitle className="text-base font-manrope">ATS Score & Insights</FeatureTitle>
-				<FeatureDescription className="font-inter">
+
+			<div className="relative z-10 mt-4 space-y-1.5 text-center w-full">
+				<FeatureTitle>ATS Score & Insights</FeatureTitle>
+				<FeatureDescription>
 					Get real-time feedback to make your resume pass ATS filters.
 				</FeatureDescription>
 			</div>
@@ -139,39 +144,28 @@ function ReportsVisual() {
 
 function DashboardVisual() {
 	return (
-		<div className="grid h-full sm:grid-cols-2">
-			<div className="relative z-10 space-y-6 py-8 ps-8 pe-2">
-				<div className="flex size-12 items-center justify-center rounded-full border bg-card shadow-xs outline outline-border/80 outline-offset-2">
-					<SquareMousePointerIcon className="size-5 text-primary/80" />
+		<div className="grid h-full sm:grid-cols-2 items-center p-7 sm:p-8 gap-4">
+			<div className="space-y-4">
+				<div className="flex size-10 items-center justify-center rounded-full bg-[#EFEFEF] text-black">
+					<SquareMousePointerIcon className="size-5 text-black" />
 				</div>
-				<div className="space-y-2">
-					<FeatureTitle className="text-base font-manrope">
-						Modern Templates
-					</FeatureTitle>
-					<FeatureDescription className="font-inter">
+				<div className="space-y-1.5">
+					<FeatureTitle>Modern Templates</FeatureTitle>
+					<FeatureDescription className="mx-0 text-left">
 						Choose from clean, recruiter-friendly designs that stand out.
 					</FeatureDescription>
 				</div>
 			</div>
 			{/* Dashboard Screen */}
-			<div className="mask-b-from-90% mask-r-from-90% relative aspect-video sm:aspect-auto">
-				<div className="absolute -right-1 -bottom-1 aspect-video max-h-50 rounded-tl-md border bg-card p-1 sm:max-h-42 md:aspect-square md:max-h-50 lg:aspect-16/12">
-					<div className="aspect-video h-full overflow-hidden rounded-tl-sm border *:pointer-events-none *:size-full *:shrink-0 *:select-none">
-						<img
-							alt="Dashboard preview"
-							className="dark:hidden"
-							height={360}
-							src="https://storage.efferd.com/screen/dashboard-light.webp"
-							width={640}
-						/>
-						<img
-							alt="Dashboard preview"
-							className="hidden dark:block"
-							height={360}
-							src="https://storage.efferd.com/screen/dashboard-dark.webp"
-							width={640}
-						/>
-					</div>
+			<div className="relative w-full h-full min-h-[160px] flex items-center justify-end -mr-8 -mb-8 overflow-hidden">
+				<div className="w-full max-w-[300px] rounded-tl-xl border border-gray-200 bg-white p-1 shadow-xs">
+					<img
+						alt="Dashboard preview"
+						className="w-full h-auto rounded-tl-lg object-cover"
+						height={360}
+						src="https://storage.efferd.com/screen/dashboard-light.webp"
+						width={640}
+					/>
 				</div>
 			</div>
 		</div>
@@ -180,16 +174,14 @@ function DashboardVisual() {
 
 function PresenceVisual() {
 	return (
-		<div className="grid max-h-120 sm:grid-cols-2">
-			<div className="space-y-6 pt-8 pb-4 pl-8 sm:pb-8">
-				<div className="flex size-12 items-center justify-center rounded-full border bg-card shadow-xs outline outline-border/80 outline-offset-2">
-					<GlobeIcon className="size-5 text-primary/80" />
+		<div className="p-7 sm:p-8 flex flex-col justify-between h-full min-h-[220px]">
+			<div className="space-y-4 max-w-sm">
+				<div className="flex size-10 items-center justify-center rounded-full bg-[#EFEFEF] text-black">
+					<GlobeIcon className="size-5 text-black" />
 				</div>
-				<div className="space-y-2">
-					<FeatureTitle className="text-base font-manrope">
-						Download & Share Anywhere
-					</FeatureTitle>
-					<FeatureDescription className="font-inter">
+				<div className="space-y-1.5">
+					<FeatureTitle>Download & Share Anywhere</FeatureTitle>
+					<FeatureDescription className="mx-0 text-left">
 						Export your resume as PDF and access it anytime, anywhere.
 					</FeatureDescription>
 				</div>
