@@ -1,4 +1,4 @@
-import { IDocumentParser } from './IDocumentParser';
+import { IDocumentParser } from './IDocumentParser.js';
 import mammoth from 'mammoth';
 
 // SRP: This class only handles DOCX extraction

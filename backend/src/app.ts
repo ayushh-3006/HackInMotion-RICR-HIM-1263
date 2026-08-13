@@ -26,6 +26,16 @@ app.use(syncUser); // Lazily sync Clerk users on any authenticated API call
 // User routes
 app.use("/api/users", userRoutes);
 
+// ATS routes
+import { ATSRouter } from "./routes/ATSRouter.js";
+import { ATSController } from "./controllers/ATSController.js";
+import { ATSAnalyzer } from "./services/ATSAnalyzerModule.js";
+import { ParserFactory } from "./parsers/ParserFactory.js";
+
+const groqApiKey = process.env.GROQ_API_KEY || "";
+const atsController = new ATSController(new ATSAnalyzer(groqApiKey), new ParserFactory());
+app.use("/api/ats", new ATSRouter(atsController).router);
+
 // Health check route
 app.get("/api/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok", message: "Server is healthy" });
