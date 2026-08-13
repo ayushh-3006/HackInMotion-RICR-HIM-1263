@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Webhook } from "svix";
 import { UserService } from "../services/user.service.js";
+import User from "../models/User.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -41,5 +42,26 @@ export const clerkWebhookHandler = async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error("Error in webhook handler:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const syncUser = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { clerkUserId, email, firstName, lastName, profilePicture } = req.body;
+
+    if (!clerkUserId || !email) {
+      return res.status(400).json({ success: false, message: "Missing clerkUserId or email" });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { clerkUserId },
+      { clerkUserId, email, firstName, lastName, profilePicture },
+      { upsert: true, new: true }
+    );
+
+    return res.status(200).json({ success: true, data: user });
+  } catch (error: any) {
+    console.error("Error syncing user:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

@@ -6,10 +6,20 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Sparkles, TrendingUp, CheckCircle2, Zap, ShieldCheck } from "lucide-react";
 import ButtonCTA from "@/components/Buttons/buttonCTA";
+import { Status, StatusIndicator, StatusLabel } from "@/components/kibo-ui/status";
 
 const CTA = () => {
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 overflow-hidden">
+    <section id="career-success" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16 md:pb-20 lg:pb-24 mb-16 md:mb-20 lg:mb-24 overflow-hidden scroll-mt-28">
+      
+      {/* Centered Section Label Above Blue Card */}
+      <div className="flex items-center justify-center flex-col gap-4 mb-8 sm:mb-10 text-center w-full">
+        <Status status="maintenance" className="border-neutral-200 shadow-sm font-manrope px-4 py-1.5 rounded-full flex items-center gap-2.5 bg-white">
+          <StatusIndicator className="h-2.5 w-2.5" />
+          <StatusLabel className="text-xs sm:text-sm font-semibold text-neutral-800 tracking-wide">Level Up</StatusLabel>
+        </Status>
+      </div>
+
       <div className="relative w-full rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-blue-900 via-blue-950 to-slate-950 border border-blue-500/20 shadow-2xl shadow-blue-950/40 p-6 sm:p-10 lg:p-14 overflow-hidden text-white flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-12">
         
         {/* Ambient Glowing Background Orbs */}
@@ -20,12 +30,6 @@ const CTA = () => {
         {/* ── LEFT CONTENT ─────────────────────────────────── */}
         <div className="relative z-10 flex flex-col items-start gap-6 max-w-xl text-left">
           
-          {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-200 text-xs sm:text-sm font-medium font-manrope backdrop-blur-md shadow-inner">
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <span>Fast-Track Your Career Success</span>
-          </div>
-
           {/* Main Heading */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-manrope tracking-tight leading-tight text-white">
             Upgrade Your Resume.{" "}

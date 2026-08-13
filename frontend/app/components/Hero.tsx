@@ -87,10 +87,12 @@ const Hero = () => {
 
               <div className='flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4'>
                 <ButtonWithIconDemo />
-                <Button variant="outline" className="text-[#1C4ED6] cursor-pointer rounded-full h-12 px-8 font-manrope font-medium border-[#1C4ED6] hover:bg-[#1C4ED6] hover:text-white transition-all duration-300">
+                <a 
+                  href="#how-it-works"
+                  className="bg-white text-[#1C4ED6] border border-[#1C4ED6] hover:bg-[#1C4ED6] hover:text-white rounded-full h-12 px-8 font-manrope font-medium text-sm transition-all duration-300 shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center active:bg-[#1C4ED6] active:text-white"
+                >
                   Learn More
-                </Button>
-                
+                </a>
               </div>
             </div>
           }
@@ -106,7 +108,7 @@ const Hero = () => {
         </ContainerScroll>
       </div>
 
-      <section className="relative z-10 w-full flex flex-col items-center justify-center mt-48 sm:mt-56 md:mt-64">
+      <section className="relative z-10 w-full flex flex-col items-center justify-center mt-48 sm:mt-56 md:mt-40">
         <h2 className="mb-6 md:mb-8 text-center text-gray-900 text-xl sm:text-2xl md:text-3xl font-medium tracking-tight font-manrope">
           Helping users land roles at top companies
         </h2>
