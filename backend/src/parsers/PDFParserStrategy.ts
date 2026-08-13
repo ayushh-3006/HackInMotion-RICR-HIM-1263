@@ -1,4 +1,4 @@
-import { IDocumentParser } from './IDocumentParser';
+import { IDocumentParser } from './IDocumentParser.js';
 import { PDFParse } from 'pdf-parse';
 
 // SRP: This class only handles PDF extraction

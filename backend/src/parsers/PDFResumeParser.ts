@@ -1,5 +1,5 @@
 import { PDFParse } from "pdf-parse";
-import { IResumeParser } from "../interfaces/IResumeParser";
+import type { IResumeParser } from "../interfaces/IResumeParser.js";
 
 export class PDFResumeParser implements IResumeParser {
   async parse(fileBuffer: Buffer): Promise<string> {
