@@ -5,7 +5,8 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useSignIn, useClerk } from "@clerk/nextjs";
+import { useSignIn } from "@clerk/nextjs/legacy";
+import { useClerk } from "@clerk/nextjs";
 
 // ── Inline toast (no external dependency needed) ──────────────
 function useToast() {
@@ -100,7 +101,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { add, Toast } = useToast();
-  const { signIn } = useSignIn();
+  const { isLoaded, signIn, setActive } = useSignIn();
   const clerk = useClerk();
 
   const isFormValid = Boolean(email && password);
@@ -127,16 +128,24 @@ export default function LoginPage() {
       return;
     }
 
+    if (!isLoaded || !signIn) {
+      add({
+        title: "Loading",
+        description: "Please wait a moment and try again.",
+        type: "error",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      if (!signIn) return;
-
       const result = await signIn.create({
         identifier: email,
         password,
       });
 
-      if (!(result as any).error) {
+      if (result.status === "complete") {
+        await setActive!({ session: result.createdSessionId });
         add({
           title: "Welcome back!",
           description: "Redirecting to your dashboard…",
@@ -151,9 +160,14 @@ export default function LoginPage() {
         });
       }
     } catch (err: any) {
+      const errorMsg =
+        err.errors?.[0]?.longMessage ||
+        err.errors?.[0]?.message ||
+        err.message ||
+        "Invalid email or password.";
       add({
         title: "Sign in failed",
-        description: err.errors?.[0]?.message || "Invalid email or password.",
+        description: errorMsg,
         type: "error",
       });
     } finally {
