@@ -75,6 +75,32 @@ export default function DashboardPage() {
     if (isLoaded) fetchData();
   }, [isLoaded, fetchData]);
 
+  useEffect(() => {
+    if (user) {
+      const syncUser = async () => {
+        try {
+          await fetch("http://localhost:5000/api/users/sync", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              clerkUserId: user.id,
+              email: user.emailAddresses[0]?.emailAddress,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              profilePicture: user.imageUrl,
+            }),
+          });
+        } catch (error) {
+          console.error("Error syncing user:", error);
+        }
+      };
+      
+      syncUser();
+    }
+  }, [user]);
+
   if (!isLoaded || loading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">

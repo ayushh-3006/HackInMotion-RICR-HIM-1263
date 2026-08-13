@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { clerkMiddleware } from "@clerk/express";
 import { connectDB } from "./config/db.js";
 import webhookRoutes from "./routes/webhook.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import { syncUser } from "./middleware/authMiddleware.js";
 
 // Load environment variables
@@ -21,6 +22,9 @@ app.use(cors());
 app.use(express.json());
 app.use(clerkMiddleware());
 app.use(syncUser); // Lazily sync Clerk users on any authenticated API call
+
+// User routes
+app.use("/api/users", userRoutes);
 
 // Health check route
 app.get("/api/health", (req: Request, res: Response) => {
