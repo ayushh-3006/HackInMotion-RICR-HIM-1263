@@ -2,24 +2,54 @@ import { InfiniteSlider } from "@/components/motion-primitives/infinite-slider";
 
 export function LogoCloud() {
   return (
-    <div 
+    <div
       className="w-full max-w-6xl mx-auto overflow-hidden py-6"
       style={{
-        maskImage: "linear-gradient(to right, transparent, black, transparent)",
-        WebkitMaskImage: "linear-gradient(to right, transparent, black, transparent)",
+        // Light fade only at the extreme edges
+        maskImage:
+          "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
+        WebkitMaskImage:
+          "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
       }}
     >
-      <InfiniteSlider gap={64} reverse speed={60} speedOnHover={20}>
+      <InfiniteSlider
+        gap={64}
+        reverse
+        speed={60}
+        speedOnHover={20}
+      >
         {logos.map((logo, index) => (
-          <div 
-            key={`logo-${logo.alt}-${index}`} 
-            className="flex items-center justify-center h-14 sm:h-16 md:h-18 px-4 transition-transform duration-300 hover:scale-110"
+          <div
+            key={`logo-${logo.alt}-${index}`}
+            className="
+              flex
+              shrink-0
+              items-center
+              justify-center
+              h-16
+              sm:h-18
+              md:h-20
+              px-4
+              transition-transform
+              duration-300
+              hover:scale-110
+            "
           >
             <img
               src={logo.src}
               alt={logo.alt}
-              className="pointer-events-none h-10 sm:h-12 md:h-14 w-auto object-contain select-none transition-opacity duration-300"
-              loading="lazy"
+              className="
+                pointer-events-none
+                h-11
+                sm:h-12
+                md:h-14
+                w-auto
+                max-w-[150px]
+                object-contain
+                select-none
+                opacity-100
+              "
+              loading="eager"
             />
           </div>
         ))}
@@ -31,16 +61,13 @@ export function LogoCloud() {
 const logos = [
   {
     src: "https://cdn.simpleicons.org/nvidia/76B900",
-    alt: "Nvidia Logo",
+    alt: "NVIDIA Logo",
   },
   {
     src: "https://cdn.simpleicons.org/supabase/3ECF8E",
     alt: "Supabase Logo",
   },
-  {
-    src: "https://cdn.simpleicons.org/openai/10A37F",
-    alt: "OpenAI Logo",
-  },
+
   {
     src: "https://cdn.simpleicons.org/turso/4FF8D2",
     alt: "Turso Logo",
@@ -55,7 +82,7 @@ const logos = [
   },
   {
     src: "https://cdn.simpleicons.org/anthropic/D97757",
-    alt: "Claude AI Logo",
+    alt: "Anthropic Logo",
   },
   {
     src: "https://cdn.simpleicons.org/clerk/6C47FF",

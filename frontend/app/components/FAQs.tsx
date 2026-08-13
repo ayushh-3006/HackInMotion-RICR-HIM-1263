@@ -9,30 +9,33 @@ import { Button } from "@/components/Buttons/button";
 
 export function FAQs() {
     return (
-        <section className="mx-auto w-full max-w-7xl max-w-full overflow-hidden space-y-7 px-6 md:px-12 py-24">
-            <div className="flex items-center justify-start">
-                <Status status="maintenance" className="border-neutral-200 shadow-2xs font-manrope">
-                    <StatusIndicator />
-                    <StatusLabel>FAQs</StatusLabel>
-                </Status>
-            </div>
-            <div className="flex flex-col md:flex-row items-start justify-between gap-12 mb-15 w-full">
+        <section id="faqs" className="mx-auto w-full max-w-7xl overflow-hidden px-6 md:px-12 py-20 sm:py-24 scroll-mt-28">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-12 w-full">
 
-                <div className="space-y-4 md:w-1/3">
-                    <h2 className="text-3xl font-medium tracking-tight text-gray-900 font-manrope">
+                <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-4 md:w-1/3 w-full">
+                    <div className="flex justify-center md:justify-start w-full">
+                        <Status status="maintenance" className="border-neutral-200 shadow-sm font-manrope px-4 py-1.5 rounded-full flex items-center gap-2.5 bg-white">
+                            <StatusIndicator className="h-2.5 w-2.5" />
+                            <StatusLabel className="text-xs sm:text-sm font-semibold text-neutral-800 tracking-wide">FAQs</StatusLabel>
+                        </Status>
+                    </div>
+
+                    <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-gray-900 font-manrope">
                         Everything You Need to Know
                     </h2>
-                    <p className="text-gray-600 font-inter text-start max-w-2xl">
+                    <p className="text-gray-600 font-inter text-sm sm:text-base max-w-2xl">
                         Clear answers about how it works, what to expect, and how you can get the most out of it.
                     </p>
 
-                    <Button className="bg-[#1C4ED6] text-white font-manrope rounded-3xl cursor-pointer py-5 mt-5">Contact Us</Button>
+                    <Button className="bg-[#1C4ED6] hover:bg-blue-700 text-white font-manrope font-medium rounded-full cursor-pointer py-5 px-8 mt-5 transition-colors">
+                        Contact Us
+                    </Button>
                 </div>
 
                 <Accordion className="w-full md:w-3/5 space-y-3" collapsible type="single">
                     {questions.map((item) => (
                         <AccordionItem 
-                            className="bg-white rounded-[1.25rem] border-none shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] px-5 sm:px-6" 
+                            className="bg-white rounded-[1.25rem] border-none shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] px-5 sm:px-6 overflow-hidden" 
                             key={item.id} 
                             value={item.id}
                         >

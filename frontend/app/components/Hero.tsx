@@ -49,7 +49,7 @@ const Hero = () => {
 
             {/* ✨ Glitter Layer */}
             <div className="absolute inset-0 pointer-events-none w-full h-full">
-               <Glitter density={0.08} size={1.2} />
+              <Glitter density={0.08} size={1.2} />
             </div>
 
           </div>
@@ -106,12 +106,14 @@ const Hero = () => {
       </div>
 
       <section className="relative z-10 w-full flex flex-col items-center justify-center mt-48 sm:mt-56 md:mt-64">
-        <h2 className="mb-5 md:mb-6 text-center text-neutral-700 dark:text-neutral-300 text-lg sm:text-xl md:text-2xl font-semibold tracking-tight font-manrope">
+        <h2 className="mb-6 md:mb-8 text-center text-gray-900 text-xl sm:text-2xl md:text-3xl font-medium tracking-tight font-manrope">
           Helping users land roles at top companies
         </h2>
 
         <LogoCloud />
       </section>
+
+
 
     </div>
   )
