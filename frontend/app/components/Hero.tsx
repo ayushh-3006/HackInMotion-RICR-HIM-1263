@@ -12,7 +12,7 @@ import { Glitter } from '@/components/ui/glitter'
 
 const Hero = () => {
   return (
-    <div className="min-h-screen w-full relative pb-30">
+    <div className="min-h-screen w-full max-w-full overflow-hidden relative pb-6 sm:pb-10">
 
       {/* Base background color */}
       <div className="absolute inset-0 z-0 bg-white" />
@@ -28,12 +28,12 @@ const Hero = () => {
         }}
       />
 
-      <div className="relative z-10 w-full flex flex-col items-center justify-center">
+      <div className="relative z-10 w-full max-w-full flex flex-col items-center justify-center">
 
 
-        <div className="absolute top-[40%] md:top-[50%] left-1/2 -translate-x-1/2 w-full md:w-[120vw] max-w-none -z-10 flex justify-center items-center pointer-events-none select-none -mt-60">
+        <div className="absolute top-[40%] md:top-[50%] left-1/2 -translate-x-1/2 w-full max-w-full -z-10 flex justify-center items-center pointer-events-none select-none -mt-60 overflow-hidden">
 
-          <div className="relative w-full flex justify-center">
+          <div className="relative w-full max-w-7xl flex justify-center">
 
             {/* Glow Image */}
             <Image
@@ -41,9 +41,9 @@ const Hero = () => {
               alt="Blue Dashboard Glow"
               width={6914}
               height={5050}
-              sizes="120vw"
+              sizes="100vw"
               quality={100}
-              className="w-full h-auto object-contain scale-[1.2]"
+              className="w-full h-auto object-contain scale-[1.1]"
               priority
             />
 
@@ -63,7 +63,7 @@ const Hero = () => {
               </div>
 
               <div className='flex flex-col items-center justify-center text-center gap-6'>
-                <h1 className='text-5xl md:text-6xl font-semibold max-w-2xl tracking-tight text-neutral-900 font-manrope'>
+                <h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold max-w-2xl tracking-tight text-neutral-900 font-manrope'>
                   Build Smarter Resumes. Get Hired Faster{" "}
                   <span>
                     <ShinyText
@@ -80,12 +80,12 @@ const Hero = () => {
                     />
                   </span>
                 </h1>
-                <p className='text-sm md:text-lg max-w-2xl text-neutral-600 font-light'>
+                <p className='text-sm md:text-lg max-w-2xl text-neutral-600 font-light px-2'>
                   Create, optimize, and analyze your resume with AI-powered tools from ATS scoring to role-based enhancements, all in one place.
                 </p>
               </div>
 
-              <div className='flex flex-row justify-center gap-4 w-full px-4'>
+              <div className='flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4'>
                 <ButtonWithIconDemo />
                 <Button variant="outline" className="text-[#1C4ED6] cursor-pointer rounded-full h-12 px-8 font-manrope font-medium border-[#1C4ED6] hover:bg-[#1C4ED6] hover:text-white transition-all duration-300">
                   Learn More
@@ -105,9 +105,9 @@ const Hero = () => {
         </ContainerScroll>
       </div>
 
-      <section className="relative z-10 w-full flex flex-col items-center justify-center mt-40">
-        <h2 className="mb-3 text-center text-neutral-500 text-base tracking-tight md:text-base font-manrope">
-          <span className="font-medium">Helping users land roles at top companies</span>
+      <section className="relative z-10 w-full flex flex-col items-center justify-center mt-48 sm:mt-56 md:mt-64">
+        <h2 className="mb-5 md:mb-6 text-center text-neutral-700 dark:text-neutral-300 text-lg sm:text-xl md:text-2xl font-semibold tracking-tight font-manrope">
+          Helping users land roles at top companies
         </h2>
 
         <LogoCloud />

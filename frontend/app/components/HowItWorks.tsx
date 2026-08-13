@@ -27,7 +27,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <main className="py-24 text-black overflow-hidden">
+    <section className="py-24 text-black w-full max-w-full overflow-hidden">
       <div className="flex items-center justify-center flex-col gap-8 mb-15">
         <Status status="maintenance" className="border-neutral-200 shadow-2xs font-manrope">
           <StatusIndicator />
@@ -141,7 +141,7 @@ const HowItWorks = () => {
 
         </div>
       </div>
-    </main>
+    </section>
   );
 };
 

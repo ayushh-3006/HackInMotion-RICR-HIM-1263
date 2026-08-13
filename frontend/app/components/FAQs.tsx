@@ -9,7 +9,7 @@ import { Button } from "@/components/Buttons/button";
 
 export function FAQs() {
     return (
-        <main className="mx-auto w-full max-w-7xl space-y-7 px-6 md:px-12 py-24">
+        <section className="mx-auto w-full max-w-7xl max-w-full overflow-hidden space-y-7 px-6 md:px-12 py-24">
             <div className="flex items-center justify-start">
                 <Status status="maintenance" className="border-neutral-200 shadow-2xs font-manrope">
                     <StatusIndicator />
@@ -46,7 +46,7 @@ export function FAQs() {
                     ))}
                 </Accordion>
             </div>
-        </main>
+        </section>
     );
 }
 
