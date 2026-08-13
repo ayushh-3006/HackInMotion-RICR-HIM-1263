@@ -28,6 +28,10 @@ export default function NavbarDemo() {
       name: "FAQ",
       link: "#faqs",
     },
+    {
+      name: "Level Up",
+      link: "#career-success",
+    },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

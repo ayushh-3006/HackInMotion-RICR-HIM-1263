@@ -4,7 +4,7 @@ import React from 'react'
 
 const Features = () => {
   return (
-    <section className='w-full max-w-full overflow-hidden'>
+    <section className='w-full max-w-full overflow-hidden bg-[#F8F8F8] py-16 sm:py-24 border-y border-gray-200/50'>
       <div className='flex items-center justify-center flex-col gap-6 sm:gap-8 mb-12 sm:mb-15 mt-6 sm:mt-8 md:mt-10'>
         <Status status="maintenance" className="border-neutral-200 shadow-sm font-manrope px-4 py-1.5 rounded-full flex items-center gap-2.5 bg-white">
           <StatusIndicator className="h-2.5 w-2.5" />

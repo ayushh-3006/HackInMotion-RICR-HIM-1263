@@ -52,7 +52,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative font-inter -mt-20 z-10">
+    <footer className="relative font-inter z-10">
       <div className="w-full bg-white text-gray-700 rounded-t-[2.5rem] md:rounded-t-[3.5rem] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] border-t border-gray-100">
         <div className="w-full pt-10 pb-8 flex flex-col gap-6">
           
@@ -126,11 +126,6 @@ const Footer = () => {
                     <Link href="/#faqs" onClick={scrollToSection("faqs")} className="hover:text-blue-600 transition-colors">
                       FAQs
                     </Link>
-                  </li>
-                  <li>
-                    <a href="mailto:support@resumind.com" className="hover:text-blue-600 transition-colors">
-                      Contact Us
-                    </a>
                   </li>
                 </ul>
               </div>
