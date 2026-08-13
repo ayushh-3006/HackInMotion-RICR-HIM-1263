@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUser extends Document {
+  clerkId: string;
   email: string;
-  password?: string;
   name?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -10,8 +10,8 @@ export interface IUser extends Document {
 
 const UserSchema: Schema = new Schema(
   {
+    clerkId: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: false }, // optional for oauth if added later
     name: { type: String, required: false },
   },
   { timestamps: true },

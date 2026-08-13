@@ -10,8 +10,9 @@ import {
   XCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSignIn, useClerk } from "@clerk/nextjs";
 
 function useToast() {
   const [toasts, setToasts] = React.useState<
@@ -81,17 +82,27 @@ function PasswordStrength({ password }: { password: string }) {
 function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "";
   const { add, Toast } = useToast();
+  const { signIn } = useSignIn();
+  const clerk = useClerk();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!code) {
+      add({
+        title: "Code required",
+        description: "Please enter the verification code.",
+        type: "error",
+      });
+      return;
+    }
 
     if (
       password.length < 8 ||
@@ -115,41 +126,30 @@ function ResetPasswordForm() {
       return;
     }
 
-    if (!token) {
-      add({
-        title: "Invalid link",
-        description: "This reset link is invalid or has expired.",
-        type: "error",
-      });
-      return;
-    }
-
     setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/reset-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, password }),
-        },
-      );
+      if (!signIn) return;
+      const result = await (signIn as any).attemptFirstFactor({
+        strategy: "reset_password_email_code",
+        code,
+        password,
+      });
 
-      if (res.ok) {
+      if (result.status === "complete") {
+        await clerk.setActive({ session: result.createdSessionId });
         setDone(true);
-        setTimeout(() => router.push("/login"), 3000);
+        setTimeout(() => router.push("/dashboard"), 1500);
       } else {
-        const data = await res.json();
         add({
           title: "Reset failed",
-          description: data.error || "Link may have expired.",
+          description: "Could not complete the password reset.",
           type: "error",
         });
       }
-    } catch {
+    } catch (err: any) {
       add({
-        title: "Network error",
-        description: "Please check your connection.",
+        title: "Reset failed",
+        description: err.errors?.[0]?.message || "Invalid code or link may have expired.",
         type: "error",
       });
     } finally {
@@ -185,6 +185,24 @@ function ResetPasswordForm() {
               noValidate
               className="flex flex-col gap-4"
             >
+              {/* Verification Code */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="reset-code"
+                  className="text-xs font-medium text-zinc-400"
+                >
+                  Verification Code
+                </label>
+                <input
+                  id="reset-code"
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="Enter the 6-digit code"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/30"
+                />
+              </div>
+
               {/* New password */}
               <div className="flex flex-col gap-1.5">
                 <label
@@ -276,9 +294,12 @@ function ResetPasswordForm() {
               <ShieldCheck size={24} className="text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">Password reset!</h2>
-              <p className="mt-2 text-sm text-zinc-500">
-                Your password has been updated. Redirecting you to sign in…
+              <h2 className="text-2xl font-bold text-white">
+                Password updated
+              </h2>
+              <p className="mt-2 text-sm text-zinc-500 leading-relaxed">
+                Your password has been successfully reset. Redirecting you to
+                the dashboard...
               </p>
             </div>
           </motion.div>

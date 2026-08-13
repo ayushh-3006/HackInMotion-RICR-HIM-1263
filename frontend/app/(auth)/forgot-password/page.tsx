@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Loader2, Mail, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSignIn } from "@clerk/nextjs";
 
 function useToast() {
   const [toasts, setToasts] = React.useState<
@@ -46,8 +48,9 @@ function useToast() {
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
   const { add, Toast } = useToast();
+  const { signIn } = useSignIn();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,29 +67,21 @@ export default function ForgotPasswordPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/forgot-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        },
-      );
-
-      if (res.ok) {
-        setSent(true);
-      } else {
-        const data = await res.json();
-        add({
-          title: "Error",
-          description: data.error || "Something went wrong.",
-          type: "error",
-        });
-      }
-    } catch {
+      if (!signIn) return;
+      await (signIn as any).create({
+        strategy: "reset_password_email_code",
+        identifier: email,
+      });
       add({
-        title: "Network error",
-        description: "Please check your connection.",
+        title: "Code Sent",
+        description: "Please check your inbox.",
+        type: "success",
+      });
+      setTimeout(() => router.push("/reset-password"), 1500);
+    } catch (err: any) {
+      add({
+        title: "Error",
+        description: err.errors?.[0]?.message || "Something went wrong.",
         type: "error",
       });
     } finally {
@@ -112,7 +107,6 @@ export default function ForgotPasswordPage() {
           Back to Sign In
         </Link>
 
-        {!sent ? (
           <>
             {/* Header */}
             <div className="flex flex-col gap-1.5">
@@ -123,8 +117,7 @@ export default function ForgotPasswordPage() {
                 Forgot password?
               </h1>
               <p className="text-sm text-zinc-500">
-                No worries. Enter your email and we&apos;ll send you a reset
-                link.
+                No worries. Enter your email and we&apos;ll send you a reset code.
               </p>
             </div>
 
@@ -162,42 +155,11 @@ export default function ForgotPasswordPage() {
                     <Loader2 size={14} className="animate-spin" /> Sending…
                   </>
                 ) : (
-                  "Send Reset Link"
+                  "Send Reset Code"
                 )}
               </motion.button>
             </form>
           </>
-        ) : (
-          /* Success state */
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col gap-4 text-center"
-          >
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/20">
-              <Mail size={24} className="text-emerald-400" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white">
-                Check your inbox
-              </h2>
-              <p className="mt-2 text-sm text-zinc-500 leading-relaxed">
-                We&apos;ve sent a password reset link to{" "}
-                <span className="text-violet-400 font-medium">{email}</span>.
-                Check your inbox and follow the instructions.
-              </p>
-            </div>
-            <p className="text-xs text-zinc-600">
-              Didn&apos;t receive it?{" "}
-              <button
-                onClick={() => setSent(false)}
-                className="text-violet-400 hover:text-violet-300 transition-colors"
-              >
-                Try again
-              </button>
-            </p>
-          </motion.div>
-        )}
 
         <p className="text-center text-sm text-zinc-500">
           Remember your password?{" "}

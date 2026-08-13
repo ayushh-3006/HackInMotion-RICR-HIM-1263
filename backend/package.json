@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "tsx src/app.ts",
-    "dev": "nodemon --exec tsx src/app.ts",
+    "dev": "nodemon -e ts,js,json --exec tsx src/app.ts",
     "build": "tsc",
     "lint": "eslint \"src/**/*.ts\"",
     "format": "prettier --write ."
@@ -16,6 +16,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@clerk/express": "^2.1.55",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -24,7 +25,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.2",
     "multer": "^2.2.0",
-    "pdf-parse": "^2.4.5"
+    "pdf-parse": "^2.4.5",
+    "svix": "^1.99.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

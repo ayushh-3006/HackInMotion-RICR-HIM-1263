@@ -1,0 +1,29 @@
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+
+const isAuthRoute = createRouteMatcher([
+  '/login(.*)', 
+  '/register(.*)', 
+  '/forgot-password(.*)',
+  '/reset-password(.*)'
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  const authState = await auth();
+
+  // If user is already logged in and tries to access an auth route,
+  // redirect them to the dashboard.
+  if (authState.userId && isAuthRoute(req)) {
+    const dashboardUrl = new URL('/dashboard', req.url);
+    return NextResponse.redirect(dashboardUrl);
+  }
+});
+
+export const config = {
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
+};

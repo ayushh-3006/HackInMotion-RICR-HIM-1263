@@ -5,6 +5,7 @@ import { Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSignUp, useClerk } from "@clerk/nextjs";
 
 // ── Toast hook (inline) ───────────────────────────────────────
 function useToast() {
@@ -122,8 +123,12 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState("");
   const router = useRouter();
   const { add, Toast } = useToast();
+  const { signUp } = useSignUp();
+  const clerk = useClerk();
 
   const isFormValid = Boolean(
     fullName && email && password && password.length >= 6,
@@ -166,40 +171,56 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: fullName, email, password }),
-        },
-      );
+      if (!signUp) return;
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        add({
-          title: "Registration failed",
-          description: data.error || "Something went wrong.",
-          type: "error",
-        });
-        return;
-      }
-
-      if (data.token) localStorage.setItem("token", data.token);
-
-      add({
-        title: "Account created!",
-        description: "Welcome to AI Career Coach!",
-        type: "success",
+      const result = await signUp.create({
+        emailAddress: email,
+        password,
+        firstName: fullName,
       });
-      setTimeout(() => router.push("/dashboard"), 1000);
-    } catch {
+
+      const currentStatus = (result as any).status || signUp.status;
+      const currentSessionId = (result as any).createdSessionId || signUp.createdSessionId;
+
+      if (currentStatus === "complete") {
+        add({
+          title: "Account created!",
+          description: "Welcome to AI Career Coach!",
+          type: "success",
+        });
+        setTimeout(() => router.push("/dashboard"), 1000);
+      } else {
+        await (signUp as any).prepareEmailAddressVerification({ strategy: "email_code" });
+        setPendingVerification(true);
+      }
+    } catch (err: any) {
       add({
-        title: "Network error",
-        description: "Please check your connection and try again.",
+        title: "Registration failed",
+        description: err.errors?.[0]?.message || "Please check your details and try again.",
         type: "error",
       });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!signUp || !code) return;
+    setLoading(true);
+    try {
+      const result = await (signUp as any).attemptEmailAddressVerification({ code });
+      const currentStatus = (result as any).status || signUp.status;
+      const currentSessionId = (result as any).createdSessionId || signUp.createdSessionId;
+
+      if (currentStatus === "complete") {
+        add({ title: "Account created!", description: "Welcome to AI Career Coach!", type: "success" });
+        setTimeout(() => router.push("/dashboard"), 1000);
+      } else {
+        add({ title: "Verification incomplete", description: "Please try again.", type: "error" });
+      }
+    } catch (err: any) {
+      add({ title: "Verification failed", description: err.errors?.[0]?.message || "Invalid code.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -220,11 +241,44 @@ export default function RegisterPage() {
             Create your account
           </h1>
           <p className="text-sm text-zinc-500">
-            Join thousands of candidates who landed their dream jobs.
+            {pendingVerification 
+              ? "We've sent a code to your email. Enter it below to verify your account." 
+              : "Join thousands of candidates who landed their dream jobs."}
           </p>
         </div>
 
         {/* Form */}
+        {pendingVerification ? (
+          <form
+            onSubmit={handleVerify}
+            noValidate
+            className="flex flex-col gap-4"
+          >
+            <Input
+              id="verify-code"
+              label="Verification Code"
+              value={code}
+              onChange={setCode}
+              placeholder="Enter 6-digit code"
+            />
+            
+            <motion.button
+              whileTap={{ scale: code && !loading ? 0.97 : 1 }}
+              type="submit"
+              disabled={loading}
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Verifying…
+                </>
+              ) : (
+                "Verify Email"
+              )}
+            </motion.button>
+          </form>
+        ) : (
         <form
           onSubmit={handleSubmit}
           noValidate
@@ -285,7 +339,25 @@ export default function RegisterPage() {
               "Create Account"
             )}
           </motion.button>
+
+          <div id="clerk-captcha"></div>
+
+          {/* Google Auth Button */}
+          <button
+            type="button"
+            onClick={() => clerk.client.signUp.authenticateWithRedirect({ strategy: "oauth_google", redirectUrl: "/sso-callback", redirectUrlComplete: "/dashboard" })}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-white/10"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            Continue with Google
+          </button>
         </form>
+        )}
 
         {/* Terms */}
         <p className="text-center text-[11px] text-zinc-600 leading-relaxed">

@@ -5,8 +5,9 @@ import Link from "next/link";
 import {
   FileText, ScanSearch, Download, TrendingUp, TrendingDown,
   Plus, ArrowRight, Clock, Pencil, Trash2, Loader2,
-  BarChart3, Sparkles, RefreshCw,
+  BarChart3, Sparkles, RefreshCw, MoreHorizontal, PencilLine, Play,
 } from "lucide-react";
+import { useUser, useAuth, UserButton } from "@clerk/nextjs";
 import {
   ChartConfig,
   ChartContainer,
@@ -158,9 +159,9 @@ const chartConfig: ChartConfig = {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
-  const user = { firstName: "Ayush", email: "ayush@example.com" };
-  const isLoaded = true;
-  const getToken = useCallback(async () => "dummy_token", []);
+  const { user, isLoaded: userLoaded } = useUser();
+  const { getToken, isLoaded: authLoaded } = useAuth();
+  const isLoaded = userLoaded && authLoaded;
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [drafts, setDrafts] = useState<Draft[]>([]);
@@ -172,7 +173,7 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const token = await getToken();
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005/api";
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       const headers = { Authorization: `Bearer ${token}` };
 
       const [statsRes, draftsRes, atsRes] = await Promise.all([
@@ -180,11 +181,22 @@ export default function DashboardPage() {
         fetch(`${baseUrl}/dashboard/drafts`, { headers }),
         fetch(`${baseUrl}/dashboard/ats-record`, { headers }),
       ]);
+
+      const safeJson = async (res: Response) => {
+        if (!res.ok) return { success: false, data: null };
+        try {
+          return await res.json();
+        } catch {
+          return { success: false, data: null };
+        }
+      };
+
       const [statsJson, draftsJson, atsJson] = await Promise.all([
-        statsRes.json(),
-        draftsRes.json(),
-        atsRes.json(),
+        safeJson(statsRes),
+        safeJson(draftsRes),
+        safeJson(atsRes),
       ]);
+
       if (statsJson.success) setStats(statsJson.data);
       if (draftsJson.success) setDrafts(draftsJson.data);
       if (atsJson.success) setATSHistory(atsJson.data);
@@ -204,7 +216,7 @@ export default function DashboardPage() {
     setDeletingId(id);
     try {
       const token = await getToken();
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005/api";
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       const res = await fetch(`${baseUrl}/resume-builder/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -252,7 +264,7 @@ export default function DashboardPage() {
     );
   }
 
-  const firstName = user?.firstName || user?.email?.split("@")[0] || "there";
+  const firstName = user?.firstName || user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] || "there";
 
   return (
     <div className="p-6 md:p-8 max-w-[1400px] mx-auto">
@@ -267,13 +279,23 @@ export default function DashboardPage() {
             Here's what's happening with your resumes today.
           </p>
         </div>
-        <button
-          onClick={fetchData}
-          className="flex items-center gap-2 text-xs font-semibold text-neutral-500 hover:text-neutral-900 bg-white border border-neutral-200 px-3 py-2 rounded-xl hover:bg-neutral-50 transition-all shadow-sm font-manrope"
-        >
-          <RefreshCw size={13} />
-          Refresh
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={fetchData}
+            className="flex items-center gap-2 text-xs font-semibold text-neutral-500 hover:text-neutral-900 bg-white border border-neutral-200 px-3 py-2 rounded-xl hover:bg-neutral-50 transition-all shadow-sm font-manrope"
+          >
+            <RefreshCw size={13} />
+            Refresh
+          </button>
+          
+          <UserButton 
+            appearance={{
+              elements: {
+                avatarBox: "w-10 h-10 shadow-sm border border-neutral-200",
+              }
+            }}
+          />
+        </div>
       </div>
 
       {/* ── STAT CARDS ── */}
