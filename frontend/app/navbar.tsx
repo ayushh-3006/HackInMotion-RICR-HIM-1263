@@ -12,7 +12,7 @@ import {
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
-import { Sparkles, PenTool, ScanText, BookText } from "lucide-react";
+
 
 export default function NavbarDemo() {
   const navItems = [
@@ -25,42 +25,8 @@ export default function NavbarDemo() {
       link: "#how-it-works",
     },
     {
-      name: "Tools",
-      link: "#pricing",
-      children: [
-        {
-          title: "AI Resume Builder",
-          href: "/ai-builder",
-          icon: <Sparkles strokeWidth={2} className="w-4 h-4" />,
-          description: "Build a resume from scratch using AI",
-        },
-        {
-          title: "Resume Enhancer",
-          href: "/dashboard/enhance",
-          icon: <PenTool strokeWidth={2} className="w-4 h-4" />,
-          description: "Enhance your resume based on job roles",
-        },
-        {
-          title: "ATS Score Checker",
-          href: "/ats",
-          icon: <ScanText strokeWidth={2} className="w-4 h-4" />,
-          description: "Check ATS score and improve visibility",
-        },
-        {
-          title: "Manual Resume Builder",
-          href: "/resume-builder",
-          icon: <BookText strokeWidth={2} className="w-4 h-4" />,
-          description: "Create resumes manually with full control",
-        },
-      ],
-    },
-    {
-      name: "Templates",
-      link: "#contact",
-    },
-    {
-      name: "Examples",
-      link: "#contact",
+      name: "FAQ",
+      link: "#faqs",
     },
   ];
 
