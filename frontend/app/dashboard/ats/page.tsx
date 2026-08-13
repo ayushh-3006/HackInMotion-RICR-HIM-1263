@@ -3,7 +3,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { toast } from 'sonner';
-import { UploadCloud, FileText, Loader2, Briefcase, FileSearch, X, Sparkles } from 'lucide-react';
+import { UploadCloud, FileText, Loader2, Briefcase, FileSearch, X, Sparkles, Plus } from 'lucide-react';
 import ScoreGauge from '@/components/ats/ScoreGauge';
 import SkillTagList from '@/components/ats/SkillTagList';
 import SuggestionsList from '@/components/ats/SuggestionsList';
@@ -214,6 +214,18 @@ export default function ATSCheckerPage() {
                 placeholder="Paste required skills or the full job description here…"
                 className="flex-1 w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow resize-none min-h-[100px] placeholder:text-slate-400 placeholder:font-normal"
               />
+              <div className="mt-3 flex flex-wrap gap-2">
+                {['React.js', 'Node.js', 'Express.js', 'MongoDB'].map(skill => (
+                  <button
+                    key={skill}
+                    type="button"
+                    onClick={() => setJobSkills(prev => prev ? `${prev}, ${skill}` : skill)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold rounded-lg transition-colors border border-slate-200"
+                  >
+                    <Plus size={14} className="text-indigo-500" /> {skill}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button
