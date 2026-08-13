@@ -3,22 +3,22 @@ import { InfiniteSlider } from "@/components/motion-primitives/infinite-slider";
 export function LogoCloud() {
   return (
     <div 
-      className="w-full max-w-5xl mx-auto overflow-hidden py-4"
+      className="w-full max-w-6xl mx-auto overflow-hidden py-6"
       style={{
         maskImage: "linear-gradient(to right, transparent, black, transparent)",
         WebkitMaskImage: "linear-gradient(to right, transparent, black, transparent)",
       }}
     >
-      <InfiniteSlider gap={56} reverse speed={60} speedOnHover={20}>
+      <InfiniteSlider gap={64} reverse speed={60} speedOnHover={20}>
         {logos.map((logo, index) => (
           <div 
             key={`logo-${logo.alt}-${index}`} 
-            className="flex items-center justify-center h-12 px-2 transition-transform duration-300 hover:scale-110"
+            className="flex items-center justify-center h-14 sm:h-16 md:h-18 px-4 transition-transform duration-300 hover:scale-110"
           >
             <img
               src={logo.src}
               alt={logo.alt}
-              className="pointer-events-none h-8 md:h-10 w-auto object-contain select-none transition-opacity duration-300"
+              className="pointer-events-none h-10 sm:h-12 md:h-14 w-auto object-contain select-none transition-opacity duration-300"
               loading="lazy"
             />
           </div>

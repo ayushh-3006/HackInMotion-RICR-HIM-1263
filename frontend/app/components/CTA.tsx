@@ -16,7 +16,7 @@ const CTA = () => {
   const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
 
   return (
-    <section ref={containerRef} className="relative -mt-20 h-[860px] overflow-hidden">
+    <section ref={containerRef} className="relative -mt-20 h-[500px] sm:h-[650px] md:h-[860px] w-full max-w-full overflow-hidden">
       <motion.div style={{ y }} className="absolute inset-x-0 -inset-y-[20%] w-full h-[140%]">
         <Image
           src="/CTA/1.jpg"
@@ -29,9 +29,9 @@ const CTA = () => {
       </motion.div>
 
 
-      <div className='relative z-10 h-full flex flex-col items-start justify-center gap-8 pl-16'>
+      <div className='relative z-10 h-full max-w-7xl mx-auto w-full flex flex-col items-start justify-center gap-8 px-6 sm:px-12 md:pl-16 lg:pl-20'>
 
-        <p className='text-white text-5xl font-bold font-manrope max-w-4xl tracking-tight leading-tight'>
+        <p className='text-white text-3xl sm:text-4xl md:text-5xl font-bold font-manrope max-w-4xl tracking-tight leading-tight'>
           Upgrade Your Resume. <br /> Unlock More Opportunities.
         </p>
 

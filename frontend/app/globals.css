@@ -11,11 +11,15 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
-html {
-  color-scheme: dark;
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 html {
+  color-scheme: dark;
   scroll-behavior: smooth;
 }
 
