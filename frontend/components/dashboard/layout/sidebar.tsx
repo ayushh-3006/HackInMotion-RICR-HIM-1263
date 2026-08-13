@@ -17,7 +17,7 @@ import {
 
 const mainLinks = [
   { name: 'Overview', href: '/dashboard', icon: Home },
-  { name: 'ATS Resume Parser', href: '/dashboard/resume-parser', icon: FileText },
+  { name: 'ATS Score Checker', href: '/dashboard/ats', icon: FileText },
   { name: 'JD Matcher & Rewriter', href: '/dashboard/jd-matcher', icon: Target },
   { name: 'Mock Interview Studio', href: '/dashboard/mock-interview', icon: Mic },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart2 },
