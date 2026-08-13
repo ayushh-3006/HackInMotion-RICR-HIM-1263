@@ -5,7 +5,7 @@ import { clerkMiddleware } from "@clerk/express";
 import { connectDB } from "./config/db.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import userRoutes from "./routes/user.routes.js";
-import { syncUser } from "./middleware/authMiddleware.js";
+import { syncUser } from "./middlewares/authMiddleware.js";
 
 // Load environment variables
 dotenv.config();
@@ -26,11 +26,22 @@ app.use(syncUser); // Lazily sync Clerk users on any authenticated API call
 // User routes
 app.use("/api/users", userRoutes);
 
+// Resume Builder routes
+import resumeBuilderRoutes from "./routes/ResumeBuilderRouter.js";
+app.use("/api/resume-builder", resumeBuilderRoutes);
+
 // ATS routes
 import { ATSRouter } from "./routes/ATSRouter.js";
 import { ATSController } from "./controllers/ATSController.js";
 import { ATSAnalyzer } from "./services/ATSAnalyzerModule.js";
 import { ParserFactory } from "./parsers/ParserFactory.js";
+
+// Resume Routes
+import resumeRoutes from "./routes/ResumeRoutes.js";
+import path from "path";
+
+app.use("/api/resume", resumeRoutes);
+app.use("/uploads", express.static(path.resolve("uploads")));
 
 const groqApiKey = process.env.GROQ_API_KEY || "";
 const atsController = new ATSController(new ATSAnalyzer(groqApiKey), new ParserFactory());
