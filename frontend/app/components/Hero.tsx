@@ -90,6 +90,7 @@ const Hero = () => {
                 <Button variant="outline" className="text-[#1C4ED6] cursor-pointer rounded-full h-12 px-8 font-manrope font-medium border-[#1C4ED6] hover:bg-[#1C4ED6] hover:text-white transition-all duration-300">
                   Learn More
                 </Button>
+                
               </div>
             </div>
           }
