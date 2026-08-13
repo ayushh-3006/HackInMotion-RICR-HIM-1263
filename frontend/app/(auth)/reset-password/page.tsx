@@ -6,8 +6,6 @@ import {
   EyeOff,
   Loader2,
   ShieldCheck,
-  CheckCircle2,
-  XCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -52,33 +50,6 @@ function useToast() {
   return { add, Toast };
 }
 
-function PasswordStrength({ password }: { password: string }) {
-  const rules = [
-    { label: "At least 8 characters", pass: password.length >= 8 },
-    { label: "Contains a number", pass: /\d/.test(password) },
-    { label: "Contains a letter", pass: /[a-zA-Z]/.test(password) },
-  ];
-  if (!password) return null;
-  return (
-    <div className="flex flex-col gap-1 mt-1">
-      {rules.map((r, i) => (
-        <div key={i} className="flex items-center gap-1.5">
-          {r.pass ? (
-            <CheckCircle2 size={11} className="text-emerald-400 shrink-0" />
-          ) : (
-            <XCircle size={11} className="text-zinc-600 shrink-0" />
-          )}
-          <span
-            className={`text-[11px] ${r.pass ? "text-emerald-400" : "text-zinc-600"}`}
-          >
-            {r.label}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -104,14 +75,10 @@ function ResetPasswordForm() {
       return;
     }
 
-    if (
-      password.length < 8 ||
-      !/\d/.test(password) ||
-      !/[a-zA-Z]/.test(password)
-    ) {
+    if (password.length < 6) {
       add({
         title: "Weak password",
-        description: "Password must meet all strength requirements.",
+        description: "Password must be at least 6 characters.",
         type: "error",
       });
       return;
@@ -228,7 +195,6 @@ function ResetPasswordForm() {
                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                 </div>
-                <PasswordStrength password={password} />
               </div>
 
               {/* Confirm password */}

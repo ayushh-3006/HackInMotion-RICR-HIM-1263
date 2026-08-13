@@ -103,8 +103,8 @@ export default function ForgotPasswordPage() {
           href="/login"
           className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-violet-400 transition-colors w-fit"
         >
-          <ArrowLeft size={13} />
-          Back to Sign In
+          <ArrowLeft size={13}  className="bg-white"/>
+          Back
         </Link>
 
           <>
