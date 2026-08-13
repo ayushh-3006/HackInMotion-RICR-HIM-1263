@@ -1,17 +1,36 @@
 'use client';
 
+import { useMemo } from 'react';
 import { ChevronDown, Check, AlertTriangle, X, Link as LinkIcon, Download } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 
-const mockTrendData = [
-  { date: 'May 15', score: 25 },
-  { date: 'May 22', score: 45 },
-  { date: 'May 29', score: 55 },
-  { date: 'Jun 5', score: 75 },
-  { date: 'Jun 12', score: 82 },
-];
+export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
+  
+  // Transform atsHistory into chart data (chronological order)
+  const chartData = useMemo(() => {
+    if (!atsHistory || atsHistory.length === 0) {
+      return [
+        { date: 'No Data', score: 0 }
+      ];
+    }
+    
+    // Take up to 5 most recent records
+    const recentHistory = [...atsHistory].slice(0, 5);
+    
+    // Sort them chronologically (oldest to newest for the chart trend)
+    recentHistory.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    
+    return recentHistory.map(record => {
+      const dateStr = new Date(record.createdAt).toLocaleDateString("en-US", {
+        month: "short", day: "numeric",
+      });
+      return {
+        date: dateStr,
+        score: record.score
+      };
+    });
+  }, [atsHistory]);
 
-export function InsightsColumn() {
   return (
     <div className="flex flex-col w-full">
       {/* Invisible Title just to keep alignment perfectly synced with the left column's title */}
@@ -30,7 +49,7 @@ export function InsightsColumn() {
           </div>
           <div className="h-40 w-full mt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={mockTrendData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+              <AreaChart data={chartData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
@@ -50,6 +69,7 @@ export function InsightsColumn() {
                   tickLine={false} 
                   tick={{ fontSize: 10, fill: '#94a3b8' }}
                   tickFormatter={(val) => `${val}%`}
+                  domain={[0, 100]}
                 />
                 <Tooltip 
                   contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
