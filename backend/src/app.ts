@@ -20,6 +20,20 @@ app.use("/api/webhooks", webhookRoutes);
 
 app.use(cors());
 app.use(express.json());
+
+// Database readiness check middleware
+import mongoose from "mongoose";
+app.use((req: Request, res: Response, next: express.NextFunction) => {
+  if (mongoose.connection.readyState !== 1) {
+    res.status(503).json({ 
+      error: "Service Unavailable: Database connection is not established.", 
+      details: "The backend is running but cannot reach MongoDB. Please check your IP whitelist and DATABASE_URL."
+    });
+    return;
+  }
+  next();
+});
+
 app.use(clerkMiddleware());
 app.use(syncUser); // Lazily sync Clerk users on any authenticated API call
 
