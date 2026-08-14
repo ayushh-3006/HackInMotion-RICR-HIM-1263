@@ -2,24 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Home, 
-  FileText, 
-  Target, 
-  Mic, 
-  BarChart2, 
-  PenTool, 
-  ShieldCheck, 
-  BookOpen, 
+import {
+  Home,
+  FileText,
+  Target,
+  Mic,
+  BarChart2,
+  PenTool,
+  ShieldCheck,
+  BookOpen,
   Share2,
   ChevronUp
 } from 'lucide-react';
 
+
 const mainLinks = [
   { name: 'Overview', href: '/dashboard', icon: Home },
-  { name: 'ATS Resume Parser', href: '/dashboard/resume-parser', icon: FileText },
-  { name: 'JD Matcher & Rewriter', href: '/dashboard/jd-matcher', icon: Target },
-  { name: 'Mock Interview Studio', href: '/dashboard/mock-interview', icon: Mic },
+  { name: 'ATS Score Checker', href: '/dashboard/ats', icon: FileText },
+  { name: 'AI Resume Builder', href: '/dashboard/ai-resume-builder', icon: Target },
+  { name: 'Mock Interview', href: '/dashboard/mock-interview', icon: Mic },
+  { name: 'Share Reports', href: '/dashboard/share-reports', icon: Share2 },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart2 },
 ];
 
@@ -27,7 +29,6 @@ const secondaryLinks = [
   { name: 'Resume Rewriter', href: '/dashboard/resume-rewriter', icon: PenTool },
   { name: 'ATS Compatibility', href: '/dashboard/ats-compatibility', icon: ShieldCheck },
   { name: 'Question Bank', href: '/dashboard/question-bank', icon: BookOpen },
-  { name: 'Share Reports', href: '/dashboard/share-reports', icon: Share2 },
 ];
 
 export function Sidebar() {
@@ -71,11 +72,10 @@ export function Sidebar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
                     ? 'bg-indigo-50 text-indigo-700 shadow-sm'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
                 {link.name}
@@ -96,11 +96,10 @@ export function Sidebar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    isActive
+                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
                       ? 'bg-indigo-50 text-indigo-700'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
+                    }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
                   {link.name}

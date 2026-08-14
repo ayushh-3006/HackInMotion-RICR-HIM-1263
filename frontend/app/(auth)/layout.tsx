@@ -44,7 +44,7 @@ export default function AuthLayout({
 
       {/* ── RIGHT: 3D Marquee Panel ───────────────────────── */}
       <div className="hidden lg:block w-full bg-gray-950/5">
-        <ThreeDMarquee images={images} />
+        <ThreeDMarquee images={textBasedImages} />
       </div>
     </div>
   );

@@ -104,7 +104,7 @@ export default function LoginPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const clerk = useClerk();
 
-  const isFormValid = Boolean(email && password);
+  const isFormValid = Boolean(email && password && password.length >= 8);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,6 +113,15 @@ export default function LoginPage() {
       add({
         title: "Missing information",
         description: "Please fill in all required fields.",
+        type: "error",
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      add({
+        title: "Invalid password",
+        description: "Password must be at least 8 characters long.",
         type: "error",
       });
       return;

@@ -68,4 +68,84 @@ export class AIProvider implements IAIProvider {
             throw new Error("AI response was not valid JSON");
         }
     }
+
+    async buildResumeFromChat(chatHistory: any[], currentData: any): Promise<any> {
+        const response = await client.chat.completions.create({
+            model: "llama-3.1-8b-instant",
+            messages: [
+                {
+                    role: "system",
+                    content: `You are an expert AI Resume Builder.
+                    Your goal is to iteratively build and refine a JSON resume based on a conversation with the user.
+                    
+                    STRICT RULES:
+                    1. Return ONLY valid JSON.
+                    2. Maintain the schema structure exactly as provided.
+                    3. Update the JSON based on the latest user messages in the chat history.
+                    4. If the user provides a target job role or experience, incorporate it to enhance their resume bullet points.
+                    5. Ensure dates, names, and contact info stay accurate based on user input.
+                    
+                    CURRENT RESUME DATA:
+                    ${JSON.stringify(currentData, null, 2)}
+                    
+                    SCHEMA EXPECTED:
+                    {
+                        "id": "string",
+                        "personalInfo": {
+                            "fullName": "string",
+                            "email": "string",
+                            "phone": "string",
+                            "portfolio": "string",
+                            "linkedin": "string",
+                            "github": "string",
+                            "twitter": "string",
+                            "leetcode": "string",
+                            "codeforces": "string"
+                        },
+                        "careerDetails": {
+                            "objective": "string"
+                        },
+                        "experience": [{
+                            "id": "string",
+                            "jobTitle": "string",
+                            "company": "string",
+                            "duration": "string",
+                            "description": "string"
+                        }],
+                        "education": [{
+                            "id": "string",
+                            "degree": "string",
+                            "institution": "string",
+                            "year": "string"
+                        }],
+                        "projects": [{
+                            "id": "string",
+                            "name": "string",
+                            "date": "string",
+                            "description": "string"
+                        }],
+                        "certifications": [{
+                            "id": "string",
+                            "name": "string",
+                            "issuer": "string",
+                            "date": "string"
+                        }]
+                    }`,
+                },
+                ...chatHistory
+            ],
+            temperature: 0.2,
+            response_format: { type: "json_object" }
+        });
+
+        const result = response.choices[0]?.message?.content;
+        if (!result) throw new Error("AI returned empty response");
+
+        try {
+            return JSON.parse(result);
+        } catch (e) {
+            console.error("Failed to parse AI JSON response:", result);
+            throw new Error("AI response was not valid JSON");
+        }
+    }
 }

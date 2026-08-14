@@ -12,7 +12,7 @@ import {
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
-
+import { useAuth } from "@clerk/nextjs";
 
 export default function NavbarDemo() {
   const navItems = [
@@ -35,6 +35,7 @@ export default function NavbarDemo() {
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { userId, isLoaded } = useAuth();
 
   return (
     <div className="relative w-full font-manrope">
@@ -44,12 +45,20 @@ export default function NavbarDemo() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex flex-1 items-center justify-end gap-2">
-            <NavbarButton href="/login" variant="secondary" className="rounded-full px-6">
-              Login
-            </NavbarButton>
-            <NavbarButton href="/register" variant="primary" className="rounded-full px-6">
-              Get Started
-            </NavbarButton>
+            {!userId ? (
+              <>
+                <NavbarButton href="/login" variant="secondary" className="rounded-full px-6">
+                  Login
+                </NavbarButton>
+                <NavbarButton href="/register" variant="primary" className="rounded-full px-6">
+                  Get Started
+                </NavbarButton>
+              </>
+            ) : (
+              <NavbarButton href="/dashboard" variant="primary" className="rounded-full px-6">
+                Dashboard
+              </NavbarButton>
+            )}
           </div>
         </NavBody>
 
@@ -78,22 +87,35 @@ export default function NavbarDemo() {
               </a>
             ))}
             <div className="flex w-full flex-col gap-4">
-              <NavbarButton
-                href="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton>
-              <NavbarButton
-                href="/register"
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Get Started
-              </NavbarButton>
+              {!userId ? (
+                <>
+                  <NavbarButton
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    Login
+                  </NavbarButton>
+                  <NavbarButton
+                    href="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    Get Started
+                  </NavbarButton>
+                </>
+              ) : (
+                <NavbarButton
+                  href="/dashboard"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  variant="primary"
+                  className="w-full"
+                >
+                  Dashboard
+                </NavbarButton>
+              )}
             </div>
           </MobileNavMenu>
         </MobileNav>

@@ -1,12 +1,16 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const isAuthRoute = createRouteMatcher([
-  '/login(.*)', 
-  '/register(.*)', 
-  '/forgot-password(.*)',
-  '/reset-password(.*)'
-]);
+const authRoutes = [
+  '/login', 
+  '/register', 
+  '/forgot-password',
+  '/reset-password'
+];
+
+const isAuthRoute = (req: any) => {
+  return authRoutes.some(route => req.nextUrl.pathname.startsWith(route));
+};
 
 export default clerkMiddleware(async (auth, req) => {
   try {

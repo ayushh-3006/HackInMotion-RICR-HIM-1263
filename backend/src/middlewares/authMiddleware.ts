@@ -23,6 +23,11 @@ export const syncUser = async (req: Request, res: Response, next: NextFunction) 
 
     // If missing, fetch from Clerk and sync to DB
     if (!user) {
+      if (!process.env.CLERK_SECRET_KEY) {
+        console.warn("CLERK_SECRET_KEY is missing. Skipping user sync for:", clerkId);
+        return next();
+      }
+
       const clerkUser = await clerkClient.users.getUser(clerkId);
       const email = clerkUser.emailAddresses[0]?.emailAddress;
       
@@ -36,6 +41,7 @@ export const syncUser = async (req: Request, res: Response, next: NextFunction) 
     next();
   } catch (error) {
     console.error("Failed to sync user lazily:", error);
-    next(error);
+    // Continue instead of crashing the request
+    next();
   }
 };

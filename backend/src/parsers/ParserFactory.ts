@@ -1,6 +1,6 @@
-import { IDocumentParser } from './IDocumentParser';
-import { PDFParserStrategy } from './PDFParserStrategy';
-import { DOCXParserStrategy } from './DOCXParserStrategy';
+import { IDocumentParser } from './IDocumentParser.js';
+import { PDFParserStrategy } from './PDFParserStrategy.js';
+import { DOCXParserStrategy } from './DOCXParserStrategy.js';
 
 // OCP: Adding a new parser only requires adding to the strategies array
 // DIP: Returns the abstraction (IDocumentParser), not the concrete type

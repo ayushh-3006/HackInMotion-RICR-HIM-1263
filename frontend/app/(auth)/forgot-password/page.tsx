@@ -103,11 +103,10 @@ export default function ForgotPasswordPage() {
           href="/login"
           className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-violet-400 transition-colors w-fit"
         >
-          <ArrowLeft size={13}  className="bg-white"/>
+          <ArrowLeft size={13}/>
           Back
         </Link>
 
-          <>
             {/* Header */}
             <div className="flex flex-col gap-1.5">
               <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/15 border border-violet-500/20">
@@ -159,7 +158,6 @@ export default function ForgotPasswordPage() {
                 )}
               </motion.button>
             </form>
-          </>
 
         <p className="text-center text-sm text-zinc-500">
           Remember your password?{" "}

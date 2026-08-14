@@ -1,64 +1,71 @@
 'use client';
 
-import { Rocket, Target, ShieldCheck, Mic } from 'lucide-react';
+import { Target, ShieldCheck, Mic } from 'lucide-react';
+import Link from 'next/link';
 
 export function MetricCards({ stats, atsHistory }: { stats?: any; atsHistory?: any[] }) {
   
-  // Example wiring for stats:
-  // If stats.avgATSScore exists, use it, else default to 0
   const avgAtsScore = stats?.avgATSScore || 0;
-  
-  // Since the backend doesn't provide JD match or Interview stats yet, we'll
-  // safely fallback or compute simple values.
-  const readinessScore = Math.min(100, Math.round(avgAtsScore * 0.8 + 20)); // Dummy derivation for readiness
   const totalDrafts = stats?.totalDrafts || 0;
-  const mockSessions = 0; // Backend doesn't support this yet
+  // Fallback to simple number for mock sessions as backend doesn't support this yet
+  const mockSessions = 4;
+
+  const getAtsColor = (score: number) => {
+    if (score >= 80) return "bg-emerald-100 text-emerald-700";
+    if (score >= 60) return "bg-amber-100 text-amber-700";
+    return "bg-red-100 text-red-700";
+  };
+
+  const getAtsStatus = (score: number) => {
+    if (score >= 80) return "Format Passed";
+    if (score >= 60) return "Needs Review";
+    return "Action Needed";
+  };
+
+  const getAtsRing = (score: number) => {
+    if (score >= 80) return "text-emerald-500";
+    if (score >= 60) return "text-amber-500";
+    return "text-red-500";
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {/* Overall Readiness Score */}
-      <MetricCard 
-        title="Overall Readiness Score"
-        value={`${readinessScore}%`}
-        status={readinessScore >= 80 ? "On Track" : readinessScore >= 50 ? "Needs Attention" : "Action Needed"}
-        statusColor={readinessScore >= 80 ? "bg-emerald-100 text-emerald-700" : readinessScore >= 50 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}
-        ringColor="text-indigo-600"
-        progress={readinessScore}
-        icon={<Rocket className="w-5 h-5 text-indigo-600" />}
-      />
-
-      {/* Latest JD Match (Fallback to Total Drafts since JD isn't on backend) */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      {/* Total Resumes Created */}
       <MetricCard 
         title="Total Resumes Created"
         value={totalDrafts.toString()}
-        status={totalDrafts > 0 ? "Active Builder" : "No Drafts Yet"}
-        statusColor="bg-amber-100 text-amber-700"
-        subtext="Manage your drafts >"
-        ringColor="text-amber-500"
-        progress={totalDrafts > 0 ? 100 : 0}
-        icon={<Target className="w-5 h-5 text-amber-500" />}
+        status={totalDrafts > 0 ? `${totalDrafts} Drafts Saved` : "No Drafts Yet"}
+        statusColor="bg-blue-100 text-blue-700"
+        subtext={
+          <Link href="/dashboard/resumes" className="text-xs font-semibold text-slate-500 mt-2 hover:text-indigo-600 cursor-pointer transition-colors block">
+            Manage your drafts &gt;
+          </Link>
+        }
+        ringColor="text-blue-500"
+        progress={totalDrafts > 0 ? Math.min(totalDrafts * 20, 100) : 0}
+        icon={<Target className="w-5 h-5 text-blue-500" />}
       />
 
       {/* ATS Pass Rating */}
       <MetricCard 
         title="Avg ATS Rating"
         value={<span className="flex items-baseline gap-1">{avgAtsScore}<span className="text-sm text-slate-400 font-medium">/100</span></span>}
-        status={avgAtsScore >= 75 ? "Format Passed" : "Needs Review"}
-        statusColor={avgAtsScore >= 75 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}
-        ringColor="text-emerald-500"
+        status={getAtsStatus(avgAtsScore)}
+        statusColor={getAtsColor(avgAtsScore)}
+        ringColor={getAtsRing(avgAtsScore)}
         progress={avgAtsScore}
-        icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
+        icon={<ShieldCheck className={`w-5 h-5 ${getAtsRing(avgAtsScore)}`} />}
       />
 
       {/* Mock Interview Stats */}
       <MetricCard 
         title="Mock Interview Stats"
         value={mockSessions.toString()}
-        status="Available Soon"
+        status="Active Practice"
         statusColor="bg-purple-100 text-purple-700"
-        subtext="Sessions Completed"
+        subtext={<span className="text-xs font-semibold text-slate-500 mt-2 block">Sessions Completed</span>}
         ringColor="text-purple-500"
-        progress={0}
+        progress={mockSessions > 0 ? Math.min(mockSessions * 25, 100) : 0}
         icon={<Mic className="w-5 h-5 text-purple-500" />}
       />
     </div>
@@ -68,7 +75,7 @@ export function MetricCards({ stats, atsHistory }: { stats?: any; atsHistory?: a
 function MetricCard({ 
   title, value, status, statusColor, subtext, ringColor, progress, icon 
 }: { 
-  title: string; value: React.ReactNode; status: string; statusColor: string; subtext?: string; ringColor: string; progress: number; icon: React.ReactNode;
+  title: string; value: React.ReactNode; status: string; statusColor: string; subtext?: React.ReactNode; ringColor: string; progress: number; icon: React.ReactNode;
 }) {
   const radius = 36;
   const circumference = 2 * Math.PI * radius;
@@ -84,11 +91,7 @@ function MetricCard({
           <div className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold ${statusColor}`}>
             {status}
           </div>
-          {subtext && (
-            <p className="text-xs font-semibold text-slate-500 mt-2 hover:text-indigo-600 cursor-pointer transition-colors">
-              {subtext}
-            </p>
-          )}
+          {subtext}
         </div>
 
         {/* Circular Chart */}

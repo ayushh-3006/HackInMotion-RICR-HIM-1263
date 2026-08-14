@@ -35,6 +35,8 @@ export default function RootLayout({
             <Toaster position="top-center" />
             <SonnerToaster position="top-right" richColors />
             {children}
+            {/* Required by Clerk for Bot Protection (Smart CAPTCHA) */}
+            <div id="clerk-captcha"></div>
           </ThemeProvider>
         </body>
       </html>
