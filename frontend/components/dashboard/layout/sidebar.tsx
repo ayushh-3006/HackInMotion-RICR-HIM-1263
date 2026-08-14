@@ -28,6 +28,11 @@ const ADVANCED_TOOLS = [
     href: "/dashboard/ai-resume-builder",
     icon: Target,
   },
+  {
+    name: "ATS Match Engine",
+    href: "/dashboard/ats-match",
+    icon: Target,
+  },
   { name: "Question Bank", href: "/dashboard/question-bank", icon: Library },
   { name: "Video Interview", href: "/dashboard/video-interview", icon: Video },
   { name: "Share Reports", href: "/dashboard/share-reports", icon: Share2 },

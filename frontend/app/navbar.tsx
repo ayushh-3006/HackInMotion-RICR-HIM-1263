@@ -45,7 +45,9 @@ export default function NavbarDemo() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex flex-1 items-center justify-end gap-2">
-            {!userId ? (
+            {!isLoaded ? (
+              <div className="flex h-10 w-24" />
+            ) : !userId ? (
               <>
                 <NavbarButton
                   href="/login"
@@ -99,7 +101,9 @@ export default function NavbarDemo() {
               </a>
             ))}
             <div className="flex w-full flex-col gap-4">
-              {!userId ? (
+              {!isLoaded ? (
+                <div className="h-10 w-full" />
+              ) : !userId ? (
                 <>
                   <NavbarButton
                     href="/login"

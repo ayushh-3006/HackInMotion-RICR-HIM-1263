@@ -198,12 +198,13 @@ export class GroqScorer {
           {
             role: "system",
             content:
-              "You are an ATS scoring engine. Always respond with valid JSON only. No explanation, no markdown, no code blocks.",
+              "You are an expert ATS scoring engine. Your job is to deeply analyze the provided resume against the provided full Job Description (JD). Identify exact and semantic keyword matches. Always respond with valid JSON only. No explanation, no markdown, no code blocks.",
           },
           {
             role: "user",
-            content: `Score this resume against the job description.
+            content: `Score this resume against the FULL job description provided. Be rigorous.
                      Resume: ${resumeText}
+                     
                      Job Description: ${jobDescription}
                      
                      Return ONLY this JSON:

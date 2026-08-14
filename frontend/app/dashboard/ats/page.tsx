@@ -30,7 +30,7 @@ export default function ATSCheckerPage() {
   /* Form state */
   const [file, setFile] = useState<File | null>(null);
   const [jobRole, setJobRole] = useState("");
-  const [jobSkills, setJobSkills] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const [experience, setExperience] = useState("Fresher");
 
   /* UI state */
@@ -63,9 +63,9 @@ export default function ATSCheckerPage() {
 
       const fd = new FormData();
       fd.append("resumeFile", file);
-      fd.append("jobRole", jobRole);
-      fd.append("jobSkills", jobSkills);
-      fd.append("experience", experience);
+      if (jobRole) fd.append("jobRole", jobRole);
+      if (jobDescription) fd.append("jobDescription", jobDescription);
+      if (experience) fd.append("experience", experience);
 
       const base =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";

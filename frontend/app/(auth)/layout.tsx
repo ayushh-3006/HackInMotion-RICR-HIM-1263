@@ -3,6 +3,7 @@
 import { ThreeDMarquee } from "@/components/ui/3d-marquee";
 import { BrainCircuit } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 // AI Career & Resume platform themed screenshots
 const baseImages = [
@@ -22,7 +23,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid h-screen overflow-hidden grid-cols-1 lg:grid-cols-2 bg-[#080808]">
+    <div className="grid h-screen overflow-hidden grid-cols-1 lg:grid-cols-2 bg-slate-50">
       {/* ── LEFT: Form Panel ─────────────────────────────── */}
       <div className="relative flex flex-col items-center justify-center px-8 py-12">
         {/* Logo top-left */}
@@ -30,16 +31,16 @@ export default function AuthLayout({
           href="/"
           className="absolute top-8 left-8 flex items-center gap-2.5 hover:opacity-80 transition-opacity"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/30">
-            <BrainCircuit size={16} className="text-white" />
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-white">
+          <Image src="/logo.png" alt="Resumind Logo" width={32} height={32} className="rounded-lg" />
+          <span className="text-sm font-semibold tracking-tight text-slate-900">
             resumind
           </span>
         </Link>
 
         {/* Form content */}
-        <div className="w-full max-w-[380px]">{children}</div>
+        <div className="w-full max-w-[420px] rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          {children}
+        </div>
       </div>
 
       {/* ── RIGHT: 3D Marquee Panel ───────────────────────── */}

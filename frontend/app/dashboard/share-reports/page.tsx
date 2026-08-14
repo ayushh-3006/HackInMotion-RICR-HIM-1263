@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 import {
   Share2,
@@ -24,6 +24,7 @@ interface Session {
   shareToken: string | null;
   sharedAt: string | null;
   createdAt: string;
+  status?: string;
 }
 
 export default function ShareReportsPage() {
@@ -31,11 +32,7 @@ export default function ShareReportsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchSharedSessions();
-  }, []);
-
-  const fetchSharedSessions = async () => {
+  const fetchSharedSessions = useCallback(async () => {
     try {
       const token = await getToken();
       const API_URL =
@@ -43,18 +40,29 @@ export default function ShareReportsPage() {
       const res = await fetch(`${API_URL}/interview/history`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
 
-      // Filter only public sessions
-      const shared = data.data.filter((s: Session) => s.isPublic);
-      setSessions(shared);
-    } catch (error: any) {
-      toast.error("Failed to load shared reports");
+      if (!res.ok) {
+        throw new Error("Failed to fetch sessions");
+      }
+
+      const data = await res.json();
+      if (data.success) {
+        // Filter out drafts or incomplete sessions if you only want to share finished ones
+        const completed = data.data.filter(
+          (s: Session) => s.isPublic && (s.status === "completed" || !s.status),
+        );
+        setSessions(completed);
+      }
+    } catch (error) {
+      toast.error("Failed to load interview reports");
     } finally {
       setLoading(false);
     }
-  };
+  }, [getToken]);
+
+  useEffect(() => {
+    fetchSharedSessions();
+  }, [fetchSharedSessions]);
 
   const handleRevoke = async (sessionId: string) => {
     try {
