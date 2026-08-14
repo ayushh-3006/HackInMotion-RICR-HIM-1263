@@ -12,8 +12,7 @@ export function MetricCards({
 }) {
   const avgAtsScore = stats?.avgATSScore || 0;
   const totalDrafts = stats?.totalDrafts || 0;
-  // Fallback to simple number for mock sessions as backend doesn't support this yet
-  const mockSessions = 4;
+  const totalInterviews = stats?.totalInterviews || 0;
 
   const getAtsColor = (score: number) => {
     if (score >= 80) return "bg-emerald-100 text-emerald-700";
@@ -84,7 +83,7 @@ export function MetricCards({
           </span>
         }
         ringColor="text-purple-500"
-        progress={mockSessions > 0 ? Math.min(mockSessions * 25, 100) : 0}
+        progress={totalInterviews > 0 ? Math.min(totalInterviews * 25, 100) : 0}
         icon={<Mic className="w-5 h-5 text-purple-500" />}
       />
     </div>

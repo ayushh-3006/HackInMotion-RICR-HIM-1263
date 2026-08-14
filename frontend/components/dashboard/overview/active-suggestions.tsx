@@ -72,7 +72,13 @@ const suggestions: SuggestionItem[] = [
 ];
 
 export function ActiveSuggestions() {
+  const [activeItems, setActiveItems] = useState<SuggestionItem[]>(suggestions);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const handleApply = (id: string, title: string) => {
+    setActiveItems(prev => prev.filter(item => item.id !== id));
+    toast.success(`Applied: ${title}`);
+  };
 
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -183,7 +189,10 @@ export function ActiveSuggestions() {
                         </div>
                       </div>
 
-                      <button className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors">
+                      <button 
+                        onClick={() => handleApply(item.id, item.title)}
+                        className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors"
+                      >
                         Apply Suggestion
                       </button>
                     </div>
@@ -192,7 +201,8 @@ export function ActiveSuggestions() {
               </AnimatePresence>
             </div>
           );
-        })}
+        })
+        )}
       </div>
     </div>
   );
