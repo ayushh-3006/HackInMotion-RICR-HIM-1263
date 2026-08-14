@@ -1,39 +1,48 @@
 import { Request, Response } from "express";
 import { ATSAnalyzer } from "../services/ATSAnalyzerModule.js";
 import { ParserFactory } from "../parsers/ParserFactory.js";
+import { IATSRepository } from "../interfaces/IATSRepository.js";
 
 export class ATSController {
   constructor(
     private analyzer: ATSAnalyzer,
     private parserFactory: ParserFactory,
+    private repository: IATSRepository
   ) {}
 
   calculateFromText = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { resumeText, jobSkills, jobRole, experience, filters } = req.body;
+      const { resumeText, jobDescription } = req.body;
 
-      if (!resumeText || (!jobSkills && !jobRole)) {
-        res
-          .status(400)
-          .json({
-            error: "resumeText and either jobSkills or jobRole are required",
-          });
+      if (!resumeText || !jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
+        res.status(400).json({
+          error: "resumeText and jobDescription (string) are required",
+        });
         return;
       }
 
-      // Construct a job description for the AI
-      const jobDescription = this.constructJD(
-        jobRole,
-        experience,
-        jobSkills,
-        filters,
-      );
+      let result;
+      try {
+        result = await this.analyzer.analyzeText(resumeText, jobDescription);
+      } catch (aiError) {
+        console.error("AI Error:", aiError);
+        res.status(502).json({ error: "Failed to communicate with AI provider" });
+        return;
+      }
 
-      const result = await this.analyzer.analyzeText(
-        resumeText,
-        jobDescription,
-      );
-      res.status(200).json(this.mapResult(result));
+      const mappedResult = this.mapResult(result);
+      const userId = (req as any).auth?.userId || (req as any).userId;
+
+      if (userId) {
+        await this.repository.save({
+          userId,
+          score: mappedResult.score,
+          jobRole: "Parsed from Text",
+          fileName: "Pasted Text",
+        });
+      }
+
+      res.status(200).json(mappedResult);
     } catch (err: any) {
       res.status(500).json({ error: err.message || "Internal Server Error" });
     }
@@ -42,14 +51,15 @@ export class ATSController {
   calculateFromFile = async (req: Request, res: Response): Promise<void> => {
     try {
       const file = (req as any).file;
-      const { jobSkills, jobRole, experience, filters } = req.body;
+      const { jobDescription } = req.body;
 
-      if (!file || (!jobSkills && !jobRole)) {
-        res
-          .status(400)
-          .json({
-            error: "resumeFile and either jobSkills or jobRole are required",
-          });
+      if (!file) {
+        res.status(400).json({ error: "resumeFile is required" });
+        return;
+      }
+
+      if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
+        res.status(400).json({ error: "jobDescription (string) is required" });
         return;
       }
 
@@ -57,25 +67,32 @@ export class ATSController {
       const resumeText = await parser.extractText(file.buffer);
 
       if (!resumeText.trim()) {
-        res
-          .status(400)
-          .json({ error: "Could not extract text from the provided file." });
+        res.status(400).json({ error: "Could not extract text from the provided file." });
         return;
       }
 
-      // Construct a job description for the AI
-      const jobDescription = this.constructJD(
-        jobRole,
-        experience,
-        jobSkills,
-        filters,
-      );
+      let result;
+      try {
+        result = await this.analyzer.analyzeText(resumeText, jobDescription);
+      } catch (aiError) {
+        console.error("AI Error:", aiError);
+        res.status(502).json({ error: "Failed to communicate with AI provider" });
+        return;
+      }
 
-      const result = await this.analyzer.analyzeText(
-        resumeText,
-        jobDescription,
-      );
-      res.status(200).json(this.mapResult(result));
+      const mappedResult = this.mapResult(result);
+      const userId = (req as any).auth?.userId || (req as any).userId;
+
+      if (userId) {
+        await this.repository.save({
+          userId,
+          score: mappedResult.score,
+          jobRole: "Parsed from Document",
+          fileName: file.originalname || "Uploaded File",
+        });
+      }
+
+      res.status(200).json(mappedResult);
     } catch (err: any) {
       res.status(err.message?.includes("Unsupported") ? 415 : 500).json({
         error: err.message || "Internal Server Error",
@@ -83,33 +100,24 @@ export class ATSController {
     }
   };
 
-  private constructJD(
-    role: string,
-    exp: string,
-    skills: string,
-    filters: string,
-  ): string {
-    let jd = "";
-    if (role) jd += `Role: ${role}\n`;
-    if (exp) jd += `Experience: ${exp}\n`;
-    if (skills) jd += `Required Skills: ${skills}\n`;
-    if (filters) {
-      try {
-        const f = JSON.parse(filters);
-        const activeFilters = Object.entries(f)
-          .filter(([_, v]) => v)
-          .map(([k]) => k);
-        if (activeFilters.length > 0)
-          jd += `Work Preferences: ${activeFilters.join(", ")}\n`;
-      } catch (e) {}
+  getHistory = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = (req as any).auth?.userId || (req as any).userId;
+      if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+
+      const history = await this.repository.findByUserId(userId);
+      res.status(200).json({ success: true, data: history });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Internal Server Error" });
     }
-    return jd.trim() || "Analyze this resume based on industry standards.";
-  }
+  };
 
   private mapResult(result: any) {
     const { finalScore, basicChecks, aiAnalysis } = result;
 
-    // Calculate simple keyword density for the frontend UI
     const keywordDensity: Record<string, number> = {};
     if (aiAnalysis?.matchedKeywords) {
       aiAnalysis.matchedKeywords.forEach((k: string) => {
@@ -129,7 +137,7 @@ export class ATSController {
         skills: basicChecks.sections.skills ? 100 : 40,
         experience: basicChecks.sections.experience ? 100 : 40,
         education: basicChecks.sections.education ? 100 : 40,
-        projects: 70, // Default placeholder as our basic checker doesn't check projects yet
+        projects: 70,
       },
       aiSummary: aiAnalysis
         ? `Analysis complete. AI Score: ${aiAnalysis.aiScore}/60, Basic Score: ${basicChecks.basicScore}/40.`
