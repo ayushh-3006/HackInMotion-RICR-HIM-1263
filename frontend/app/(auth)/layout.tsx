@@ -34,7 +34,7 @@ export default function AuthLayout({
             <BrainCircuit size={16} className="text-white" />
           </div>
           <span className="text-sm font-semibold tracking-tight text-white">
-            AI Career Coach
+            resumind
           </span>
         </Link>
 
@@ -44,7 +44,7 @@ export default function AuthLayout({
 
       {/* ── RIGHT: 3D Marquee Panel ───────────────────────── */}
       <div className="hidden lg:block w-full bg-gray-950/5">
-        <ThreeDMarquee images={textBasedImages} />
+        <ThreeDMarquee images={images} />
       </div>
     </div>
   );
