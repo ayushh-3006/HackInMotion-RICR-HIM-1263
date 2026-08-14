@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { InterviewController } from "../controllers/InterviewController.js";
 import { clerkAuth } from "../middlewares/clerkAuth.js";
+import { VisionAnalysisController } from "../controllers/VisionAnalysisController.js";
 import multer from "multer";
 
 // In-memory upload for audio blobs (max 25 MB)
@@ -39,6 +40,10 @@ export class InterviewRoutes {
 
     // Fetch past interview sessions
     this.router.get("/history", clerkAuth, this.controller.getHistory.bind(this.controller));
+
+    // Analyze video frames for body language
+    const visionController = new VisionAnalysisController();
+    this.router.post("/analyze-video-frames", clerkAuth, visionController.analyzeVideoFrames.bind(visionController));
 
     // ── Sharing routes ──
 

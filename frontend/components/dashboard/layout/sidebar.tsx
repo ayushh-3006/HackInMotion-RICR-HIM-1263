@@ -12,7 +12,8 @@ import {
   ShieldCheck,
   BookOpen,
   Share2,
-  ChevronUp
+  ChevronUp,
+  Video
 } from 'lucide-react';
 
 
@@ -21,6 +22,7 @@ const mainLinks = [
   { name: 'ATS Score Checker', href: '/dashboard/ats', icon: FileText },
   { name: 'AI Resume Builder', href: '/dashboard/ai-resume-builder', icon: Target },
   { name: 'Mock Interview', href: '/dashboard/mock-interview', icon: Mic },
+  { name: 'Video Interview', href: '/dashboard/video-interview', icon: Video },
   { name: 'Share Reports', href: '/dashboard/share-reports', icon: Share2 },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart2 },
 ];

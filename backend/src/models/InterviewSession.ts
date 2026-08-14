@@ -5,6 +5,12 @@ export interface IFillerWord {
   count: number;
 }
 
+export interface IFlaggedMoment {
+  timestamp: number; // in seconds
+  type: string; // 'eye_contact', 'posture', 'expression'
+  description: string;
+}
+
 export interface IAnswer {
   questionId: string;
   userAnswer: string;
@@ -19,6 +25,13 @@ export interface IAnswer {
   confidenceLabel: string;
   idealAnswer: string;
   audioDurationSeconds: number;
+  
+  // Body language & vision metrics (optional for audio-only)
+  eyeContactScore?: number;
+  postureScore?: number;
+  expressionScore?: number;
+  flaggedMoments?: IFlaggedMoment[];
+  bodyLanguageFeedback?: string;
 }
 
 export interface IInterviewSession extends Document {
@@ -44,6 +57,12 @@ const FillerWordSchema = new Schema<IFillerWord>({
   count: { type: Number, required: true, default: 0 }
 });
 
+const FlaggedMomentSchema = new Schema<IFlaggedMoment>({
+  timestamp: { type: Number, required: true },
+  type: { type: String, required: true },
+  description: { type: String, required: true }
+});
+
 const AnswerSchema = new Schema<IAnswer>({
   questionId: { type: String, required: true },
   userAnswer: { type: String },
@@ -57,7 +76,12 @@ const AnswerSchema = new Schema<IAnswer>({
   fillerWords: [FillerWordSchema],
   confidenceLabel: { type: String, default: 'Neutral' },
   idealAnswer: { type: String, default: '' },
-  audioDurationSeconds: { type: Number, default: 0 }
+  audioDurationSeconds: { type: Number, default: 0 },
+  eyeContactScore: { type: Number },
+  postureScore: { type: Number },
+  expressionScore: { type: Number },
+  flaggedMoments: [FlaggedMomentSchema],
+  bodyLanguageFeedback: { type: String }
 });
 
 const InterviewSessionSchema = new Schema<IInterviewSession>({
