@@ -3,11 +3,14 @@ import { ATSAnalyzer } from "../services/ATSAnalyzerModule.js";
 import { ParserFactory } from "../parsers/ParserFactory.js";
 import { ATSResult } from "../models/ATSResult.js";
 
+import { ATSService } from "../services/ATSService.js";
+
 export class ATSController {
   constructor(
     private analyzer: ATSAnalyzer,
     private parserFactory: ParserFactory,
-    private repository: IATSRepository
+    private repository: IATSRepository,
+    private atsService?: ATSService
   ) {}
 
   calculateFromText = async (req: Request, res: Response): Promise<void> => {

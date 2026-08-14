@@ -13,6 +13,11 @@ const mainLinks = [
     href: "/dashboard/ai-resume-builder",
     icon: Target,
   },
+  {
+    name: "ATS Match Engine",
+    href: "/dashboard/ats-match",
+    icon: Target,
+  },
   { name: "Question Bank", href: "/dashboard/question-bank", icon: Library },
   { name: "Mock Interview", href: "/dashboard/mock-interview", icon: Mic },
   { name: "Video Interview", href: "/dashboard/video-interview", icon: Video },

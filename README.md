@@ -127,6 +127,14 @@ The **Question Bank Generator** dynamically builds tailored interview questions 
 
 <br>
 
+### ◈ AI API Justification (Groq)
+
+For the core NLP tasks—specifically the real-time Job Description Matching Engine and dynamic Question Bank generation—Groq was selected over traditional LLM providers due to its specialized LPU (Language Processing Unit) architecture. This hardware enables ultra-fast inference speeds and exceptionally low latency. In the context of an ATS matching engine where users expect instant feedback upon uploading a resume and pasting a job description, standard API latency (often 2-5 seconds) degrades the UX. Groq processes these heavy text payloads and returns structured JSON in a fraction of that time, ensuring a seamless, real-time experience.
+
+Furthermore, leveraging the Llama 3 models via Groq provides a massive advantage in structured data extraction over standard text-similarity algorithms (like Cosine Similarity with TF-IDF or basic embedding comparisons). Traditional similarity algorithms only detect exact or fuzzy keyword matches, failing to understand the context of how a skill was applied. Llama 3 deeply parses the semantic meaning behind bullet points, accurately identifying true missing skills and generating highly specific, context-aware actionable suggestions. Crucially, Llama 3 on Groq consistently strictly adheres to JSON schema constraints, allowing our backend to reliably parse `matchScore`, `missingSkills`, and `actionableSuggestions` without regex hacks or parsing failures.
+
+<br>
+
 ### Implementation Comparison
 
 | Domain | Traditional Approach | Resumind |

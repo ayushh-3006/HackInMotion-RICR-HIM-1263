@@ -44,7 +44,7 @@ export default function ATSCheckerPage() {
   /* Form state */
   const [file, setFile] = useState<File | null>(null);
   const [jobRole, setJobRole] = useState("");
-  const [jobSkills, setJobSkills] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const [experience, setExperience] = useState("Fresher");
 
   const defaultSkills = ["React", "Express", "Node", "MongoDB", ".NET"];
@@ -93,8 +93,8 @@ export default function ATSCheckerPage() {
       toast.error("Please upload your resume.");
       return;
     }
-    if (!jobRole.trim() && !jobSkills.trim()) {
-      toast.error("Provide a Job Role or Required Skills.");
+    if (!jobRole.trim() && !jobDescription.trim()) {
+      toast.error("Provide a Job Role or full Job Description.");
       return;
     }
 
@@ -111,9 +111,9 @@ export default function ATSCheckerPage() {
 
       const fd = new FormData();
       fd.append("resumeFile", file);
-      fd.append("jobRole", jobRole);
-      fd.append("jobSkills", jobSkills);
-      fd.append("experience", experience);
+      if (jobRole) fd.append("jobRole", jobRole);
+      if (jobDescription) fd.append("jobDescription", jobDescription);
+      if (experience) fd.append("experience", experience);
 
       const base =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
@@ -282,9 +282,9 @@ export default function ATSCheckerPage() {
                 )}
               </div>
               <textarea
-                value={jobSkills}
-                onChange={(e) => setJobSkills(e.target.value)}
-                placeholder="Paste required skills or the full job description here…"
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="Paste the full job description here…"
                 className="flex-1 w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow resize-none min-h-[100px] placeholder:text-slate-400 placeholder:font-normal"
               />
             </div>
