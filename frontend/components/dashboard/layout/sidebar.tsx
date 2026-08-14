@@ -7,13 +7,7 @@ import {
   FileText,
   Target,
   Mic,
-  BarChart2,
-  PenTool,
-  ShieldCheck,
-  BookOpen,
-  Share2,
-  ChevronUp,
-  Video
+  Share2
 } from 'lucide-react';
 
 
@@ -24,13 +18,6 @@ const mainLinks = [
   { name: 'Mock Interview', href: '/dashboard/mock-interview', icon: Mic },
   { name: 'Video Interview', href: '/dashboard/video-interview', icon: Video },
   { name: 'Share Reports', href: '/dashboard/share-reports', icon: Share2 },
-  { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart2 },
-];
-
-const secondaryLinks = [
-  { name: 'Resume Rewriter', href: '/dashboard/resume-rewriter', icon: PenTool },
-  { name: 'ATS Compatibility', href: '/dashboard/ats-compatibility', icon: ShieldCheck },
-  { name: 'Question Bank', href: '/dashboard/question-bank', icon: BookOpen },
 ];
 
 export function Sidebar() {
@@ -86,30 +73,7 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="mt-8">
-          <h2 className="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-            Tools & Extras
-          </h2>
-          <nav className="space-y-1.5">
-            {secondaryLinks.map((link) => {
-              const isActive = pathname === link.href;
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                    }`}
-                >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
-                  {link.name}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+
       </div>
 
     </aside>
