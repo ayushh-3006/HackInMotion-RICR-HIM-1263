@@ -45,7 +45,7 @@ export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
         score: record.score,
       };
     });
-  }, [atsHistory]);
+  }, [interviewHistory]);
 
   return (
     <div className="flex flex-col w-full">
@@ -190,10 +190,22 @@ export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
             recruiters.
           </p>
           <div className="flex items-center gap-3">
-            <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success('Link copied to clipboard!');
+              }}
+              className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors"
+            >
               <LinkIcon className="w-4 h-4" /> Copy Link
             </button>
-            <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-sm shadow-indigo-200 transition-colors">
+            <button 
+              onClick={() => {
+                window.print();
+                toast.success('Preparing PDF export...');
+              }}
+              className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-sm shadow-indigo-200 transition-colors"
+            >
               <Download className="w-4 h-4" /> Export PDF
             </button>
           </div>
