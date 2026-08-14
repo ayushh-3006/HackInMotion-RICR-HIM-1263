@@ -131,7 +131,7 @@ export default function DashboardPage() {
       <DashboardOverview
         userName={firstName}
         stats={stats}
-        interviewHistory={interviewHistory}
+        atsHistory={interviewHistory}
       />
     </div>
   );

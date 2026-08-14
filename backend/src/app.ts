@@ -2,13 +2,29 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { clerkMiddleware } from "@clerk/express";
+import mongoose from "mongoose";
+import path from "path";
+
+// Routes and Middlewares
 import { connectDB } from "./config/db.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import { syncUser } from "./middlewares/authMiddleware.js";
 import { clerkAuth } from "./middlewares/clerkAuth.js";
-import mongoose from "mongoose";
-import path from "path";
+import resumeRoutes from "./routes/ResumeRoutes.js";
+import resumeBuilderRoutes from "./routes/ResumeBuilderRouter.js";
+import { ATSRouter } from "./routes/ATSRouter.js";
+import { ATSController } from "./controllers/ATSController.js";
+import { ATSAnalyzer } from "./services/ATSAnalyzerModule.js";
+import { ParserFactory } from "./parsers/ParserFactory.js";
+import { ATSRepository } from "./repositories/ATSRepository.js";
+import { InterviewRoutes } from "./routes/InterviewRoutes.js";
+import { InterviewController } from "./controllers/InterviewController.js";
+import { QuestionBankRouter } from "./routes/QuestionBankRouter.js";
+
+// Models
+import { ResumeDraft } from "./models/ResumeDraft.js";
+import { InterviewSession } from "./models/InterviewSession.js";
 
 // Load environment variables
 dotenv.config();
@@ -47,18 +63,9 @@ app.use(syncUser); // Lazily sync Clerk users on any authenticated API call
 app.use("/api/users", userRoutes);
 
 // Resume Builder routes
-import resumeBuilderRoutes from "./routes/ResumeBuilderRouter.js";
 app.use("/api/resume-builder", resumeBuilderRoutes);
 
-// ATS routes
-import { ATSRouter } from "./routes/ATSRouter.js";
-import { ATSController } from "./controllers/ATSController.js";
-import { ATSAnalyzer } from "./services/ATSAnalyzerModule.js";
-import { ParserFactory } from "./parsers/ParserFactory.js";
-
 // Resume Routes
-import resumeRoutes from "./routes/ResumeRoutes.js";
-
 app.use("/api/resume", resumeRoutes);
 
 // Secure file serving — requires authentication and blocks directory traversal
@@ -78,11 +85,6 @@ app.get("/api/uploads/:filename", clerkAuth, (req: Request, res: Response) => {
     }
   });
 });
-
-import { ResumeDraft } from "./models/ResumeDraft.js";
-import { InterviewSession } from "./models/InterviewSession.js";
-
-import { ATSRepository } from "./repositories/ATSRepository.js";
 
 const groqApiKey = process.env.GROQ_API_KEY;
 if (!groqApiKey) {
@@ -122,38 +124,11 @@ app.get("/api/dashboard/stats", clerkAuth, async (req: Request, res: Response) =
   }
 });
 
-// Mock ATS History Route (authenticated)
-app.get("/api/ats/history", clerkAuth, (req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    data: [
-      {
-        id: "1",
-        score: 85,
-        jobRole: "Frontend Developer",
-        fileName: "resume_v1.pdf",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        score: 62,
-        jobRole: "Software Engineer",
-        fileName: "resume_old.pdf",
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ],
-  });
-});
-
 // Interview routes
-import { InterviewRoutes } from "./routes/InterviewRoutes.js";
-import { InterviewController } from "./controllers/InterviewController.js";
-
 const interviewController = new InterviewController();
 app.use("/api/interview", new InterviewRoutes(interviewController).router);
 
 // Industry-Specific Question Bank Generator Route
-import { QuestionBankRouter } from "./routes/QuestionBankRouter.js";
 app.use("/api/interview/questions", new QuestionBankRouter().router);
 
 // Health check route
