@@ -2,6 +2,8 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { toast } from "sonner";
 import {
   FileText,
   Mic,
@@ -13,9 +15,13 @@ import {
   Loader2,
   X,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+type InterviewMode = "voice" | "text" | "video";
 
 export function PrimaryWorkflows() {
   const router = useRouter();
+  const { getToken } = useAuth();
 
   // Analyze State
   const [file, setFile] = useState<File | null>(null);
@@ -24,14 +30,13 @@ export function PrimaryWorkflows() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock Interview State
-  type InterviewMode = "voice" | "text" | "video";
   const [mode, setMode] = useState<InterviewMode>("voice");
 
   // Handlers for Analyze Card
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
-    validateAndSetFile(droppedFile);
+    if (droppedFile) validateAndSetFile(droppedFile);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,20 +50,57 @@ export function PrimaryWorkflows() {
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
-    if (validTypes.includes(f.type) && f.size <= 10 * 1024 * 1024) {
-      setFile(f);
-    } else {
-      alert("Please upload a valid PDF or DOCX file under 10MB.");
+    if (!validTypes.includes(f.type)) {
+      toast.error("Please upload a valid PDF or DOCX file.");
+      return;
     }
+    if (f.size > 10 * 1024 * 1024) {
+      toast.error("File size must be under 10MB.");
+      return;
+    }
+    setFile(f);
+    toast.success(`Uploaded: ${f.name}`);
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
+    if (!file || jdText.trim().length <= 20) return;
+
     setIsAnalyzing(true);
-    // Simulate API delay
-    setTimeout(() => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        toast.error("Authentication required.");
+        return;
+      }
+
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+      const formData = new FormData();
+      formData.append("resumeFile", file);
+      formData.append("jobDescription", jdText);
+
+      const response = await fetch(`${baseUrl}/ats/calculate-file`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Analysis failed");
+      }
+
+      toast.success("Analysis complete! Redirecting…");
+      router.push("/dashboard/ats");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to analyze. Please try again.");
+    } finally {
       setIsAnalyzing(false);
-      alert("Analysis complete! (Mock functionality)");
-    }, 2000);
+    }
   };
 
   const canAnalyze = file !== null && jdText.trim().length > 20;
@@ -68,7 +110,7 @@ export function PrimaryWorkflows() {
     router.push(`/dashboard/mock-interview?mode=${mode}`);
   };
 
-  const getModeFeatures = (m: InterviewMode) => {
+  const getModeFeatures = (m: InterviewMode): string[] => {
     switch (m) {
       case "voice":
         return [
@@ -91,6 +133,12 @@ export function PrimaryWorkflows() {
     }
   };
 
+  const modeConfig: { key: InterviewMode; icon: React.ReactNode; label: string }[] = [
+    { key: "voice", icon: <Mic className="w-5 h-5" />, label: "Voice" },
+    { key: "text", icon: <Type className="w-5 h-5" />, label: "Text" },
+    { key: "video", icon: <Video className="w-5 h-5" />, label: "Video" },
+  ];
+
   return (
     <div className="flex flex-col w-full">
       <h2 className="text-lg font-bold text-slate-900 mb-4 tracking-tight">
@@ -99,7 +147,12 @@ export function PrimaryWorkflows() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         {/* Analyze Resume & Job Description */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col w-full h-full">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 22 }}
+          className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col w-full h-full"
+        >
           <div className="flex items-start gap-3 mb-4">
             <div className="p-2.5 bg-indigo-100 text-indigo-600 rounded-xl">
               <FileText className="w-5 h-5" />
@@ -128,45 +181,59 @@ export function PrimaryWorkflows() {
               accept=".pdf,.docx"
               onChange={handleFileChange}
             />
-            {file ? (
-              <div className="flex flex-col items-center justify-center">
-                <FileText className="w-8 h-8 text-indigo-600 mb-2" />
-                <p className="text-sm font-bold text-slate-800 truncate max-w-[200px]">
-                  {file.name}
-                </p>
-                <p className="text-xs font-medium text-slate-500 mb-3">
-                  {(file.size / 1024 / 1024).toFixed(2)} MB
-                </p>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFile(null);
-                  }}
-                  className="absolute top-2 right-2 p-1 bg-white rounded-full text-slate-400 hover:text-red-500 shadow-sm border border-slate-200"
+            <AnimatePresence mode="wait">
+              {file ? (
+                <motion.div
+                  key="file-preview"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="flex flex-col items-center justify-center"
                 >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <>
-                <UploadCloud className="w-8 h-8 text-indigo-400 mx-auto mb-2" />
-                <p className="text-sm font-bold text-slate-700">
-                  Drag & drop your resume
-                </p>
-                <p className="text-xs font-medium text-slate-500 mb-3">
-                  PDF, DOCX (Max 10MB)
-                </p>
-                <button className="bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition-colors pointer-events-none">
-                  Browse Files
-                </button>
-              </>
-            )}
+                  <FileText className="w-8 h-8 text-indigo-600 mb-2" />
+                  <p className="text-sm font-bold text-slate-800 truncate max-w-[200px]">
+                    {file.name}
+                  </p>
+                  <p className="text-xs font-medium text-slate-500 mb-3">
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className="absolute top-2 right-2 p-1 bg-white rounded-full text-slate-400 hover:text-red-500 shadow-sm border border-slate-200 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="upload-prompt"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                >
+                  <UploadCloud className="w-8 h-8 text-indigo-400 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-slate-700">
+                    Drag & drop your resume
+                  </p>
+                  <p className="text-xs font-medium text-slate-500 mb-3">
+                    PDF, DOCX (Max 10MB)
+                  </p>
+                  <span className="bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition-colors pointer-events-none inline-block">
+                    Browse Files
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="relative flex items-center py-2 mb-4">
             <div className="flex-grow border-t border-slate-200"></div>
             <span className="flex-shrink-0 mx-4 text-xs font-bold text-slate-400 uppercase">
-              OR
+              AND
             </span>
             <div className="flex-grow border-t border-slate-200"></div>
           </div>
@@ -174,18 +241,23 @@ export function PrimaryWorkflows() {
           <div className="relative mb-4 flex-grow">
             <textarea
               value={jdText}
-              onChange={(e) => setJdText(e.target.value)}
+              onChange={(e) => {
+                if (e.target.value.length <= 5000) setJdText(e.target.value);
+              }}
+              maxLength={5000}
               className="w-full h-full min-h-[96px] bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
               placeholder="Paste job description here..."
             />
             <span
-              className={`absolute bottom-2 right-2 text-[10px] font-bold ${jdText.length > 5000 ? "text-red-500" : "text-slate-400"}`}
+              className={`absolute bottom-2 right-2 text-[10px] font-bold ${jdText.length > 4900 ? "text-red-500" : "text-slate-400"}`}
             >
               {jdText.length} / 5000
             </span>
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: canAnalyze && !isAnalyzing ? 1.02 : 1 }}
+            whileTap={{ scale: canAnalyze && !isAnalyzing ? 0.98 : 1 }}
             onClick={handleAnalyze}
             disabled={!canAnalyze || isAnalyzing}
             className="w-full mt-auto bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white py-2.5 rounded-xl font-bold text-sm shadow-sm shadow-indigo-200 flex items-center justify-center gap-2 transition-colors"
@@ -195,12 +267,17 @@ export function PrimaryWorkflows() {
             ) : (
               <span className="text-indigo-200">✨</span>
             )}
-            {isAnalyzing ? "Analyzing..." : "Analyze Now"}
-          </button>
-        </div>
+            {isAnalyzing ? "Analyzing…" : "Analyze Now"}
+          </motion.button>
+        </motion.div>
 
         {/* Start AI Mock Interview */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col w-full h-full">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 22, delay: 0.1 }}
+          className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col w-full h-full"
+        >
           <div className="flex items-start gap-3 mb-6">
             <div className="p-2.5 bg-purple-100 text-purple-600 rounded-xl">
               <Mic className="w-5 h-5" />
@@ -220,48 +297,47 @@ export function PrimaryWorkflows() {
             Choose Mode
           </h4>
           <div className="grid grid-cols-3 gap-3 mb-6">
-            <button
-              onClick={() => setMode("voice")}
-              className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${mode === "voice" ? "border-purple-500 bg-purple-50 text-purple-700" : "border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-600"}`}
-            >
-              <Mic className="w-5 h-5" />
-              <span className="text-xs font-bold">Voice</span>
-            </button>
-            <button
-              onClick={() => setMode("text")}
-              className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${mode === "text" ? "border-purple-500 bg-purple-50 text-purple-700" : "border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-600"}`}
-            >
-              <Type className="w-5 h-5" />
-              <span className="text-xs font-bold">Text</span>
-            </button>
-            <button
-              onClick={() => setMode("video")}
-              className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${mode === "video" ? "border-purple-500 bg-purple-50 text-purple-700" : "border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-600"}`}
-            >
-              <Video className="w-5 h-5" />
-              <span className="text-xs font-bold">Video</span>
-            </button>
+            {modeConfig.map((m) => (
+              <motion.button
+                key={m.key}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setMode(m.key)}
+                className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${mode === m.key ? "border-purple-500 bg-purple-50 text-purple-700" : "border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-600"}`}
+              >
+                {m.icon}
+                <span className="text-xs font-bold">{m.label}</span>
+              </motion.button>
+            ))}
           </div>
 
           <ul className="space-y-3 mb-6 flex-grow">
-            {getModeFeatures(mode).map((feature, idx) => (
-              <li
-                key={idx}
-                className="flex items-center gap-2 text-sm font-medium text-slate-600 animate-in fade-in slide-in-from-left-2 duration-300"
-              >
-                <CheckCircle2 className="w-4 h-4 text-purple-500" />
-                {feature}
-              </li>
-            ))}
+            <AnimatePresence mode="wait">
+              {getModeFeatures(mode).map((feature, idx) => (
+                <motion.li
+                  key={`${mode}-${idx}`}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 12 }}
+                  transition={{ delay: idx * 0.05, type: "spring", stiffness: 300, damping: 24 }}
+                  className="flex items-center gap-2 text-sm font-medium text-slate-600"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                  {feature}
+                </motion.li>
+              ))}
+            </AnimatePresence>
           </ul>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleStartInterview}
             className="w-full mt-auto bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl font-bold text-sm shadow-sm shadow-purple-200 flex items-center justify-center gap-2 transition-colors"
           >
             Start Interview <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );

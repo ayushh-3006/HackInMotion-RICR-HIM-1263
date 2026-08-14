@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   Lightbulb,
   Info,
   CheckCircle2,
   ChevronRight,
-  ChevronDown,
   AlertTriangle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -76,7 +76,8 @@ export function ActiveSuggestions() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleApply = (id: string, title: string) => {
-    setActiveItems(prev => prev.filter(item => item.id !== id));
+    setActiveItems((prev) => prev.filter((item) => item.id !== id));
+    if (expandedId === id) setExpandedId(null);
     toast.success(`Applied: ${title}`);
   };
 
@@ -84,7 +85,7 @@ export function ActiveSuggestions() {
     setExpandedId((prev) => (prev === id ? null : id));
   };
 
-  const getPriorityBadge = (priority: Priority) => {
+  const getPriorityBadge = (priority: Priority): string => {
     switch (priority) {
       case "High":
         return "bg-red-100 text-red-700";
@@ -101,107 +102,128 @@ export function ActiveSuggestions() {
         <h3 className="font-bold text-slate-900">
           Active Optimization Suggestions
         </h3>
-        <button className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors">
-          View All <ChevronRight className="w-3 h-3" />
-        </button>
+        <span className="text-xs font-semibold text-slate-400">
+          {activeItems.length} remaining
+        </span>
       </div>
 
       <div className="space-y-3">
-        {suggestions.map((item) => {
-          const isExpanded = expandedId === item.id;
+        <AnimatePresence initial={false}>
+          {activeItems.map((item) => {
+            const isExpanded = expandedId === item.id;
 
-          return (
-            <div
-              key={item.id}
-              className={`rounded-xl border transition-colors overflow-hidden ${isExpanded ? "border-indigo-200 bg-indigo-50/30" : "border-slate-100 hover:bg-slate-50"}`}
-            >
-              {/* Accordion Header */}
-              <div
-                onClick={() => toggleExpand(item.id)}
-                className="flex items-center justify-between p-3 cursor-pointer group"
+            return (
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className={`rounded-xl border overflow-hidden ${isExpanded ? "border-indigo-200 bg-indigo-50/30" : "border-slate-100 hover:bg-slate-50"}`}
               >
-                <div className="flex items-center gap-3 flex-grow">
-                  <div
-                    className={`w-8 h-8 rounded-full ${item.iconBg} flex items-center justify-center flex-shrink-0`}
-                  >
-                    {item.icon}
-                  </div>
-                  <div className="flex flex-col">
-                    <span
-                      className={`text-sm font-medium transition-colors ${isExpanded ? "text-indigo-900" : "text-slate-700 group-hover:text-slate-900"}`}
+                {/* Accordion Header */}
+                <div
+                  onClick={() => toggleExpand(item.id)}
+                  className="flex items-center justify-between p-3 cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3 flex-grow">
+                    <div
+                      className={`w-8 h-8 rounded-full ${item.iconBg} flex items-center justify-center flex-shrink-0`}
                     >
-                      {item.title}
-                    </span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] font-bold text-slate-500">
-                        {item.category}
-                      </span>
+                      {item.icon}
+                    </div>
+                    <div className="flex flex-col">
                       <span
-                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getPriorityBadge(item.priority)}`}
+                        className={`text-sm font-medium transition-colors ${isExpanded ? "text-indigo-900" : "text-slate-700 group-hover:text-slate-900"}`}
                       >
-                        {item.priority} Priority
+                        {item.title}
                       </span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] font-bold text-slate-500">
+                          {item.category}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getPriorityBadge(item.priority)}`}
+                        >
+                          {item.priority} Priority
+                        </span>
+                      </div>
                     </div>
                   </div>
+                  <div className="flex-shrink-0 ml-4">
+                    <motion.div
+                      animate={{ rotate: isExpanded ? 90 : 0 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    >
+                      <ChevronRight
+                        className={`w-4 h-4 transition-colors ${isExpanded ? "text-indigo-500" : "text-slate-400 group-hover:text-indigo-400"}`}
+                      />
+                    </motion.div>
+                  </div>
                 </div>
-                <div className="flex-shrink-0 ml-4">
-                  <motion.div
-                    animate={{ rotate: isExpanded ? 90 : 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  >
-                    <ChevronRight
-                      className={`w-4 h-4 transition-colors ${isExpanded ? "text-indigo-500" : "text-slate-400 group-hover:text-indigo-400"}`}
-                    />
-                  </motion.div>
-                </div>
-              </div>
 
-              {/* Accordion Content */}
-              <AnimatePresence initial={false}>
-                {isExpanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  >
-                    <div className="px-4 pb-4 pt-1 ml-11 border-t border-slate-100/50 mt-1">
-                      <p className="text-sm text-slate-600 mb-3 leading-relaxed">
-                        {item.explanation}
-                      </p>
+                {/* Accordion Content */}
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    >
+                      <div className="px-4 pb-4 pt-1 ml-11 border-t border-slate-100/50 mt-1">
+                        <p className="text-sm text-slate-600 mb-3 leading-relaxed">
+                          {item.explanation}
+                        </p>
 
-                      <div className="bg-white rounded-lg p-3 border border-slate-200 mb-4 shadow-sm text-sm">
-                        <div className="flex items-start gap-2 mb-2">
-                          <span className="font-bold text-red-500 flex-shrink-0">
-                            Before:
-                          </span>
-                          <span className="text-slate-500 line-through">
-                            {item.before}
-                          </span>
+                        <div className="bg-white rounded-lg p-3 border border-slate-200 mb-4 shadow-sm text-sm">
+                          <div className="flex items-start gap-2 mb-2">
+                            <span className="font-bold text-red-500 flex-shrink-0">
+                              Before:
+                            </span>
+                            <span className="text-slate-500 line-through">
+                              {item.before}
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="font-bold text-emerald-500 flex-shrink-0">
+                              After:
+                            </span>
+                            <span className="text-slate-800 font-medium">
+                              {item.after}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-start gap-2">
-                          <span className="font-bold text-emerald-500 flex-shrink-0">
-                            After:
-                          </span>
-                          <span className="text-slate-800 font-medium">
-                            {item.after}
-                          </span>
-                        </div>
+
+                        <motion.button
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={() => handleApply(item.id, item.title)}
+                          className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors"
+                        >
+                          Apply Suggestion
+                        </motion.button>
                       </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
 
-                      <button 
-                        onClick={() => handleApply(item.id, item.title)}
-                        className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors"
-                      >
-                        Apply Suggestion
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          );
-        })
+        {activeItems.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-8 text-slate-400"
+          >
+            <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-emerald-400" />
+            <p className="text-sm font-semibold text-slate-500">
+              All suggestions applied!
+            </p>
+          </motion.div>
         )}
       </div>
     </div>

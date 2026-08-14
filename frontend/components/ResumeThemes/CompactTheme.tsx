@@ -102,8 +102,8 @@ const CompactTheme = ({ data }: { data: any }) => (
       {data.experience.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Experience</Text>
-          {(data.experience || []).map((exp: any) => (
-            <View key={exp.id} style={styles.entry}>
+          {(data.experience || []).map((exp: any, index: number) => (
+            <View key={exp.id || index} style={styles.entry}>
               <View style={styles.entryHeader}>
                 <Text style={styles.entryTitle}>{exp.jobTitle}</Text>
                 <Text style={styles.entryDate}>{exp.duration}</Text>
@@ -118,8 +118,8 @@ const CompactTheme = ({ data }: { data: any }) => (
       {data.education.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Education</Text>
-          {(data.education || []).map((edu: any) => (
-            <View key={edu.id} style={styles.entry}>
+          {(data.education || []).map((edu: any, index: number) => (
+            <View key={edu.id || index} style={styles.entry}>
               <View style={styles.entryHeader}>
                 <Text style={styles.entryTitle}>{edu.degree}</Text>
                 <Text style={styles.entryDate}>{edu.year}</Text>
@@ -133,8 +133,8 @@ const CompactTheme = ({ data }: { data: any }) => (
       {data.projects.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Projects</Text>
-          {(data.projects || []).map((proj: any) => (
-            <View key={proj.id} style={styles.entry}>
+          {(data.projects || []).map((proj: any, index: number) => (
+            <View key={proj.id || index} style={styles.entry}>
               <View style={styles.entryHeader}>
                 <Text style={styles.entryTitle}>{proj.name}</Text>
                 <Text style={styles.entryDate}>{proj.date}</Text>
@@ -148,8 +148,8 @@ const CompactTheme = ({ data }: { data: any }) => (
       {data.certifications.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Certifications</Text>
-          {(data.certifications || []).map((cert: any) => (
-            <View key={cert.id} style={styles.entry}>
+          {(data.certifications || []).map((cert: any, index: number) => (
+            <View key={cert.id || index} style={styles.entry}>
               <View style={styles.entryHeader}>
                 <Text style={styles.entryTitle}>{cert.name}</Text>
                 <Text style={styles.entryDate}>{cert.date}</Text>

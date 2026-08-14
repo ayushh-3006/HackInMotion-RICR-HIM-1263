@@ -75,7 +75,7 @@ app.get("/api/dashboard/stats", clerkAuth, async (req: Request, res: Response) =
     const userId = (req as any).userId;
     const totalDrafts = await ResumeDraft.countDocuments({ userId });
     const totalInterviews = await InterviewSession.countDocuments({ clerkUserId: userId });
-    
+
     const completedInterviews = await InterviewSession.find({ clerkUserId: userId, status: 'completed' });
     let avgInterviewScore = 0;
     if (completedInterviews.length > 0) {
@@ -125,6 +125,10 @@ import { InterviewController } from "./controllers/InterviewController.js";
 
 const interviewController = new InterviewController();
 app.use("/api/interview", new InterviewRoutes(interviewController).router);
+
+// Industry-Specific Question Bank Generator Route
+import { QuestionBankRouter } from "./routes/QuestionBankRouter.js";
+app.use("/api/interview/questions", new QuestionBankRouter().router);
 
 // Health check route
 app.get("/api/health", (req: Request, res: Response) => {

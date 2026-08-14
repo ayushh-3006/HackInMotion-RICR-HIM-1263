@@ -90,10 +90,14 @@ function ResetPasswordForm() {
 
     setLoading(true);
     try {
-      if (!signIn) return;
-      const result = await (signIn as any).attemptFirstFactor({
+      if (!clerk.client.signIn) return;
+      
+      const signInObj = clerk.client.signIn as any;
+      const attemptFn = signInObj.attemptFirstFactor || signInObj.resetPassword;
+      
+      const result = await attemptFn.call(signInObj, {
         strategy: "reset_password_email_code",
-        code,
+        code: code.trim(),
         password,
       });
 
@@ -109,10 +113,11 @@ function ResetPasswordForm() {
         });
       }
     } catch (err: any) {
+      console.error("Reset password error raw:", err);
+      const errorMessage = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || err?.message || String(err);
       add({
         title: "Reset failed",
-        description:
-          err.errors?.[0]?.message || "Invalid code or link may have expired.",
+        description: errorMessage,
         type: "error",
       });
     } finally {

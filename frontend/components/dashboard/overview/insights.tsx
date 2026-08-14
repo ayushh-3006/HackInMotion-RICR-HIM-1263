@@ -19,15 +19,15 @@ import {
   Tooltip,
 } from "recharts";
 
-export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
-  // Transform atsHistory into chart data (chronological order)
+export function InsightsColumn({ interviewHistory = [] }: { interviewHistory?: any[] }) {
+  // Transform interviewHistory into chart data (chronological order)
   const chartData = useMemo(() => {
-    if (!atsHistory || atsHistory.length === 0) {
+    if (!interviewHistory || interviewHistory.length === 0) {
       return [{ date: "No Data", score: 0 }];
     }
 
     // Take up to 5 most recent records
-    const recentHistory = [...atsHistory].slice(0, 5);
+    const recentHistory = [...interviewHistory].slice(0, 5);
 
     // Sort them chronologically (oldest to newest for the chart trend)
     recentHistory.sort(
@@ -190,7 +190,7 @@ export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
             recruiters.
           </p>
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
                 toast.success('Link copied to clipboard!');
@@ -199,7 +199,7 @@ export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
             >
               <LinkIcon className="w-4 h-4" /> Copy Link
             </button>
-            <button 
+            <button
               onClick={() => {
                 window.print();
                 toast.success('Preparing PDF export...');

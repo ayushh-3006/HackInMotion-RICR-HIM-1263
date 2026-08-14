@@ -57,8 +57,8 @@ export default function DashboardPage() {
         );
       }
 
-      if (historyRes.ok) {
-        const historyJson = await historyRes.json();
+      if (atsRes.ok) {
+        const historyJson = await atsRes.json();
         if (historyJson.success) atsData = historyJson.data;
       } else {
         console.warn(

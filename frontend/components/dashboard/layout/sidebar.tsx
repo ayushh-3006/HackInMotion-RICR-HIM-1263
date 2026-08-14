@@ -1,19 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import {
-  Home,
-  FileText,
-  Target,
-  Mic,
-  Share2,
-  Video
-} from 'lucide-react';
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FileText, Target, Mic, Share2, Video } from "lucide-react";
+import { Home, FileText, Target, Mic, Share2, Video, Library } from "lucide-react";
 
 const mainLinks = [
   { name: "Overview", href: "/dashboard", icon: Home },
@@ -23,6 +12,7 @@ const mainLinks = [
     href: "/dashboard/ai-resume-builder",
     icon: Target,
   },
+  { name: "Question Bank", href: "/dashboard/question-bank", icon: Library },
   { name: "Mock Interview", href: "/dashboard/mock-interview", icon: Mic },
   { name: "Video Interview", href: "/dashboard/video-interview", icon: Video },
   { name: "Share Reports", href: "/dashboard/share-reports", icon: Share2 },
@@ -69,11 +59,10 @@ export function Sidebar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
                     ? "bg-indigo-50 text-indigo-700 shadow-sm"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 <Icon
                   className={`w-5 h-5 ${isActive ? "text-indigo-600" : "text-slate-400"}`}

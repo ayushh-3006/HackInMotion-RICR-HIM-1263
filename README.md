@@ -68,9 +68,62 @@ The platform simplifies resume optimization into a seamless workflow — from up
 | Capability | Impact |
 |----------|--------|
 | **Cover Letter Generator** | Generate personalized cover letters |
-| **Interview Preparation** | AI-based mock interview system |
 | **Job Matching** | Suggest relevant jobs based on resume |
 | **Advanced Export** | PDF, Word, ATS-ready formats |
+
+<br>
+
+### ◈ AI/NLP Integration — Industry-Specific Question Bank Generator
+
+The **Question Bank Generator** dynamically builds tailored interview questions based on the candidate's target industry, role, and experience level.
+
+#### AI Service: Groq API (Llama 3)
+
+| Dimension | Detail |
+|-----------|--------|
+| **Provider** | [Groq](https://groq.com/) — LPU-accelerated inference |
+| **Model** | `llama-3.1-8b-instant` |
+| **Resilience Strategy** | Built-in static dictionary fallbacks for core industries (Software Engineering, Finance, Marketing) to guarantee 100% uptime even if rate limits are hit. |
+
+#### How it works
+
+1. **Dynamic Tailoring**: The generator blends technical, situational, and behavioral questions specific to the industry (e.g., System Design for Software Engineering vs. DCF modeling for Finance).
+2. **Experience Scaling**: Question difficulty is strictly aligned with the requested experience level (Entry-Level vs. Senior).
+3. **Structured Evaluation Guidelines**: Every generated question includes `keyPointsExpected` and a `suggestedAnswerStructure` (like the STAR method) to power downstream answer evaluation.
+
+#### Endpoint Reference
+
+**`POST /api/interview/questions/generate`**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `industry` | `string` | ✅ | e.g. "Tech & Software", "Finance" |
+| `targetRole` | `string` | ✅ | e.g. "Senior React Developer" |
+| `experienceLevel` | `string` | ✅ | e.g. "Senior / Lead (5+ yrs)" |
+| `questionCount` | `number` | | Default: 5 |
+| `includeBehavioral` | `boolean` | | Default: true |
+
+**Response** (`200 OK`):
+```json
+{
+  "success": true,
+  "data": {
+    "industry": "Tech & Software",
+    "targetRole": "Senior React Developer",
+    "difficulty": "Senior / Lead (5+ yrs)",
+    "questions": [
+      {
+        "id": "e9b2...8f7d",
+        "type": "System Design",
+        "question": "How would you design the architecture for a real-time collaborative document editor like Google Docs?",
+        "keyPointsExpected": ["Operational Transformation (OT) or CRDTs", "WebSockets", "Conflict resolution"],
+        "suggestedAnswerStructure": "Start with high-level architecture, move to data models, and then dive deep into the specific conflict resolution algorithm.",
+        "difficulty": "Hard"
+      }
+    ]
+  }
+}
+```
 
 <br>
 

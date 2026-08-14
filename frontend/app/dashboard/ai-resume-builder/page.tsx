@@ -32,6 +32,7 @@ export default function AIResumeBuilderPage() {
   const { getToken } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [resumeData, setResumeData] = useState<any>({});
+  const [draftId, setDraftId] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -140,6 +141,10 @@ export default function AIResumeBuilderPage() {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
 
+      const payloadData = { ...resumeData };
+      delete payloadData.id;
+      delete payloadData._id;
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/resume-builder/save`,
         {
@@ -153,7 +158,8 @@ export default function AIResumeBuilderPage() {
               ? `${resumeData.basics.fullName}'s Resume`
               : "My Resume",
             theme,
-            ...resumeData,
+            ...payloadData,
+            id: draftId || undefined,
           }),
         },
       );
@@ -161,6 +167,7 @@ export default function AIResumeBuilderPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Failed to save draft");
 
+      if (data.id) setDraftId(data.id);
       toast.success("Draft saved successfully!");
     } catch (error: any) {
       toast.error(error.message || "Failed to save draft");
