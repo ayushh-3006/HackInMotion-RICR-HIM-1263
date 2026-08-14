@@ -7,12 +7,12 @@ export class ATSController {
   constructor(
     private analyzer: ATSAnalyzer,
     private parserFactory: ParserFactory,
-    private repository: IATSRepository
+    private repository?: any
   ) {}
 
   calculateFromText = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { resumeText, jobDescription } = req.body;
+      const { resumeText, jobDescription, jobRole } = req.body;
 
       if (!resumeText || !jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
         res.status(400).json({
@@ -20,14 +20,6 @@ export class ATSController {
         });
         return;
       }
-
-      // Construct a job description for the AI
-      const jobDescription = this.constructJD(
-        jobRole,
-        experience,
-        jobSkills,
-        filters,
-      );
 
       const result = await this.analyzer.analyzeText(
         resumeText,
@@ -55,7 +47,7 @@ export class ATSController {
   calculateFromFile = async (req: Request, res: Response): Promise<void> => {
     try {
       const file = (req as any).file;
-      const { jobDescription } = req.body;
+      const { jobDescription, jobRole } = req.body;
 
       if (!file) {
         res.status(400).json({ error: "resumeFile is required" });
@@ -84,18 +76,6 @@ export class ATSController {
         return;
       }
 
-      // Construct a job description for the AI
-      const jobDescription = this.constructJD(
-        jobRole,
-        experience,
-        jobSkills,
-        filters,
-      );
-
-      const result = await this.analyzer.analyzeText(
-        resumeText,
-        jobDescription,
-      );
       const mapped = this.mapResult(result);
       
       const clerkUserId = (req as any).userId;
@@ -119,16 +99,26 @@ export class ATSController {
 
   getHistory = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = (req as any).auth?.userId || (req as any).userId;
-      if (!userId) {
-        res.status(401).json({ error: "Unauthorized" });
+      const clerkUserId = (req as any).auth?.userId || (req as any).userId;
+      if (!clerkUserId) {
+        res.status(401).json({ error: "Not authenticated" });
         return;
       }
 
-      const history = await this.repository.findByUserId(userId);
+      let history;
+      if (this.repository && typeof this.repository.findByUserId === "function") {
+        history = await this.repository.findByUserId(clerkUserId);
+      } else {
+        history = await ATSResult.find({ clerkUserId })
+          .sort({ createdAt: -1 })
+          .limit(20)
+          .lean();
+      }
+
       res.status(200).json({ success: true, data: history });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || "Internal Server Error" });
+      console.error("Error fetching ATS history:", err);
+      res.status(500).json({ error: "Failed to fetch history" });
     }
   };
 
@@ -139,7 +129,7 @@ export class ATSController {
     if (aiAnalysis?.matchedKeywords) {
       aiAnalysis.matchedKeywords.forEach((k: string) => {
         keywordDensity[k] = (
-          result.resumeText.match(new RegExp(k, "gi")) || []
+          result.resumeText?.match(new RegExp(k, "gi")) || []
         ).length;
       });
     }
@@ -151,35 +141,16 @@ export class ATSController {
       suggestions: aiAnalysis?.suggestions || [],
       keywordDensity,
       sectionScores: {
-        skills: basicChecks.sections.skills ? 100 : 40,
-        experience: basicChecks.sections.experience ? 100 : 40,
-        education: basicChecks.sections.education ? 100 : 40,
+        skills: basicChecks?.sections?.skills ? 100 : 40,
+        experience: basicChecks?.sections?.experience ? 100 : 40,
+        education: basicChecks?.sections?.education ? 100 : 40,
         projects: 70,
       },
       aiSummary: aiAnalysis
-        ? `Analysis complete. AI Score: ${aiAnalysis.aiScore}/60, Basic Score: ${basicChecks.basicScore}/40.`
+        ? `Analysis complete. AI Score: ${aiAnalysis.aiScore}/60, Basic Score: ${basicChecks?.basicScore}/40.`
         : "AI analysis unavailable. Showing basic rule-based score.",
       atsCompatible: finalScore >= 60,
     };
   }
-
-  getHistory = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const clerkUserId = (req as any).userId;
-      if (!clerkUserId) {
-        res.status(401).json({ error: "Not authenticated" });
-        return;
-      }
-
-      const history = await ATSResult.find({ clerkUserId })
-        .sort({ createdAt: -1 })
-        .limit(20)
-        .lean();
-
-      res.status(200).json({ success: true, data: history });
-    } catch (err: any) {
-      console.error("Error fetching ATS history:", err);
-      res.status(500).json({ error: "Failed to fetch history" });
-    }
-  };
 }
+

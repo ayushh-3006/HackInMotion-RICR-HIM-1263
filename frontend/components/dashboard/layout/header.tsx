@@ -1,13 +1,18 @@
 "use client";
 
-import { Share, Loader2 } from "lucide-react";
+import { Share, Loader2, Calendar } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
 export function Header() {
+  const [mounted, setMounted] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const generatePDF = async () => {
     try {
@@ -46,21 +51,20 @@ export function Header() {
     <header className="h-16 border-b border-slate-200 bg-white flex items-center justify-end pl-6 pr-4 sticky top-0 z-10">
       {/* Right Actions */}
       <div className="flex items-center gap-4 ml-4">
-        {/* Share Feedback Report */}
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={generatePDF}
-          disabled={isGeneratingPdf}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all hidden md:flex disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isGeneratingPdf ? (
-            <Loader2 className="w-4 h-4 text-indigo-600 animate-spin" />
+        {/* Real Date */}
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 bg-white border border-slate-200 shadow-sm transition-all hidden md:flex">
+          <Calendar className="w-4 h-4 text-indigo-600" />
+          {mounted ? (
+            new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
           ) : (
-            <Share className="w-4 h-4 text-indigo-600" />
+            <span className="opacity-0">Loading...</span>
           )}
-          Share Feedback Report
-        </motion.button>
+        </div>
 
         <div className="w-px h-6 bg-slate-200 mx-1"></div>
 
