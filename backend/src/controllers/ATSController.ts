@@ -3,11 +3,14 @@ import { ATSAnalyzer } from "../services/ATSAnalyzerModule.js";
 import { ParserFactory } from "../parsers/ParserFactory.js";
 import { IATSRepository } from "../interfaces/IATSRepository.js";
 
+import { ATSService } from "../services/ATSService.js";
+
 export class ATSController {
   constructor(
     private analyzer: ATSAnalyzer,
     private parserFactory: ParserFactory,
-    private repository: IATSRepository
+    private repository: IATSRepository,
+    private atsService?: ATSService
   ) {}
 
   calculateFromText = async (req: Request, res: Response): Promise<void> => {
@@ -145,4 +148,47 @@ export class ATSController {
       atsCompatible: finalScore >= 60,
     };
   }
+
+  match = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!this.atsService) {
+        res.status(501).json({ error: "ATSService is not configured." });
+        return;
+      }
+
+      const file = (req as any).file;
+      const { jobDescription } = req.body;
+
+      if (!file) {
+        res.status(400).json({ error: "resume file is required" });
+        return;
+      }
+
+      if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
+        res.status(400).json({ error: "jobDescription (string) is required" });
+        return;
+      }
+
+      const userId = (req as any).auth?.userId || (req as any).userId;
+      if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+
+      const result = await this.atsService.matchResumeToJob(
+        userId,
+        file.buffer,
+        file.mimetype,
+        jobDescription,
+        file.originalname || "Uploaded File"
+      );
+
+      res.status(200).json({ success: true, data: result });
+    } catch (err: any) {
+      res.status(err.message?.includes("Unsupported") ? 415 : 500).json({
+        success: false,
+        error: err.message || "Internal Server Error",
+      });
+    }
+  };
 }

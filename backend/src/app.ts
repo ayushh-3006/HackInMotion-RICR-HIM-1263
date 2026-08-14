@@ -86,14 +86,25 @@ app.get("/api/uploads/:filename", clerkAuth, (req: Request, res: Response) => {
   });
 });
 
+import { ATSService } from "./services/ATSService.js";
+import { AIProvider } from "./providers/GroqAIProvider.js";
+
 const groqApiKey = process.env.GROQ_API_KEY;
 if (!groqApiKey) {
   throw new Error("FATAL: GROQ_API_KEY environment variable is not set. Server cannot start.");
 }
+
+const atsRepository = new ATSRepository();
+const parserFactory = new ParserFactory();
+const aiProvider = new AIProvider(); // Groq provider which reads API key from env implicitly, but we have groqApiKey checked
+
+const atsService = new ATSService(aiProvider, parserFactory, atsRepository);
+
 const atsController = new ATSController(
-  new ATSAnalyzer(groqApiKey),
-  new ParserFactory(),
-  new ATSRepository()
+  new ATSAnalyzer(groqApiKey), // Keeps old compatibility
+  parserFactory,
+  atsRepository,
+  atsService
 );
 app.use("/api/ats", new ATSRouter(atsController).router);
 

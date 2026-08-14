@@ -8,6 +8,8 @@ export interface SaveATSRecordData {
   score: number;
   jobRole?: string;
   fileName?: string;
+  missingSkills?: string[];
+  actionableSuggestions?: string[];
 }
 
 export interface IATSRepository {

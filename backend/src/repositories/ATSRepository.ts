@@ -20,6 +20,8 @@ const ATSRecordSchema: Schema = new Schema(
     score: { type: Number, required: true },
     jobRole: { type: String, required: false },
     fileName: { type: String, required: false },
+    missingSkills: { type: [String], required: false, default: [] },
+    actionableSuggestions: { type: [String], required: false, default: [] },
   },
   { timestamps: true },
 );
@@ -49,6 +51,8 @@ export class ATSRepository implements IATSRepository {
       score: data.score,
       jobRole: data.jobRole ?? null,
       fileName: data.fileName ?? null,
+      missingSkills: data.missingSkills ?? [],
+      actionableSuggestions: data.actionableSuggestions ?? [],
     });
     const savedRecord = await record.save();
     return { id: savedRecord._id.toString() };

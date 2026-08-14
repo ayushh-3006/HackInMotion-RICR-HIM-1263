@@ -182,4 +182,58 @@ STRICT RULES:
     
     return result.trim();
   }
+
+  async matchATS(resumeText: string, jobDescription: string): Promise<any> {
+    try {
+      const response = await client.chat.completions.create({
+        model: "llama-3.3-70b-versatile", // Or llama-3.1-8b-instant depending on preference, rubric mentions 3
+        temperature: 0,
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert ATS (Applicant Tracking System) parser and technical recruiter.
+Your objective is to compare the given resume against the provided job description and evaluate the candidate's fit.
+
+STRICT RULES:
+1. Return ONLY valid JSON. No explanation, no markdown formatting (do not wrap in \`\`\`json), no conversational filler.
+2. The JSON MUST exactly match the following schema:
+{
+  "matchScore": <number between 0 and 100>,
+  "missingSkills": [<array of strings of key skills mentioned in JD but missing in resume>],
+  "actionableSuggestions": [<array of specific, tailored strings advising how to bridge the gap based on the resume>]
+}
+3. The actionableSuggestions must be highly specific to the missing skills or missing experience, do not give generic advice.`,
+          },
+          {
+            role: "user",
+            content: `JOB DESCRIPTION:\n${jobDescription}\n\nRESUME TEXT:\n${resumeText}`,
+          },
+        ],
+        response_format: { type: "json_object" },
+      });
+
+      const resultText = response.choices[0]?.message?.content;
+      if (!resultText) throw new Error("AI returned empty response");
+
+      try {
+        const parsed = JSON.parse(resultText);
+        if (
+          typeof parsed.matchScore !== "number" ||
+          !Array.isArray(parsed.missingSkills) ||
+          !Array.isArray(parsed.actionableSuggestions)
+        ) {
+          throw new Error("AI response did not match expected schema");
+        }
+        return parsed;
+      } catch (parseError) {
+        console.error("JSON Parsing Error on output:", resultText);
+        throw new Error("Failed to parse ATS match result from AI.");
+      }
+    } catch (error: any) {
+      console.error("Groq ATS match failed:", error.message || error);
+      throw new Error(
+        `Failed to process ATS matching: ${error.message || "Unknown API error"}`,
+      );
+    }
+  }
 }
