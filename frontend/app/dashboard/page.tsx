@@ -115,7 +115,7 @@ export default function DashboardPage() {
   const firstName = user?.firstName || user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] || "there";
 
   return (
-    <div className="w-full h-full pb-10">
+    <div id="dashboard-content" className="w-full h-full pb-10">
       <DashboardOverview 
         userName={firstName} 
         stats={stats}
