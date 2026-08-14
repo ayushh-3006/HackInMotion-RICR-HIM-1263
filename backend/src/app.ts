@@ -57,31 +57,63 @@ import path from "path";
 app.use("/api/resume", resumeRoutes);
 app.use("/uploads", express.static(path.resolve("uploads")));
 
+import { clerkAuth } from "./middlewares/clerkAuth.js";
+import { ResumeDraft } from "./models/ResumeDraft.js";
+import { InterviewSession } from "./models/InterviewSession.js";
+
 const groqApiKey = process.env.GROQ_API_KEY || "";
 const atsController = new ATSController(new ATSAnalyzer(groqApiKey), new ParserFactory());
 app.use("/api/ats", new ATSRouter(atsController).router);
-// Mock Dashboard Stats Route
-app.get("/api/dashboard/stats", (req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    data: {
-      totalDrafts: 12,
-      totalATSScans: 45,
-      totalPDFs: 8,
-      avgATSScore: 82,
-    },
-  });
+
+// Real Dashboard Stats Route
+app.get("/api/dashboard/stats", clerkAuth, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const totalDrafts = await ResumeDraft.countDocuments({ userId });
+    const totalInterviews = await InterviewSession.countDocuments({ clerkUserId: userId });
+    
+    const completedInterviews = await InterviewSession.find({ clerkUserId: userId, status: 'completed' });
+    let avgInterviewScore = 0;
+    if (completedInterviews.length > 0) {
+      const sum = completedInterviews.reduce((acc, curr) => acc + (curr.overallScore || 0), 0);
+      avgInterviewScore = Math.round(sum / completedInterviews.length);
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalDrafts,
+        totalInterviews,
+        avgInterviewScore,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to fetch stats" });
+  }
 });
 
-// Mock ATS History Route
-app.get("/api/ats/history", (req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    data: [
-      { id: "1", score: 85, jobRole: "Frontend Developer", fileName: "resume_v1.pdf", createdAt: new Date().toISOString() },
-      { id: "2", score: 62, jobRole: "Software Engineer", fileName: "resume_old.pdf", createdAt: new Date(Date.now() - 86400000).toISOString() }
-    ],
-  });
+// Real Interview History Route
+app.get("/api/dashboard/history", clerkAuth, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const sessions = await InterviewSession.find({ clerkUserId: userId, status: 'completed' })
+      .select('overallScore jobRole createdAt')
+      .sort({ createdAt: 1 });
+      
+    const formattedHistory = sessions.map(s => ({
+      id: s._id,
+      score: s.overallScore,
+      jobRole: s.jobRole,
+      createdAt: s.createdAt
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: formattedHistory
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to fetch history" });
+  }
 });
 
 // Interview routes

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Lightbulb, Info, CheckCircle2, ChevronRight, ChevronDown, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 type Priority = 'High' | 'Medium' | 'Low';
 type Category = '[ATS Optimization]' | '[Impact Metrics]' | '[Formatting]';
@@ -60,7 +61,13 @@ const suggestions: SuggestionItem[] = [
 ];
 
 export function ActiveSuggestions() {
+  const [activeItems, setActiveItems] = useState<SuggestionItem[]>(suggestions);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const handleApply = (id: string, title: string) => {
+    setActiveItems(prev => prev.filter(item => item.id !== id));
+    toast.success(`Applied: ${title}`);
+  };
 
   const toggleExpand = (id: string) => {
     setExpandedId(prev => prev === id ? null : id);
@@ -84,8 +91,13 @@ export function ActiveSuggestions() {
       </div>
 
       <div className="space-y-3">
-        {suggestions.map((item) => {
-          const isExpanded = expandedId === item.id;
+        {activeItems.length === 0 ? (
+          <div className="text-sm text-slate-500 text-center py-4">
+            All suggestions applied! You are good to go.
+          </div>
+        ) : (
+          activeItems.map((item) => {
+            const isExpanded = expandedId === item.id;
           
           return (
             <div 
@@ -148,7 +160,10 @@ export function ActiveSuggestions() {
                         </div>
                       </div>
 
-                      <button className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors">
+                      <button 
+                        onClick={() => handleApply(item.id, item.title)}
+                        className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors"
+                      >
                         Apply Suggestion
                       </button>
                     </div>
@@ -157,7 +172,8 @@ export function ActiveSuggestions() {
               </AnimatePresence>
             </div>
           );
-        })}
+        })
+        )}
       </div>
     </div>
   );

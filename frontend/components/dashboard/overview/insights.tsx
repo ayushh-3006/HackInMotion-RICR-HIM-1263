@@ -3,19 +3,20 @@
 import { useMemo } from 'react';
 import { ChevronDown, Check, AlertTriangle, X, Link as LinkIcon, Download } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { toast } from 'sonner';
 
-export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
+export function InsightsColumn({ interviewHistory = [] }: { interviewHistory?: any[] }) {
   
-  // Transform atsHistory into chart data (chronological order)
+  // Transform interviewHistory into chart data (chronological order)
   const chartData = useMemo(() => {
-    if (!atsHistory || atsHistory.length === 0) {
+    if (!interviewHistory || interviewHistory.length === 0) {
       return [
         { date: 'No Data', score: 0 }
       ];
     }
     
     // Take up to 5 most recent records
-    const recentHistory = [...atsHistory].slice(0, 5);
+    const recentHistory = [...interviewHistory].slice(0, 5);
     
     // Sort them chronologically (oldest to newest for the chart trend)
     recentHistory.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
@@ -29,7 +30,7 @@ export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
         score: record.score
       };
     });
-  }, [atsHistory]);
+  }, [interviewHistory]);
 
   return (
     <div className="flex flex-col w-full">
@@ -148,10 +149,22 @@ export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
             Get a shareable link or export PDF to share with mentors or recruiters.
           </p>
           <div className="flex items-center gap-3">
-            <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success('Link copied to clipboard!');
+              }}
+              className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors"
+            >
               <LinkIcon className="w-4 h-4" /> Copy Link
             </button>
-            <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-sm shadow-indigo-200 transition-colors">
+            <button 
+              onClick={() => {
+                window.print();
+                toast.success('Preparing PDF export...');
+              }}
+              className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-sm shadow-indigo-200 transition-colors"
+            >
               <Download className="w-4 h-4" /> Export PDF
             </button>
           </div>

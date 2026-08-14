@@ -3,12 +3,11 @@
 import { Target, ShieldCheck, Mic } from 'lucide-react';
 import Link from 'next/link';
 
-export function MetricCards({ stats, atsHistory }: { stats?: any; atsHistory?: any[] }) {
+export function MetricCards({ stats }: { stats?: any }) {
   
-  const avgAtsScore = stats?.avgATSScore || 0;
+  const avgInterviewScore = stats?.avgInterviewScore || 0;
   const totalDrafts = stats?.totalDrafts || 0;
-  // Fallback to simple number for mock sessions as backend doesn't support this yet
-  const mockSessions = 4;
+  const totalInterviews = stats?.totalInterviews || 0;
 
   const getAtsColor = (score: number) => {
     if (score >= 80) return "bg-emerald-100 text-emerald-700";
@@ -46,26 +45,26 @@ export function MetricCards({ stats, atsHistory }: { stats?: any; atsHistory?: a
         icon={<Target className="w-5 h-5 text-blue-500" />}
       />
 
-      {/* ATS Pass Rating */}
+      {/* Avg Interview Rating */}
       <MetricCard 
-        title="Avg ATS Rating"
-        value={<span className="flex items-baseline gap-1">{avgAtsScore}<span className="text-sm text-slate-400 font-medium">/100</span></span>}
-        status={getAtsStatus(avgAtsScore)}
-        statusColor={getAtsColor(avgAtsScore)}
-        ringColor={getAtsRing(avgAtsScore)}
-        progress={avgAtsScore}
-        icon={<ShieldCheck className={`w-5 h-5 ${getAtsRing(avgAtsScore)}`} />}
+        title="Avg Interview Score"
+        value={<span className="flex items-baseline gap-1">{avgInterviewScore}<span className="text-sm text-slate-400 font-medium">/100</span></span>}
+        status={getAtsStatus(avgInterviewScore)}
+        statusColor={getAtsColor(avgInterviewScore)}
+        ringColor={getAtsRing(avgInterviewScore)}
+        progress={avgInterviewScore}
+        icon={<ShieldCheck className={`w-5 h-5 ${getAtsRing(avgInterviewScore)}`} />}
       />
 
       {/* Mock Interview Stats */}
       <MetricCard 
         title="Mock Interview Stats"
-        value={mockSessions.toString()}
-        status="Active Practice"
-        statusColor="bg-purple-100 text-purple-700"
+        value={totalInterviews.toString()}
+        status={totalInterviews > 0 ? "Active Practice" : "Not Started"}
+        statusColor={totalInterviews > 0 ? "bg-purple-100 text-purple-700" : "bg-slate-100 text-slate-700"}
         subtext={<span className="text-xs font-semibold text-slate-500 mt-2 block">Sessions Completed</span>}
         ringColor="text-purple-500"
-        progress={mockSessions > 0 ? Math.min(mockSessions * 25, 100) : 0}
+        progress={totalInterviews > 0 ? Math.min(totalInterviews * 25, 100) : 0}
         icon={<Mic className="w-5 h-5 text-purple-500" />}
       />
     </div>

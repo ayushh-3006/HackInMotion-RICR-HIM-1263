@@ -17,6 +17,16 @@ const client = new Groq({ apiKey: process.env.GROQ_API_KEY! });
  * Nothing else changes.
  */
 
+function parseDefensiveJson(result: string): any {
+    try {
+        const jsonMatch = result.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+        const cleanStr = jsonMatch ? jsonMatch[1].trim() : result.trim();
+        return JSON.parse(cleanStr);
+    } catch (e) {
+        console.error("Failed to parse AI JSON response:", result);
+        throw new Error("AI response was not valid JSON");
+    }
+}
 
 export class AIProvider implements IAIProvider {
     async enhance(resumeText: string, jobDescription: string): Promise<any> {
@@ -61,12 +71,7 @@ export class AIProvider implements IAIProvider {
         const result = response.choices[0]?.message?.content;
         if (!result) throw new Error("AI returned empty response");
 
-        try {
-            return JSON.parse(result);
-        } catch (e) {
-            console.error("Failed to parse AI JSON response:", result);
-            throw new Error("AI response was not valid JSON");
-        }
+        return parseDefensiveJson(result);
     }
 
     async buildResumeFromChat(chatHistory: any[], currentData: any): Promise<any> {
@@ -141,11 +146,6 @@ export class AIProvider implements IAIProvider {
         const result = response.choices[0]?.message?.content;
         if (!result) throw new Error("AI returned empty response");
 
-        try {
-            return JSON.parse(result);
-        } catch (e) {
-            console.error("Failed to parse AI JSON response:", result);
-            throw new Error("AI response was not valid JSON");
-        }
+        return parseDefensiveJson(result);
     }
 }

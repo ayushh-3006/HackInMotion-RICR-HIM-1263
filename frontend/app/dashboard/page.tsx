@@ -8,16 +8,14 @@ import { DashboardOverview } from "@/components/dashboard/overview";
 
 interface Stats {
   totalDrafts: number;
-  totalATSScans: number;
-  totalPDFs: number;
-  avgATSScore: number;
+  totalInterviews: number;
+  avgInterviewScore: number;
 }
 
-interface ATSRecord {
+interface InterviewRecord {
   id: string;
   score: number;
   jobRole: string | null;
-  fileName: string | null;
   createdAt: string;
 }
 
@@ -26,7 +24,7 @@ export default function DashboardPage() {
   const { getToken } = useAuth();
   
   const [stats, setStats] = useState<Stats | null>(null);
-  const [atsHistory, setATSHistory] = useState<ATSRecord[]>([]);
+  const [interviewHistory, setInterviewHistory] = useState<InterviewRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -37,9 +35,9 @@ export default function DashboardPage() {
 
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       
-      const [statsRes, atsRes] = await Promise.all([
+      const [statsRes, historyRes] = await Promise.all([
         fetch(`${baseUrl}/dashboard/stats`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${baseUrl}/ats/history`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${baseUrl}/dashboard/history`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
 
       let statsData = null;
@@ -52,20 +50,20 @@ export default function DashboardPage() {
         console.warn(`Stats fetch failed with status: ${statsRes.status}. Using fallback data.`);
       }
 
-      if (atsRes.ok) {
-        const atsJson = await atsRes.json();
-        if (atsJson.success) atsData = atsJson.data;
+      if (historyRes.ok) {
+        const historyJson = await historyRes.json();
+        if (historyJson.success) atsData = historyJson.data;
       } else {
-        console.warn(`ATS history fetch failed with status: ${atsRes.status}. Using fallback data.`);
+        console.warn(`History fetch failed with status: ${historyRes.status}. Using fallback data.`);
       }
 
       setStats(statsData);
-      setATSHistory(atsData);
+      setInterviewHistory(atsData);
     } catch (err) {
       console.warn("Dashboard fetchData network error or backend unavailable.");
       // Do not throw or use console.error to prevent Next.js red overlay.
       setStats(null);
-      setATSHistory([]);
+      setInterviewHistory([]);
     } finally {
       setLoading(false);
     }
@@ -119,7 +117,7 @@ export default function DashboardPage() {
       <DashboardOverview 
         userName={firstName} 
         stats={stats}
-        atsHistory={atsHistory}
+        interviewHistory={interviewHistory}
       />
     </div>
   );

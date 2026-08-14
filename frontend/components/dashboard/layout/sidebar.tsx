@@ -7,7 +7,8 @@ import {
   FileText,
   Target,
   Mic,
-  Share2
+  Share2,
+  Video
 } from 'lucide-react';
 
 

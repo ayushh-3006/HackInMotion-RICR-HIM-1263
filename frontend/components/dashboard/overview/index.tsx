@@ -6,13 +6,13 @@ import { ActiveSuggestions } from './active-suggestions';
 import { InsightsColumn } from './insights';
 
 export function DashboardOverview({ 
-  userName,
-  stats,
-  atsHistory
+  userName, 
+  stats, 
+  interviewHistory 
 }: { 
-  userName?: string;
-  stats?: any;
-  atsHistory?: any[];
+  userName: string; 
+  stats?: any; 
+  interviewHistory?: any[]; 
 }) {
   return (
     <div className="w-full max-w-[1400px] mx-auto space-y-6">
@@ -20,16 +20,16 @@ export function DashboardOverview({
         GreetingSection removed as requested by user
       */}
       
-      <MetricCards stats={stats} atsHistory={atsHistory} />
+      <MetricCards stats={stats} />
       
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         <div className="xl:col-span-2 flex flex-col gap-6">
-          <PrimaryWorkflows />
+          <PrimaryWorkflows interviewHistory={interviewHistory} />
           <ActiveSuggestions />
         </div>
         
         <div className="xl:col-span-1 flex flex-col gap-6">
-          <InsightsColumn atsHistory={atsHistory} />
+          <InsightsColumn interviewHistory={interviewHistory} />
         </div>
       </div>
     </div>
