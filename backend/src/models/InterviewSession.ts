@@ -74,6 +74,8 @@ const InterviewSessionSchema = new Schema<IInterviewSession>({
   isPublic: { type: Boolean, default: false },
   shareToken: { type: String, index: { unique: true, sparse: true } },
   sharedAt: { type: Date }
+  shareToken: { type: String, default: null, index: { unique: true, sparse: true } },
+  sharedAt: { type: Date, default: null }
 }, {
   timestamps: true
 });

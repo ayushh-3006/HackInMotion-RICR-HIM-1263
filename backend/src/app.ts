@@ -5,7 +5,7 @@ import { clerkMiddleware } from "@clerk/express";
 import { connectDB } from "./config/db.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import userRoutes from "./routes/user.routes.js";
-import { syncUser } from "./middleware/authMiddleware.js";
+import { syncUser } from "./middlewares/authMiddleware.js";
 
 // Load environment variables
 dotenv.config();
@@ -26,15 +26,56 @@ app.use(syncUser); // Lazily sync Clerk users on any authenticated API call
 // User routes
 app.use("/api/users", userRoutes);
 
+// Resume Builder routes
+import resumeBuilderRoutes from "./routes/ResumeBuilderRouter.js";
+app.use("/api/resume-builder", resumeBuilderRoutes);
+
 // ATS routes
 import { ATSRouter } from "./routes/ATSRouter.js";
 import { ATSController } from "./controllers/ATSController.js";
 import { ATSAnalyzer } from "./services/ATSAnalyzerModule.js";
 import { ParserFactory } from "./parsers/ParserFactory.js";
 
+// Resume Routes
+import resumeRoutes from "./routes/ResumeRoutes.js";
+import path from "path";
+
+app.use("/api/resume", resumeRoutes);
+app.use("/uploads", express.static(path.resolve("uploads")));
+
 const groqApiKey = process.env.GROQ_API_KEY || "";
 const atsController = new ATSController(new ATSAnalyzer(groqApiKey), new ParserFactory());
 app.use("/api/ats", new ATSRouter(atsController).router);
+// Mock Dashboard Stats Route
+app.get("/api/dashboard/stats", (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      totalDrafts: 12,
+      totalATSScans: 45,
+      totalPDFs: 8,
+      avgATSScore: 82,
+    },
+  });
+});
+
+// Mock ATS History Route
+app.get("/api/ats/history", (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    data: [
+      { id: "1", score: 85, jobRole: "Frontend Developer", fileName: "resume_v1.pdf", createdAt: new Date().toISOString() },
+      { id: "2", score: 62, jobRole: "Software Engineer", fileName: "resume_old.pdf", createdAt: new Date(Date.now() - 86400000).toISOString() }
+    ],
+  });
+});
+
+// Interview routes
+import { InterviewRoutes } from "./routes/InterviewRoutes.js";
+import { InterviewController } from "./controllers/InterviewController.js";
+
+const interviewController = new InterviewController();
+app.use("/api/interview", new InterviewRoutes(interviewController).router);
 
 // Health check route
 app.get("/api/health", (req: Request, res: Response) => {

@@ -20,7 +20,8 @@ const mainLinks = [
   { name: 'Overview', href: '/dashboard', icon: Home },
   { name: 'ATS Score Checker', href: '/dashboard/ats', icon: FileText },
   { name: 'AI Resume Builder', href: '/dashboard/ai-resume-builder', icon: Target },
-  { name: 'Resume Enhancer', href: '/dashboard/mock-interview', icon: Mic },
+  { name: 'Mock Interview', href: '/dashboard/mock-interview', icon: Mic },
+  { name: 'Share Reports', href: '/dashboard/share-reports', icon: Share2 },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart2 },
 ];
 
@@ -28,7 +29,6 @@ const secondaryLinks = [
   { name: 'Resume Rewriter', href: '/dashboard/resume-rewriter', icon: PenTool },
   { name: 'ATS Compatibility', href: '/dashboard/ats-compatibility', icon: ShieldCheck },
   { name: 'Question Bank', href: '/dashboard/question-bank', icon: BookOpen },
-  { name: 'Share Reports', href: '/dashboard/share-reports', icon: Share2 },
 ];
 
 export function Sidebar() {

@@ -4,70 +4,61 @@ import { Resume } from '@/types/resume';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 50,
     backgroundColor: '#FFFFFF',
-    fontFamily: 'Helvetica',
+    fontFamily: 'Times-Roman',
   },
   header: {
-    marginBottom: 25,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   name: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#1e40af', // Blue accent
+    marginBottom: 4,
   },
   contactInfo: {
-    flexDirection: 'row',
-    fontSize: 9,
-    marginTop: 5,
-    color: '#64748b',
-    gap: 10,
+    fontSize: 10,
+    color: '#333',
   },
   section: {
-    marginTop: 20,
+    marginTop: 15,
   },
   sectionTitle: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#1e40af',
+    textTransform: 'uppercase',
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    marginBottom: 10,
-    paddingBottom: 4,
+    borderBottomColor: '#333',
+    marginBottom: 6,
+    paddingBottom: 2,
   },
   entry: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
   entryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 2,
   },
   entryTitle: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#1e293b',
   },
   entrySubtitle: {
     fontSize: 10,
-    color: '#3b82f6',
-    fontWeight: 'bold',
+    fontStyle: 'italic',
   },
   entryDate: {
-    fontSize: 9,
-    color: '#64748b',
+    fontSize: 10,
   },
   entryDescription: {
-    fontSize: 9,
-    marginTop: 4,
-    color: '#475569',
-    lineHeight: 1.5,
+    fontSize: 10,
+    marginTop: 2,
+    textAlign: 'justify',
   },
   text: {
     fontSize: 10,
-    lineHeight: 1.5,
-    color: '#475569',
+    textAlign: 'justify',
   }
 });
 
@@ -76,26 +67,28 @@ const ProfessionalTheme = ({ data }: { data: any }) => (
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
         <Text style={styles.name}>{data.personalInfo.fullName || 'Your Name'}</Text>
-        <View style={styles.contactInfo}>
-          {data.personalInfo.email && <Text>{data.personalInfo.email}</Text>}
-          {data.personalInfo.phone && <Text>{data.personalInfo.phone}</Text>}
-          {data.personalInfo.linkedin && <Text>{data.personalInfo.linkedin}</Text>}
-          {data.personalInfo.github && <Text>{data.personalInfo.github}</Text>}
-          {data.personalInfo.twitter && <Text>{data.personalInfo.twitter}</Text>}
-          {data.personalInfo.leetcode && <Text>{data.personalInfo.leetcode}</Text>}
-        </View>
+        <Text style={styles.contactInfo}>
+          {data.personalInfo.email && `${data.personalInfo.email} | `}
+          {data.personalInfo.phone && `${data.personalInfo.phone} | `}
+          {data.personalInfo.linkedin && `${data.personalInfo.linkedin} | `}
+          {data.personalInfo.github && `${data.personalInfo.github}`}
+        </Text>
+        <Text style={styles.contactInfo}>
+          {data.personalInfo.leetcode && `LeetCode: ${data.personalInfo.leetcode} | `}
+          {data.personalInfo.codeforces && `CodeForces: ${data.personalInfo.codeforces}`}
+        </Text>
       </View>
 
       {data.careerDetails.objective && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About Me</Text>
+          <Text style={styles.sectionTitle}>Summary</Text>
           <Text style={styles.text}>{data.careerDetails.objective}</Text>
         </View>
       )}
 
       {data.experience.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Experience</Text>
+          <Text style={styles.sectionTitle}>Professional Experience</Text>
           {(data.experience || []).map((exp: any) => (
             <View key={exp.id} style={styles.entry}>
               <View style={styles.entryHeader}>
@@ -124,9 +117,9 @@ const ProfessionalTheme = ({ data }: { data: any }) => (
         </View>
       )}
 
-      {data.projects.length > 0 && (
+       {data.projects.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Side Projects</Text>
+          <Text style={styles.sectionTitle}>Projects</Text>
           {(data.projects || []).map((proj: any) => (
             <View key={proj.id} style={styles.entry}>
               <View style={styles.entryHeader}>
