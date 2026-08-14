@@ -3,7 +3,11 @@ import dotenv from "dotenv";
 import { IAIProvider } from "../interfaces/IAIProvider.js";
 dotenv.config();
 
-const client = new Groq({ apiKey: process.env.GROQ_API_KEY! });
+if (!process.env.GROQ_API_KEY) {
+  throw new Error("FATAL: GROQ_API_KEY environment variable is not set.");
+}
+const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
 
 /**
  * SOLID — S (Single Responsibility): Only job is calling Groq AI and returning text.
