@@ -7,7 +7,8 @@ import {
   Mic, Play, Square, ChevronRight, Activity, CheckCircle2,
   Loader2, Sparkles, Volume2, Clock, AlertTriangle,
   Code, Server, Users, Layers, Pause, History, RotateCcw,
-  TrendingUp, Zap, MessageCircle, Award, ChevronDown, ChevronUp
+  TrendingUp, Zap, MessageCircle, Award, ChevronDown, ChevronUp,
+  Share2, Link, Copy, X, ExternalLink
 } from 'lucide-react';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { useAudioAnalyzer } from '@/hooks/useAudioAnalyzer';
@@ -43,6 +44,8 @@ interface SessionData {
   overallScore: number;
   overallFeedback: string;
   status: string;
+  isPublic?: boolean;
+  shareToken?: string | null;
 }
 
 /* ──────── Category Cards ──────── */
@@ -215,6 +218,11 @@ export default function MockInterviewPage() {
   /* Expanded ideal answers */
   const [expandedIdeal, setExpandedIdeal] = useState<Record<number, boolean>>({});
 
+  /* Sharing State */
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [isSharing, setIsSharing] = useState(false);
+
   const { isListening, transcript, interimTranscript, startListening, stopListening, metrics: speechMetrics } = useSpeechRecognition();
   const { volume, startAnalyzing, stopAnalyzing } = useAudioAnalyzer();
 
@@ -248,6 +256,53 @@ export default function MockInterviewPage() {
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+  /* ── Share / Revoke ── */
+  const handleShare = async () => {
+    if (!session) return;
+    setIsSharing(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_URL}/interview/sessions/${session._id}/share`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      const fullUrl = `${window.location.origin}${data.shareUrl}`;
+      setShareUrl(fullUrl);
+      setSession(prev => prev ? { ...prev, isPublic: true, shareToken: data.shareToken } : prev);
+      setShowShareModal(true);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to generate share link');
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const handleRevoke = async () => {
+    if (!session) return;
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_URL}/interview/sessions/${session._id}/share`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setShareUrl('');
+      setSession(prev => prev ? { ...prev, isPublic: false, shareToken: null } : prev);
+      setShowShareModal(false);
+      toast.success('Share link revoked');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to revoke share link');
+    }
+  };
+
+  const copyShareUrl = () => {
+    navigator.clipboard.writeText(shareUrl);
+    toast.success('Link copied to clipboard!');
+  };
 
   /* ── Start Interview ── */
   const handleStartInterview = async () => {
@@ -773,6 +828,73 @@ export default function MockInterviewPage() {
             })}
           </div>
 
+          {/* ── Share Modal ── */}
+          {showShareModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 animate-in zoom-in-95 duration-300">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                      <Share2 className="w-4 h-4 text-indigo-600" />
+                    </div>
+                    <h3 className="font-bold text-slate-900">Share Report</h3>
+                  </div>
+                  <button onClick={() => setShowShareModal(false)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                {/* Body */}
+                <div className="px-6 py-5 space-y-4">
+                  {/* Status */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-slate-700">Public access via link</span>
+                    <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-bold">Enabled</span>
+                  </div>
+                  {/* URL */}
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 flex items-center gap-2 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                      <Link className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span className="text-sm text-slate-600 font-medium truncate">{shareUrl}</span>
+                    </div>
+                    <button
+                      onClick={copyShareUrl}
+                      className="px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold flex items-center gap-1.5 hover:bg-indigo-700 transition-colors shrink-0"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      Copy
+                    </button>
+                  </div>
+                  {/* Preview link */}
+                  <a
+                    href={shareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Preview shared report
+                  </a>
+                </div>
+                {/* Footer */}
+                <div className="px-6 py-4 border-t border-slate-100 flex justify-between">
+                  <button
+                    onClick={handleRevoke}
+                    className="px-4 py-2 text-red-600 bg-red-50 border border-red-200 rounded-xl text-sm font-bold hover:bg-red-100 transition-colors"
+                  >
+                    Revoke Access
+                  </button>
+                  <button
+                    onClick={() => setShowShareModal(false)}
+                    className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-200 transition-colors"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="mt-10 flex flex-wrap gap-4 justify-center">
             <button
@@ -781,6 +903,14 @@ export default function MockInterviewPage() {
             >
               <RotateCcw className="w-4 h-4" />
               Start New Interview
+            </button>
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="px-6 py-3 bg-white border border-indigo-200 text-indigo-700 rounded-xl font-bold flex items-center gap-2 hover:bg-indigo-50 transition-all shadow-sm"
+            >
+              {isSharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
+              Share Report
             </button>
             <a
               href="/dashboard/mock-interview/history"
