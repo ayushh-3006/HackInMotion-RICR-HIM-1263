@@ -1,4 +1,15 @@
-"use client";
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Home,
+  FileText,
+  Target,
+  Mic,
+  Share2,
+  Video
+} from 'lucide-react';
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -42,12 +53,8 @@ export function Sidebar() {
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none">
-              CareerAI
-            </h1>
-            <p className="text-[10px] text-slate-500 font-medium mt-0.5">
-              AI Career Assistant
-            </p>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none">Resumind</h1>
+            <p className="text-[10px] text-slate-500 font-medium mt-0.5">AI Career Assistant</p>
           </div>
         </Link>
       </div>
