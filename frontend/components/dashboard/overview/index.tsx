@@ -19,17 +19,17 @@ interface DashboardOverviewProps {
     avgATSScore?: number;
     totalInterviews?: number;
   } | null;
-  interviewHistory?: InterviewRecord[];
+  atsHistory?: InterviewRecord[];
 }
 
 export function DashboardOverview({
   userName,
   stats,
-  interviewHistory,
+  atsHistory,
 }: DashboardOverviewProps) {
   return (
     <div className="w-full max-w-[1400px] mx-auto space-y-6">
-      <MetricCards stats={stats} atsHistory={interviewHistory} />
+      <MetricCards stats={stats} atsHistory={atsHistory} />
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         <div className="xl:col-span-2 flex flex-col gap-6">
@@ -38,7 +38,7 @@ export function DashboardOverview({
         </div>
 
         <div className="xl:col-span-1 flex flex-col gap-6">
-          <InsightsColumn interviewHistory={interviewHistory} />
+          <InsightsColumn interviewHistory={atsHistory} />
         </div>
       </div>
     </div>

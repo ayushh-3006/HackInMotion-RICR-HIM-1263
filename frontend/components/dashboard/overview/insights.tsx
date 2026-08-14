@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { toast } from "sonner";
 import {
   ChevronDown,
   Check,
@@ -19,7 +20,14 @@ import {
   Tooltip,
 } from "recharts";
 
-export function InsightsColumn({ interviewHistory = [] }: { interviewHistory?: any[] }) {
+interface InterviewRecord {
+  id: string;
+  score: number;
+  jobRole: string | null;
+  createdAt: string;
+}
+
+export function InsightsColumn({ interviewHistory = [] }: { interviewHistory?: InterviewRecord[] }) {
   // Transform interviewHistory into chart data (chronological order)
   const chartData = useMemo(() => {
     if (!interviewHistory || interviewHistory.length === 0) {
