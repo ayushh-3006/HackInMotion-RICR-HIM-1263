@@ -9,10 +9,12 @@ export function DashboardOverview({
   userName,
   stats,
   atsHistory,
+  interviewHistory = [],
 }: {
   userName?: string;
   stats?: any;
   atsHistory?: any[];
+  interviewHistory?: any[];
 }) {
   return (
     <div className="w-full max-w-[1400px] mx-auto space-y-6">
