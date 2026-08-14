@@ -20,7 +20,7 @@ export default function SkillTagList({
   const Icon = isMatched ? CheckCircle2 : XCircle;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-6 h-full">
+    <div className="bg-white rounded-3xl border border-slate-200 p-6 h-full shadow-sm">
       <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-4 flex items-center gap-2">
         <Icon
           className={`w-4 h-4 ${isMatched ? "text-emerald-500" : "text-rose-500"}`}

@@ -59,7 +59,7 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
   const offset = circ - (animated / 100) * circ;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col items-center justify-center h-full">
+    <div className="bg-white rounded-3xl border border-slate-200 p-6 flex flex-col items-center justify-center h-full shadow-sm">
       <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-6">
         Match Score
       </h3>

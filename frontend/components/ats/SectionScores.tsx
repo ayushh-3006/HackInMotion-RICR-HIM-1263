@@ -21,7 +21,8 @@ export default function SectionScores({ scores }: SectionScoresProps) {
       {sections.map(({ key, label }) => {
         const val = scores?.[key] ?? 0;
         const getBarColor = (v: number) => {
-          if (v >= 80) return "bg-emerald-500";
+          if (v >= 80) return "bg-indigo-500";
+          if (v >= 60) return "bg-emerald-500";
           return "bg-amber-500";
         };
         return (

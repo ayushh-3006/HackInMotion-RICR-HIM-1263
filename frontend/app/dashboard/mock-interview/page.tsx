@@ -76,59 +76,7 @@ interface SessionData {
   shareToken?: string | null;
 }
 
-/* ──────── Category Cards ──────── */
-const CATEGORIES = [
-  {
-    id: "Frontend",
-    label: "Frontend",
-    icon: Code,
-    color: "from-blue-500 to-cyan-500",
-    bg: "bg-blue-50",
-    text: "text-blue-700",
-    border: "border-blue-200",
-  },
-  {
-    id: "Backend",
-    label: "Backend",
-    icon: Server,
-    color: "from-emerald-500 to-teal-500",
-    bg: "bg-emerald-50",
-    text: "text-emerald-700",
-    border: "border-emerald-200",
-  },
-  {
-    id: "Behavioral",
-    label: "Behavioral",
-    icon: Users,
-    color: "from-violet-500 to-purple-500",
-    bg: "bg-violet-50",
-    text: "text-violet-700",
-    border: "border-violet-200",
-  },
-  {
-    id: "System Design",
-    label: "System Design",
-    icon: Layers,
-    color: "from-orange-500 to-amber-500",
-    bg: "bg-orange-50",
-    text: "text-orange-700",
-    border: "border-orange-200",
-  },
-];
 
-const DIFFICULTIES = [
-  {
-    id: "Easy",
-    label: "Easy",
-    color: "text-emerald-600 bg-emerald-50 border-emerald-200",
-  },
-  {
-    id: "Medium",
-    label: "Medium",
-    color: "text-amber-600 bg-amber-50 border-amber-200",
-  },
-  { id: "Hard", label: "Hard", color: "text-red-600 bg-red-50 border-red-200" },
-];
 
 /* ──────── Waveform Bars ──────── */
 function WaveformBars({
@@ -349,10 +297,11 @@ export default function MockInterviewPage() {
   /* Setup State */
   const [jobRole, setJobRole] = useState("");
   const [experience, setExperience] = useState("mid");
-  const [interviewType, setInterviewType] = useState("Technical");
-  const [category, setCategory] = useState("Frontend");
-  const [difficulty, setDifficulty] = useState("Medium");
+  const [interviewMode, setInterviewMode] = useState("Text");
   const [isLoading, setIsLoading] = useState(false);
+
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
   /* Active Interview State */
   const [session, setSession] = useState<SessionData | null>(null);
@@ -431,8 +380,6 @@ export default function MockInterviewPage() {
     `${Math.floor(s / 60)
       .toString()
       .padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
   /* ── Share / Revoke ── */
   const handleShare = async () => {
@@ -493,7 +440,8 @@ export default function MockInterviewPage() {
 
   /* ── Start Interview ── */
   const handleStartInterview = async () => {
-    if (!jobRole) return toast.error("Please enter a job role.");
+    if (!jobRole) return toast.error("Please enter a target job role.");
+
     setIsLoading(true);
     try {
       const token = await getToken();
@@ -505,10 +453,7 @@ export default function MockInterviewPage() {
         },
         body: JSON.stringify({
           jobRole,
-          interviewType,
           experience,
-          category,
-          difficulty,
         }),
       });
       const data = await res.json();
@@ -710,95 +655,67 @@ export default function MockInterviewPage() {
 
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-3xl mx-auto">
             <div className="space-y-8">
-              {/* Category Selection */}
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-                  Interview Category
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {CATEGORIES.map((cat) => {
-                    const Icon = cat.icon;
-                    const isSelected = category === cat.id;
-                    return (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => {
-                          setCategory(cat.id);
-                          setInterviewType(
-                            cat.id === "Behavioral"
-                              ? "Behavioral"
-                              : "Technical",
-                          );
-                        }}
-                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
-                          isSelected
-                            ? `${cat.bg} ${cat.border} ${cat.text} shadow-sm scale-[1.02]`
-                            : "border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50"
-                        }`}
-                      >
-                        <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${isSelected ? `bg-gradient-to-br ${cat.color} text-white` : "bg-slate-100"}`}
-                        >
-                          <Icon className="w-5 h-5" />
-                        </div>
-                        <span className="text-xs font-bold">{cat.label}</span>
-                      </button>
-                    );
-                  })}
+              <div className="space-y-6">
+                {/* Job Role & Experience Level */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                      Target Job Role
+                    </label>
+                    <input
+                      type="text"
+                      value={jobRole}
+                      onChange={(e) => setJobRole(e.target.value)}
+                      placeholder="e.g. Full Stack Developer"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-medium text-slate-700 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                      Experience Level
+                    </label>
+                    <select
+                      value={experience}
+                      onChange={(e) => setExperience(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-medium text-slate-700 appearance-none bg-white"
+                    >
+                      <option value="fresher">Fresher</option>
+                      <option value="entry">Entry Level</option>
+                      <option value="mid">Mid Level</option>
+                      <option value="senior">Senior</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
 
-              {/* Difficulty */}
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-                  Difficulty
-                </label>
-                <div className="flex gap-3">
-                  {DIFFICULTIES.map((d) => (
+                {/* Interview Mode */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+                    Interview Mode
+                  </label>
+                  <div className="flex gap-3">
                     <button
-                      key={d.id}
                       type="button"
-                      onClick={() => setDifficulty(d.id)}
-                      className={`flex-1 py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${
-                        difficulty === d.id
-                          ? d.color
-                          : "border-slate-100 text-slate-400 hover:border-slate-200"
+                      onClick={() => setInterviewMode("Text")}
+                      className={`flex-1 py-3 rounded-xl text-sm font-bold border-2 transition-all flex items-center justify-center gap-2 ${
+                        interviewMode === "Text"
+                          ? "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm"
+                          : "border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50"
                       }`}
                     >
-                      {d.label}
+                      <MessageCircle className="w-4 h-4" /> Text
                     </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Job Role & Experience */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Target Job Role
-                  </label>
-                  <input
-                    type="text"
-                    value={jobRole}
-                    onChange={(e) => setJobRole(e.target.value)}
-                    placeholder="e.g. Senior Frontend Developer"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-medium text-slate-700 placeholder:text-slate-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Experience Level
-                  </label>
-                  <select
-                    value={experience}
-                    onChange={(e) => setExperience(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-medium text-slate-700 appearance-none"
-                  >
-                    <option value="entry">Entry Level</option>
-                    <option value="mid">Mid Level</option>
-                    <option value="senior">Senior</option>
-                  </select>
+                    <button
+                      type="button"
+                      onClick={() => setInterviewMode("Voice")}
+                      className={`flex-1 py-3 rounded-xl text-sm font-bold border-2 transition-all flex items-center justify-center gap-2 ${
+                        interviewMode === "Voice"
+                          ? "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm"
+                          : "border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      <Mic className="w-4 h-4" /> Voice
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -841,7 +758,7 @@ export default function MockInterviewPage() {
                 {session.jobRole}
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                {session.category} · {session.difficulty} · Question{" "}
+                {session.questions[currentQuestionIndex]?.type || "Mixed"} · Question{" "}
                 {currentQuestionIndex + 1} of {session.questions.length}
               </p>
             </div>
@@ -991,7 +908,7 @@ export default function MockInterviewPage() {
               Interview Complete!
             </h1>
             <p className="text-slate-500 text-sm">
-              {session.jobRole} · {session.category} · {session.difficulty}
+              {session.jobRole}
             </p>
           </div>
 

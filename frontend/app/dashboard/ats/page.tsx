@@ -1,18 +1,12 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
-import {
-  UploadCloud,
-  FileText,
-  Loader2,
-  Briefcase,
-  FileSearch,
-  X,
-  Sparkles,
-  RotateCcw,
-} from "lucide-react";
+import { Sparkles, BarChart2 } from "lucide-react";
+
+import ResumeUpload from "@/components/ats/ResumeUpload";
+import JobDetailsForm from "@/components/ats/JobDetailsForm";
 import ScoreGauge from "@/components/ats/ScoreGauge";
 import SkillTagList from "@/components/ats/SkillTagList";
 import SuggestionsList from "@/components/ats/SuggestionsList";
@@ -30,14 +24,6 @@ interface ATSResult {
   atsCompatible: boolean;
 }
 
-/* ──────── Constants ──────── */
-const ACCEPTED_TYPES = [
-  "application/pdf",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-
-/* ──────── Page ──────── */
 export default function ATSCheckerPage() {
   const { getToken } = useAuth();
 
@@ -47,54 +33,20 @@ export default function ATSCheckerPage() {
   const [jobSkills, setJobSkills] = useState("");
   const [experience, setExperience] = useState("Fresher");
 
-  const defaultSkills = ["React", "Express", "Node", "MongoDB", ".NET"];
-  const [availableSkills, setAvailableSkills] =
-    useState<string[]>(defaultSkills);
-
   /* UI state */
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ATSResult | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  /* ── File validation helper ── */
-  const validateAndSetFile = useCallback((f: File) => {
-    if (!ACCEPTED_TYPES.includes(f.type)) {
-      toast.error("Unsupported file type. Please upload a PDF or DOCX.");
-      return;
-    }
-    if (f.size > MAX_FILE_SIZE) {
-      toast.error("File too large. Maximum size is 5 MB.");
-      return;
-    }
-    setFile(f);
-  }, []);
-
-  /* ── Drag & Drop handlers ── */
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(true);
-  };
-  const onDragLeave = () => setDragActive(false);
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
-    if (e.dataTransfer.files?.[0]) validateAndSetFile(e.dataTransfer.files[0]);
-  };
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) validateAndSetFile(e.target.files[0]);
-  };
 
   /* ── Submit ── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!file) {
-      toast.error("Please upload your resume.");
+      toast.error("Please upload your resume to continue.");
       return;
     }
     if (!jobRole.trim() && !jobSkills.trim()) {
-      toast.error("Provide a Job Role or Required Skills.");
+      toast.error("Please provide either a Job Role or a Job Description.");
       return;
     }
 
@@ -130,203 +82,98 @@ export default function ATSCheckerPage() {
       setResult(data);
       toast.success("Resume analyzed successfully!");
     } catch (err: any) {
-      toast.error(err.message || "Something went wrong.");
+      toast.error(
+        err.message || "We couldn't complete the analysis. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  /* ──────── Render ──────── */
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-8">
+    <div className="w-full max-w-7xl mx-auto space-y-8 pb-12">
       {/* ── Header ── */}
-      <div>
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-indigo-500" />
-          ATS Score Checker
-        </h1>
-        <p className="text-sm text-slate-500 mt-1 font-medium">
-          Upload your resume, enter the target role and skills, and let our AI
-          tell you exactly how to improve.
-        </p>
+      <div className="flex items-center gap-3 border-b border-slate-200 pb-6 mb-6">
+        <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
+          <BarChart2 className="w-6 h-6" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+            Resume Analysis
+            <span className="bg-indigo-50 text-indigo-600 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full font-bold ml-2">
+              ATS Score Checker
+            </span>
+          </h1>
+          <p className="text-sm text-slate-500 mt-1 font-medium max-w-2xl">
+            See how well your resume matches your target role and get actionable
+            AI-powered suggestions.
+          </p>
+        </div>
       </div>
 
-      {/* ── Form Card ── */}
+      {/* ── Input Section ── */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left — Dropzone */}
-          <div className="space-y-3">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Resume (PDF / DOCX)
-            </label>
-            <div
-              className={`relative flex flex-col items-center justify-center w-full h-60 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${
-                dragActive
-                  ? "border-indigo-400 bg-indigo-50/60"
-                  : file
-                    ? "border-indigo-300 bg-indigo-50/40"
-                    : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-slate-100/60"
-              }`}
-              onDragOver={onDragOver}
-              onDragLeave={onDragLeave}
-              onDrop={onDrop}
-              onClick={() => inputRef.current?.click()}
-            >
-              <input
-                ref={inputRef}
-                type="file"
-                className="hidden"
-                accept=".pdf,.docx"
-                onChange={onFileChange}
-              />
-              {file ? (
-                <div className="flex flex-col items-center text-indigo-600">
-                  <FileText size={40} className="mb-3 opacity-80" />
-                  <p className="font-bold text-sm">{file.name}</p>
-                  <p className="text-xs text-indigo-400 mt-1">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setFile(null);
-                    }}
-                    className="mt-3 text-xs font-bold text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors"
-                  >
-                    <X size={14} /> Remove
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center text-slate-400">
-                  <UploadCloud size={40} className="mb-3 opacity-60" />
-                  <p className="font-bold text-sm text-slate-600">
-                    Click or drag to upload
-                  </p>
-                  <p className="text-xs mt-1">PDF or DOCX · Max 5 MB</p>
-                </div>
-              )}
-            </div>
-          </div>
+        <ResumeUpload file={file} setFile={setFile} disabled={loading} />
 
-          {/* Right — Inputs */}
-          <div className="space-y-5 flex flex-col">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                Target Job Role
-              </label>
-              <div className="relative">
-                <Briefcase
-                  size={16}
-                  className="absolute left-3.5 top-3 text-slate-400"
-                />
-                <select
-                  value={jobRole}
-                  onChange={(e) => setJobRole(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow appearance-none"
-                >
-                  <option value="">Select a role...</option>
-                  <option value="Full Stack Developer">
-                    Full Stack Developer
-                  </option>
-                  <option value="Frontend Developer">Frontend Developer</option>
-                  <option value="Backend Developer">Backend Developer</option>
-                  <option value="Software Engineer">Software Engineer</option>
-                  <option value="Data Scientist">Data Scientist</option>
-                  <option value="Product Manager">Product Manager</option>
-                  <option value="DevOps Engineer">DevOps Engineer</option>
-                  <option value="UI/UX Designer">UI/UX Designer</option>
-                  <option value="Mobile App Developer">
-                    Mobile App Developer
-                  </option>
-                  <option value="QA Automation Engineer">
-                    QA Automation Engineer
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                Experience Level
-              </label>
-              <select
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow appearance-none"
-              >
-                <option value="Fresher">Fresher</option>
-                <option value="1-3 years">1-3 years</option>
-                <option value="3-5 years">3-5 years</option>
-                <option value="5-7 years">5-7 years</option>
-                <option value="7-10 years">7-10 years</option>
-              </select>
-            </div>
-
-            <div className="flex-1 flex flex-col">
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  Required Skills / Job Description
-                </label>
-                {availableSkills.length < defaultSkills.length && (
-                  <button
-                    type="button"
-                    onClick={() => setAvailableSkills(defaultSkills)}
-                    className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-indigo-500 transition-colors uppercase tracking-wider"
-                  >
-                    <RotateCcw size={12} /> Reset Chips
-                  </button>
-                )}
-              </div>
-              <textarea
-                value={jobSkills}
-                onChange={(e) => setJobSkills(e.target.value)}
-                placeholder="Paste required skills or the full job description here…"
-                className="flex-1 w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow resize-none min-h-[100px] placeholder:text-slate-400 placeholder:font-normal"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold text-sm rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Analyzing…
-                </>
-              ) : (
-                <>
-                  <FileSearch size={18} />
-                  Run ATS Analysis
-                </>
-              )}
-            </button>
-          </div>
-        </div>
+        <JobDetailsForm
+          jobRole={jobRole}
+          setJobRole={setJobRole}
+          experience={experience}
+          setExperience={setExperience}
+          jobSkills={jobSkills}
+          setJobSkills={setJobSkills}
+          loading={loading}
+          onSubmit={handleSubmit}
+        />
       </form>
 
-      {/* ── Results ── */}
-      {result && (
-        <div className="space-y-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* ── Loading Overlay (Optional, the button handles it already) ── */}
+      {loading && !result && (
+        <div className="mt-8 p-12 bg-indigo-50 border border-indigo-100 rounded-3xl flex flex-col items-center justify-center text-center animate-pulse">
+          <Sparkles className="w-8 h-8 text-indigo-400 mb-3" />
+          <h3 className="text-lg font-bold text-indigo-900">
+            Analyzing your resume...
+          </h3>
+          <p className="text-sm text-indigo-700/70 mt-1 font-medium">
+            Comparing your skills with the job description
+          </p>
+        </div>
+      )}
+
+      {/* ── Analysis Results ── */}
+      {result && !loading && (
+        <div className="space-y-6 pt-8 border-t border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="mb-6">
+            <h2 className="text-xl font-black text-slate-900">
+              Analysis Results
+            </h2>
+            <p className="text-sm font-medium text-slate-500">
+              Review your match score and personalized recommendations.
+            </p>
+          </div>
+
           {/* Score + Section Scores */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <ScoreGauge score={result.score} />
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6">
-              <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">
+            <div className="lg:col-span-1">
+              <ScoreGauge score={result.score} />
+            </div>
+            <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-200 p-6 shadow-sm flex flex-col">
+              <h3 className="text-xs uppercase tracking-wider font-bold text-slate-400 mb-3">
                 AI Summary
               </h3>
-              <p className="text-slate-600 text-sm leading-relaxed font-medium mb-6">
+              <p className="text-slate-700 text-sm leading-relaxed font-medium mb-8">
                 {result.aiSummary}
               </p>
-              <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-4">
-                Section Performance
-              </h4>
-              <SectionScores scores={result.sectionScores} />
+
+              <div className="mt-auto">
+                <h4 className="text-xs uppercase tracking-wider font-bold text-slate-400 mb-4">
+                  Match Breakdown
+                </h4>
+                <SectionScores scores={result.sectionScores} />
+              </div>
             </div>
           </div>
 
@@ -338,7 +185,7 @@ export default function ATSCheckerPage() {
               type="matched"
             />
             <SkillTagList
-              title="Missing Skills"
+              title="Missing / Weak Skills"
               skills={result.missingSkills}
               type="missing"
             />
