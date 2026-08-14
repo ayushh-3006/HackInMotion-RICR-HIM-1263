@@ -16,6 +16,16 @@ const eslintConfig = defineConfig([
       "@next/next/no-img-element": "off",
       "react-hooks/purity": "off",
       "react-hooks/refs": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_",
+          "destructuredArrayIgnorePattern": "^_"
+        }
+      ],
+      "no-unused-vars": "off",
     },
   },
   // Override default ignores of eslint-config-next.
@@ -25,7 +35,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ignore third-party UI library files that we don't own
+    "components/ui/**",
   ]),
 ]);
 
 export default eslintConfig;
+
