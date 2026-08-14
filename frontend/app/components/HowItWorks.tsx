@@ -2,34 +2,44 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Status, StatusIndicator, StatusLabel } from "@/components/kibo-ui/status";
+import {
+  Status,
+  StatusIndicator,
+  StatusLabel,
+} from "@/components/kibo-ui/status";
 
 const steps = [
   {
     num: "1",
     title: "Upload your resume",
     desc: "Sign in and upload your existing resume or paste your details. Talvix securely prepares your data for enhancement.",
-    image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800&auto=format&fit=crop"
+    image:
+      "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800&auto=format&fit=crop",
   },
   {
     num: "2",
     title: "Enhance with AI",
     desc: "Our AI analyzes your resume and improves content, structure, and keywords to match industry standards.",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop"
+    image:
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop",
   },
   {
     num: "3",
     title: "Download & apply",
     desc: "Get a polished, ATS-friendly resume ready to download and use for job applications instantly.",
-    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=800&auto=format&fit=crop"
-  }
+    image:
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=800&auto=format&fit=crop",
+  },
 ];
 
 const HowItWorks = () => {
   return (
     <section className="py-24 text-black w-full max-w-full overflow-hidden">
       <div className="flex items-center justify-center flex-col gap-8 mb-15">
-        <Status status="maintenance" className="border-neutral-200 shadow-2xs font-manrope">
+        <Status
+          status="maintenance"
+          className="border-neutral-200 shadow-2xs font-manrope"
+        >
           <StatusIndicator />
           <StatusLabel>How It Works</StatusLabel>
         </Status>
@@ -40,9 +50,9 @@ const HowItWorks = () => {
           </h2>
 
           <p className="text-gray-600 font-inter text-center max-w-2xl">
-            Our AI guides you step-by-step to create a professional resume tailored to your goals.
+            Our AI guides you step-by-step to create a professional resume
+            tailored to your goals.
           </p>
-
         </div>
       </div>
 
@@ -57,7 +67,11 @@ const HowItWorks = () => {
               transition={{ duration: 0.6, delay: index * 0.15 }}
             >
               <div className="aspect-[4/3] w-full rounded-2xl overflow-hidden mb-6">
-                <img src={step.image} alt={step.title} className="object-cover w-full h-full" />
+                <img
+                  src={step.image}
+                  alt={step.title}
+                  className="object-cover w-full h-full"
+                />
               </div>
 
               <div className="flex items-center mb-4">
@@ -77,7 +91,6 @@ const HowItWorks = () => {
 
         {/* Desktop Layout */}
         <div className="hidden md:flex flex-col w-full">
-
           {/* Images */}
           <div className="grid grid-cols-3 gap-8 lg:gap-12">
             {steps.map((step, index) => (
@@ -88,7 +101,11 @@ const HowItWorks = () => {
                 transition={{ duration: 0.6, delay: index * 0.15 }}
               >
                 <div className="aspect-[4/3] rounded-[2rem] overflow-hidden">
-                  <img src={step.image} alt={step.title} className="object-cover w-full h-full" />
+                  <img
+                    src={step.image}
+                    alt={step.title}
+                    className="object-cover w-full h-full"
+                  />
                 </div>
               </motion.div>
             ))}
@@ -132,13 +149,10 @@ const HowItWorks = () => {
                   {step.title}
                 </h3>
 
-                <p className="text-gray-600 lg:text-base">
-                  {step.desc}
-                </p>
+                <p className="text-gray-600 lg:text-base">{step.desc}</p>
               </motion.div>
             ))}
           </div>
-
         </div>
       </div>
     </section>

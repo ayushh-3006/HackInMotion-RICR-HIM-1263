@@ -30,7 +30,8 @@ export default function ShinyText({
     return <span style={{ color }}>{text}</span>;
   }
 
-  const animationName = direction === "left" ? "shiny-text-left" : "shiny-text-right";
+  const animationName =
+    direction === "left" ? "shiny-text-left" : "shiny-text-right";
 
   return (
     <span

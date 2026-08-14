@@ -16,8 +16,6 @@ export default function HoverBorderGradientDemo() {
         </span>
 
         <span>Introducing Resume Builder v2.0 </span>
-
-
       </HoverBorderGradient>
     </div>
   );

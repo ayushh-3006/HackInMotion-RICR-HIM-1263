@@ -1,35 +1,35 @@
-import React from 'react';
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
-import { Resume } from '@/types/resume';
+import React from "react";
+import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import { Resume } from "@/types/resume";
 
 const styles = StyleSheet.create({
   page: {
     padding: 50,
-    backgroundColor: '#FFFFFF',
-    fontFamily: 'Times-Roman',
+    backgroundColor: "#FFFFFF",
+    fontFamily: "Times-Roman",
   },
   header: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
   },
   name: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   contactInfo: {
     fontSize: 10,
-    color: '#333',
+    color: "#333",
   },
   section: {
     marginTop: 15,
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    fontWeight: "bold",
+    textTransform: "uppercase",
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    borderBottomColor: "#333",
     marginBottom: 6,
     paddingBottom: 2,
   },
@@ -37,16 +37,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   entryTitle: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   entrySubtitle: {
     fontSize: 10,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   entryDate: {
     fontSize: 10,
@@ -54,19 +54,21 @@ const styles = StyleSheet.create({
   entryDescription: {
     fontSize: 10,
     marginTop: 2,
-    textAlign: 'justify',
+    textAlign: "justify",
   },
   text: {
     fontSize: 10,
-    textAlign: 'justify',
-  }
+    textAlign: "justify",
+  },
 });
 
 const ProfessionalTheme = ({ data }: { data: any }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
-        <Text style={styles.name}>{data.personalInfo.fullName || 'Your Name'}</Text>
+        <Text style={styles.name}>
+          {data.personalInfo.fullName || "Your Name"}
+        </Text>
         <Text style={styles.contactInfo}>
           {data.personalInfo.email && `${data.personalInfo.email} | `}
           {data.personalInfo.phone && `${data.personalInfo.phone} | `}
@@ -74,8 +76,10 @@ const ProfessionalTheme = ({ data }: { data: any }) => (
           {data.personalInfo.github && `${data.personalInfo.github}`}
         </Text>
         <Text style={styles.contactInfo}>
-          {data.personalInfo.leetcode && `LeetCode: ${data.personalInfo.leetcode} | `}
-          {data.personalInfo.codeforces && `CodeForces: ${data.personalInfo.codeforces}`}
+          {data.personalInfo.leetcode &&
+            `LeetCode: ${data.personalInfo.leetcode} | `}
+          {data.personalInfo.codeforces &&
+            `CodeForces: ${data.personalInfo.codeforces}`}
         </Text>
       </View>
 
@@ -117,7 +121,7 @@ const ProfessionalTheme = ({ data }: { data: any }) => (
         </View>
       )}
 
-       {data.projects.length > 0 && (
+      {data.projects.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Projects</Text>
           {(data.projects || []).map((proj: any) => (

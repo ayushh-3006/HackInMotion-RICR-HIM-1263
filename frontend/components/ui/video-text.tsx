@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import React, { ElementType, ReactNode, useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
+import React, { ElementType, ReactNode, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export interface VideoTextProps {
-  src: string
-  maskSrc?: string
-  className?: string
-  autoPlay?: boolean
-  muted?: boolean
-  loop?: boolean
-  preload?: "auto" | "metadata" | "none"
-  children?: ReactNode // ✅ FIXED (optional now)
-  fontSize?: string | number
-  fontWeight?: string | number
-  textAnchor?: string
-  dominantBaseline?: string
-  fontFamily?: string
-  as?: ElementType
+  src: string;
+  maskSrc?: string;
+  className?: string;
+  autoPlay?: boolean;
+  muted?: boolean;
+  loop?: boolean;
+  preload?: "auto" | "metadata" | "none";
+  children?: ReactNode; // ✅ FIXED (optional now)
+  fontSize?: string | number;
+  fontWeight?: string | number;
+  textAnchor?: string;
+  dominantBaseline?: string;
+  fontFamily?: string;
+  as?: ElementType;
 }
 
 export function VideoText({
@@ -36,22 +36,20 @@ export function VideoText({
   fontFamily = "sans-serif",
   as: Component = "div",
 }: VideoTextProps) {
-  const [svgMask, setSvgMask] = useState("")
+  const [svgMask, setSvgMask] = useState("");
 
   // ✅ SAFE content handling
-  const content = children
-    ? React.Children.toArray(children).join("")
-    : ""
+  const content = children ? React.Children.toArray(children).join("") : "";
 
   useEffect(() => {
     // Skip SVG generation if using image mask
-    if (maskSrc) return
+    if (maskSrc) return;
 
     const updateSvgMask = () => {
-      if (!content) return // ✅ avoid empty mask
+      if (!content) return; // ✅ avoid empty mask
 
       const responsiveFontSize =
-        typeof fontSize === "number" ? `${fontSize}vw` : fontSize
+        typeof fontSize === "number" ? `${fontSize}vw` : fontSize;
 
       const newSvgMask = `
         <svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'>
@@ -68,13 +66,13 @@ export function VideoText({
             ${content}
           </text>
         </svg>
-      `
-      setSvgMask(newSvgMask)
-    }
+      `;
+      setSvgMask(newSvgMask);
+    };
 
-    updateSvgMask()
-    window.addEventListener("resize", updateSvgMask)
-    return () => window.removeEventListener("resize", updateSvgMask)
+    updateSvgMask();
+    window.addEventListener("resize", updateSvgMask);
+    return () => window.removeEventListener("resize", updateSvgMask);
   }, [
     content,
     fontSize,
@@ -83,7 +81,7 @@ export function VideoText({
     dominantBaseline,
     fontFamily,
     maskSrc,
-  ])
+  ]);
 
   // ✅ Decide mask source safely
   const mask =
@@ -91,7 +89,7 @@ export function VideoText({
       ? maskSrc
         ? `url(${maskSrc})`
         : `url("data:image/svg+xml,${encodeURIComponent(svgMask)}")`
-      : "none"
+      : "none";
 
   return (
     <Component className={cn("relative size-full", className)}>
@@ -124,5 +122,5 @@ export function VideoText({
       {/* Accessibility */}
       {content && <span className="sr-only">{content}</span>}
     </Component>
-  )
+  );
 }

@@ -17,11 +17,15 @@ export class ResumeBuilderRepository implements IResumeBuilderRepository {
     return { id: saved._id.toString() };
   }
 
-  async update(id: string, userId: string, data: UpdateDraftData): Promise<{ id: string }> {
+  async update(
+    id: string,
+    userId: string,
+    data: UpdateDraftData,
+  ): Promise<{ id: string }> {
     const updated = await ResumeDraft.findOneAndUpdate(
       { _id: id, userId },
       { $set: data },
-      { new: true }
+      { new: true },
     );
     if (!updated) throw new Error("Draft not found or unauthorized");
     return { id: updated._id.toString() };

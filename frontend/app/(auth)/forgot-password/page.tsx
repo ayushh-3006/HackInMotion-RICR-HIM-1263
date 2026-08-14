@@ -103,61 +103,61 @@ export default function ForgotPasswordPage() {
           href="/login"
           className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-violet-400 transition-colors w-fit"
         >
-          <ArrowLeft size={13}/>
+          <ArrowLeft size={13} />
           Back
         </Link>
 
-            {/* Header */}
-            <div className="flex flex-col gap-1.5">
-              <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/15 border border-violet-500/20">
-                <Mail size={20} className="text-violet-400" />
-              </div>
-              <h1 className="text-3xl font-bold tracking-tight text-white">
-                Forgot password?
-              </h1>
-              <p className="text-sm text-zinc-500">
-                No worries. Enter your email and we&apos;ll send you a reset code.
-              </p>
-            </div>
+        {/* Header */}
+        <div className="flex flex-col gap-1.5">
+          <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/15 border border-violet-500/20">
+            <Mail size={20} className="text-violet-400" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">
+            Forgot password?
+          </h1>
+          <p className="text-sm text-zinc-500">
+            No worries. Enter your email and we&apos;ll send you a reset code.
+          </p>
+        </div>
 
-            {/* Form */}
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              className="flex flex-col gap-4"
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="flex flex-col gap-4"
+        >
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="forgot-email"
+              className="text-xs font-medium text-zinc-400"
             >
-              <div className="flex flex-col gap-1.5">
-                <label
-                  htmlFor="forgot-email"
-                  className="text-xs font-medium text-zinc-400"
-                >
-                  Email Address
-                </label>
-                <input
-                  id="forgot-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/30"
-                />
-              </div>
+              Email Address
+            </label>
+            <input
+              id="forgot-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/30"
+            />
+          </div>
 
-              <motion.button
-                whileTap={{ scale: email && !loading ? 0.97 : 1 }}
-                type="submit"
-                disabled={loading || !email}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 size={14} className="animate-spin" /> Sending…
-                  </>
-                ) : (
-                  "Send Reset Code"
-                )}
-              </motion.button>
-            </form>
+          <motion.button
+            whileTap={{ scale: email && !loading ? 0.97 : 1 }}
+            type="submit"
+            disabled={loading || !email}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={14} className="animate-spin" /> Sending…
+              </>
+            ) : (
+              "Send Reset Code"
+            )}
+          </motion.button>
+        </form>
 
         <p className="text-center text-sm text-zinc-500">
           Remember your password?{" "}

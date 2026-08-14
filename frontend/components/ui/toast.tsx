@@ -11,7 +11,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 
-import { cn } from "@/components/lib/utils"
+import { cn } from "@/components/lib/utils";
 
 import { buttonVariants } from "@/components/ui/button";
 
@@ -31,7 +31,9 @@ export interface CustomToastData {
   [key: string]: unknown;
 }
 
-export interface ToastProviderProps extends React.ComponentProps<typeof Toast.Provider> {
+export interface ToastProviderProps extends React.ComponentProps<
+  typeof Toast.Provider
+> {
   children?: React.ReactNode;
   position?: ToastPosition;
 }
@@ -40,7 +42,9 @@ export interface ToastsProps {
   position?: ToastPosition;
 }
 
-export interface AnchoredToastProviderProps extends React.ComponentProps<typeof Toast.Provider> {
+export interface AnchoredToastProviderProps extends React.ComponentProps<
+  typeof Toast.Provider
+> {
   children?: React.ReactNode;
 }
 
@@ -87,7 +91,7 @@ function Toasts({ position = "bottom-right" }: ToastsProps): React.JSX.Element {
           // Horizontal positioning
           "data-[position*=left]:left-(--toast-inset)",
           "data-[position*=right]:right-(--toast-inset)",
-          "data-[position*=center]:-translate-x-1/2 data-[position*=center]:left-1/2"
+          "data-[position*=center]:-translate-x-1/2 data-[position*=center]:left-1/2",
         )}
         data-position={position}
         data-slot="toast-viewport"
@@ -136,7 +140,7 @@ function Toasts({ position = "bottom-right" }: ToastsProps): React.JSX.Element {
                 "data-expanded:data-ending-style:data-[swipe-direction=left]:transform-[translateX(calc(var(--toast-swipe-movement-x)-100%-var(--toast-inset)))_translateY(var(--toast-calc-offset-y))]",
                 "data-expanded:data-ending-style:data-[swipe-direction=right]:transform-[translateX(calc(var(--toast-swipe-movement-x)+100%+var(--toast-inset)))_translateY(var(--toast-calc-offset-y))]",
                 "data-expanded:data-ending-style:data-[swipe-direction=up]:transform-[translateY(calc(var(--toast-swipe-movement-y)-100%-var(--toast-inset)))]",
-                "data-expanded:data-ending-style:data-[swipe-direction=down]:transform-[translateY(calc(var(--toast-swipe-movement-y)+100%+var(--toast-inset)))]"
+                "data-expanded:data-ending-style:data-[swipe-direction=down]:transform-[translateY(calc(var(--toast-swipe-movement-y)+100%+var(--toast-inset)))]",
               )}
               data-position={position}
               key={toast.id}
@@ -144,8 +148,8 @@ function Toasts({ position = "bottom-right" }: ToastsProps): React.JSX.Element {
                 position.includes("center")
                   ? [isTop ? "up" : "down"]
                   : position.includes("left")
-                  ? ["left", isTop ? "up" : "down"]
-                  : ["right", isTop ? "up" : "down"]
+                    ? ["left", isTop ? "up" : "down"]
+                    : ["right", isTop ? "up" : "down"]
               }
               toast={toast}
             >
@@ -161,12 +165,21 @@ function Toasts({ position = "bottom-right" }: ToastsProps): React.JSX.Element {
                   )}
 
                   <div className="flex flex-col gap-0.5">
-                    <Toast.Title className="font-medium font-urbanist" data-slot="toast-title" />
-                    <Toast.Description className="text-muted-foreground font-urbanist" data-slot="toast-description" />
+                    <Toast.Title
+                      className="font-medium font-urbanist"
+                      data-slot="toast-title"
+                    />
+                    <Toast.Description
+                      className="text-muted-foreground font-urbanist"
+                      data-slot="toast-description"
+                    />
                   </div>
                 </div>
                 {toast.actionProps && (
-                  <Toast.Action className={buttonVariants({ size: "xs" })} data-slot="toast-action">
+                  <Toast.Action
+                    className={buttonVariants({ size: "xs" })}
+                    data-slot="toast-action"
+                  >
                     {toast.actionProps.children}
                   </Toast.Action>
                 )}
@@ -201,7 +214,8 @@ function AnchoredToasts(): React.JSX.Element {
       <Toast.Viewport className="outline-0" data-slot="toast-viewport-anchored">
         {toasts.map((toast) => {
           const Icon = toast.type ? TOAST_ICONS[toast.type as ToastType] : null;
-          const tooltipStyle = (toast.data as CustomToastData)?.tooltipStyle ?? false;
+          const tooltipStyle =
+            (toast.data as CustomToastData)?.tooltipStyle ?? false;
           const positionerProps = toast.positionerProps;
 
           if (!positionerProps?.anchor) {
@@ -221,7 +235,7 @@ function AnchoredToasts(): React.JSX.Element {
                   "relative text-balance border bg-popover bg-clip-padding text-popover-foreground text-xs transition-[scale,opacity] before:pointer-events-none before:absolute before:inset-0 before:shadow-[0_1px_--theme(--color-black/4%)] data-ending-style:scale-98 data-starting-style:scale-98 data-ending-style:opacity-0 data-starting-style:opacity-0 dark:bg-clip-border dark:before:shadow-[0_-1px_--theme(--color-white/8%)]",
                   tooltipStyle
                     ? "rounded-md shadow-black/5 shadow-md before:rounded-[calc(var(--radius-md)-1px)]"
-                    : "rounded-lg shadow-lg before:rounded-[calc(var(--radius-lg)-1px)]"
+                    : "rounded-lg shadow-lg before:rounded-[calc(var(--radius-lg)-1px)]",
                 )}
                 data-slot="toast-popup"
                 toast={toast}
@@ -243,12 +257,21 @@ function AnchoredToasts(): React.JSX.Element {
                       )}
 
                       <div className="flex flex-col gap-0.5">
-                        <Toast.Title className="font-medium" data-slot="toast-title" />
-                        <Toast.Description className="text-muted-foreground" data-slot="toast-description" />
+                        <Toast.Title
+                          className="font-medium"
+                          data-slot="toast-title"
+                        />
+                        <Toast.Description
+                          className="text-muted-foreground"
+                          data-slot="toast-description"
+                        />
                       </div>
                     </div>
                     {toast.actionProps && (
-                      <Toast.Action className={buttonVariants({ size: "xs" })} data-slot="toast-action">
+                      <Toast.Action
+                        className={buttonVariants({ size: "xs" })}
+                        data-slot="toast-action"
+                      >
                         {toast.actionProps.children}
                       </Toast.Action>
                     )}
@@ -263,4 +286,9 @@ function AnchoredToasts(): React.JSX.Element {
   );
 }
 
-export { ToastProvider, toastManager, AnchoredToastProvider, anchoredToastManager };
+export {
+  ToastProvider,
+  toastManager,
+  AnchoredToastProvider,
+  anchoredToastManager,
+};

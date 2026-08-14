@@ -1,4 +1,8 @@
-import { IResumeBuilderRepository, SaveDraftData, UpdateDraftData } from "../interfaces/IResumeBuilderRepository.js";
+import {
+  IResumeBuilderRepository,
+  SaveDraftData,
+  UpdateDraftData,
+} from "../interfaces/IResumeBuilderRepository.js";
 import { IAIProvider } from "../interfaces/IAIProvider.js";
 import { IPDFGenerator } from "../interfaces/IPDFGenerator.js";
 
@@ -12,12 +16,12 @@ export class ResumeBuilderService {
   constructor(
     private repository: IResumeBuilderRepository,
     private aiProvider: IAIProvider,
-    private pdfGenerator: IPDFGenerator
+    private pdfGenerator: IPDFGenerator,
   ) {}
 
   async generateResume(chatHistory: any[], currentData: any): Promise<any> {
     if (!this.aiProvider.buildResumeFromChat) {
-        throw new Error("AI Provider does not support chat building.");
+      throw new Error("AI Provider does not support chat building.");
     }
     return this.aiProvider.buildResumeFromChat(chatHistory, currentData);
   }
@@ -27,7 +31,12 @@ export class ResumeBuilderService {
     return this.pdfGenerator.generate(data, fileName); // Assuming generator handles theme implicitly or data structure is enough
   }
 
-  async saveDraft(userId: string, title: string, data: Record<string, unknown>, theme: string): Promise<{ id: string }> {
+  async saveDraft(
+    userId: string,
+    title: string,
+    data: Record<string, unknown>,
+    theme: string,
+  ): Promise<{ id: string }> {
     if (!userId) throw new Error("User ID is required.");
     if (!data) throw new Error("Resume data is required.");
 
@@ -39,7 +48,11 @@ export class ResumeBuilderService {
     });
   }
 
-  async updateDraft(id: string, userId: string, updates: UpdateDraftData): Promise<{ id: string }> {
+  async updateDraft(
+    id: string,
+    userId: string,
+    updates: UpdateDraftData,
+  ): Promise<{ id: string }> {
     if (!id) throw new Error("Draft ID is required.");
     const existing = await this.repository.findById(id, userId);
     if (!existing) throw new Error("Draft not found or access denied.");

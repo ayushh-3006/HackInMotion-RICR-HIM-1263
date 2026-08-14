@@ -25,9 +25,10 @@ app.use(express.json());
 import mongoose from "mongoose";
 app.use((req: Request, res: Response, next: express.NextFunction) => {
   if (mongoose.connection.readyState !== 1) {
-    res.status(503).json({ 
-      error: "Service Unavailable: Database connection is not established.", 
-      details: "The backend is running but cannot reach MongoDB. Please check your IP whitelist and DATABASE_URL."
+    res.status(503).json({
+      error: "Service Unavailable: Database connection is not established.",
+      details:
+        "The backend is running but cannot reach MongoDB. Please check your IP whitelist and DATABASE_URL.",
     });
     return;
   }
@@ -58,7 +59,10 @@ app.use("/api/resume", resumeRoutes);
 app.use("/uploads", express.static(path.resolve("uploads")));
 
 const groqApiKey = process.env.GROQ_API_KEY || "";
-const atsController = new ATSController(new ATSAnalyzer(groqApiKey), new ParserFactory());
+const atsController = new ATSController(
+  new ATSAnalyzer(groqApiKey),
+  new ParserFactory(),
+);
 app.use("/api/ats", new ATSRouter(atsController).router);
 // Mock Dashboard Stats Route
 app.get("/api/dashboard/stats", (req: Request, res: Response) => {
@@ -78,8 +82,20 @@ app.get("/api/ats/history", (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     data: [
-      { id: "1", score: 85, jobRole: "Frontend Developer", fileName: "resume_v1.pdf", createdAt: new Date().toISOString() },
-      { id: "2", score: 62, jobRole: "Software Engineer", fileName: "resume_old.pdf", createdAt: new Date(Date.now() - 86400000).toISOString() }
+      {
+        id: "1",
+        score: 85,
+        jobRole: "Frontend Developer",
+        fileName: "resume_v1.pdf",
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: "2",
+        score: 62,
+        jobRole: "Software Engineer",
+        fileName: "resume_old.pdf",
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+      },
     ],
   });
 });

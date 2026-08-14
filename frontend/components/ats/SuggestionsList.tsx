@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Zap } from 'lucide-react';
+import React from "react";
+import { Zap } from "lucide-react";
 
 interface SuggestionsListProps {
   suggestions: string[];
@@ -23,9 +23,11 @@ export default function SuggestionsList({ suggestions }: SuggestionsListProps) {
             className="flex items-start gap-4 bg-white hover:bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-md transition-all duration-200"
           >
             <span className="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-indigo-500 text-white text-xs font-bold mt-0.5 shadow-sm">
-              {String(i + 1).padStart(2, '0')}
+              {String(i + 1).padStart(2, "0")}
             </span>
-            <span className="text-slate-700 text-base leading-relaxed font-medium">{suggestion}</span>
+            <span className="text-slate-700 text-base leading-relaxed font-medium">
+              {suggestion}
+            </span>
           </li>
         ))}
       </ul>

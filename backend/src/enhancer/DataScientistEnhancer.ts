@@ -1,5 +1,5 @@
 import { BaseRoleEnhancer } from "./BaseRoleEnhancer.js";
- 
+
 /**
  * OOP — Inheritance: Extends BaseRoleEnhancer, gets enhance() for free.
  *
@@ -13,7 +13,7 @@ export class DataScientistEnhancer extends BaseRoleEnhancer {
   getRoleName(): string {
     return "Data Scientist";
   }
- 
+
   protected getRoleContext(): string {
     return `Role focus: Data Scientist.
 Please emphasize the following in the resume:
@@ -24,4 +24,3 @@ Please emphasize the following in the resume:
 - Business impact of data insights`;
   }
 }
- 

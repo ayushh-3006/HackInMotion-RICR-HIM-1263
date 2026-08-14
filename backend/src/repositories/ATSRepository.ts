@@ -21,11 +21,13 @@ const ATSRecordSchema: Schema = new Schema(
     jobRole: { type: String, required: false },
     fileName: { type: String, required: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // We need to check if the model already exists to prevent errors during hot-reloading
-const ATSRecordModel = mongoose.models.ATSRecord || mongoose.model<IATSRecord>("ATSRecord", ATSRecordSchema);
+const ATSRecordModel =
+  mongoose.models.ATSRecord ||
+  mongoose.model<IATSRecord>("ATSRecord", ATSRecordSchema);
 
 /**
  * SOLID — S (Single Responsibility): Only handles ATSRecord DB operations.
@@ -39,7 +41,7 @@ export class ATSRepository implements IATSRepository {
     await User.updateOne(
       { clerkUserId: data.userId },
       { $setOnInsert: { email: `${data.userId}@clerk.user` } },
-      { upsert: true }
+      { upsert: true },
     );
 
     const record = new ATSRecordModel({
@@ -57,7 +59,7 @@ export class ATSRepository implements IATSRepository {
       .select("score jobRole fileName createdAt")
       .sort({ createdAt: 1 })
       .exec();
-      
+
     // Map _id to id to match Prisma output
     return records.map((r) => ({
       id: r._id.toString(),

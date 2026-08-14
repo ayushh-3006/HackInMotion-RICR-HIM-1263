@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Share, Loader2 } from 'lucide-react';
-import { UserButton } from '@clerk/nextjs';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { Share, Loader2 } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function Header() {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -11,18 +11,17 @@ export function Header() {
   const generatePDF = async () => {
     try {
       setIsGeneratingPdf(true);
-      toast.info('Preparing PDF report...', { id: 'pdf-gen' });
-      
+      toast.info("Preparing PDF report...", { id: "pdf-gen" });
+
       // We use native print to avoid html2canvas issues with modern CSS like oklch/lab
       setTimeout(() => {
         window.print();
-        toast.success('Report ready!', { id: 'pdf-gen' });
+        toast.success("Report ready!", { id: "pdf-gen" });
         setIsGeneratingPdf(false);
       }, 500);
-      
     } catch (error) {
-      console.error('PDF generation error:', error);
-      toast.error('Failed to generate PDF report', { id: 'pdf-gen' });
+      console.error("PDF generation error:", error);
+      toast.error("Failed to generate PDF report", { id: "pdf-gen" });
       setIsGeneratingPdf(false);
     }
   };
@@ -32,7 +31,7 @@ export function Header() {
       {/* Right Actions */}
       <div className="flex items-center gap-4 ml-4">
         {/* Share Feedback Report */}
-        <button 
+        <button
           onClick={generatePDF}
           disabled={isGeneratingPdf}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all hidden md:flex disabled:opacity-50 disabled:cursor-not-allowed"
@@ -52,7 +51,7 @@ export function Header() {
           appearance={{
             elements: {
               avatarBox: "w-10 h-10 shadow-sm border border-slate-200",
-            }
+            },
           }}
         />
       </div>

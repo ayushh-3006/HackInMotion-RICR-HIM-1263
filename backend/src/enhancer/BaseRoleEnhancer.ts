@@ -1,5 +1,5 @@
 import { IAIProvider } from "../interfaces/IAIProvider.js";
- 
+
 /**
  * SOLID — O (Open/Closed Principle)
  *
@@ -20,14 +20,13 @@ import { IAIProvider } from "../interfaces/IAIProvider.js";
 export abstract class BaseRoleEnhancer {
   // D principle — depends on IAIProvider interface, not GroqAIProvider directly
   constructor(protected aiProvider: IAIProvider) {}
- 
+
   async enhance(resumeText: string, jobDescription: string): Promise<string> {
     const enrichedJobDescription = `${this.getRoleContext()}\n\n${jobDescription}`;
     return this.aiProvider.enhance(resumeText, enrichedJobDescription);
   }
- 
+
   abstract getRoleName(): string;
- 
+
   protected abstract getRoleContext(): string;
 }
- 

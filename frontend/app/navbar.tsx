@@ -47,15 +47,27 @@ export default function NavbarDemo() {
           <div className="flex flex-1 items-center justify-end gap-2">
             {!userId ? (
               <>
-                <NavbarButton href="/login" variant="secondary" className="rounded-full px-6">
+                <NavbarButton
+                  href="/login"
+                  variant="secondary"
+                  className="rounded-full px-6"
+                >
                   Login
                 </NavbarButton>
-                <NavbarButton href="/register" variant="primary" className="rounded-full px-6">
+                <NavbarButton
+                  href="/register"
+                  variant="primary"
+                  className="rounded-full px-6"
+                >
                   Get Started
                 </NavbarButton>
               </>
             ) : (
-              <NavbarButton href="/dashboard" variant="primary" className="rounded-full px-6">
+              <NavbarButton
+                href="/dashboard"
+                variant="primary"
+                className="rounded-full px-6"
+              >
                 Dashboard
               </NavbarButton>
             )}

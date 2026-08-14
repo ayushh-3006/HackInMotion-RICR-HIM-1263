@@ -8,7 +8,7 @@ const router = Router();
 router.post(
   "/clerk",
   express.raw({ type: "application/json" }),
-  clerkWebhookHandler
+  clerkWebhookHandler,
 );
 
 export default router;

@@ -9,7 +9,7 @@ dotenv.config();
 export const clerkAuth = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
@@ -31,6 +31,8 @@ export const clerkAuth = async (
 
     next();
   } catch {
-    res.status(401).json({ error: "Invalid or expired token. Please log in again." });
+    res
+      .status(401)
+      .json({ error: "Invalid or expired token. Please log in again." });
   }
 };
