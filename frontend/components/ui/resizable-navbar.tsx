@@ -254,7 +254,7 @@ export const NavbarLogo = () => {
         href="#"
         className="relative z-20 flex items-center space-x-2 px-2 py-1"
       >
-        <span className="font-bold text-white text-lg tracking-tight">resumind</span>
+        <span className="font-bold text-white text-lg tracking-tight">Resumind</span>
         {/* <Image src="/Logo/full.png" className="w-[130px] h-auto object-contain" alt="Logo" width={200} height={60} /> */}
       </a>
     </div>
