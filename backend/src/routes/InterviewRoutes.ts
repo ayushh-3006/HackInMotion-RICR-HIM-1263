@@ -39,5 +39,16 @@ export class InterviewRoutes {
 
     // Fetch past interview sessions
     this.router.get("/history", clerkAuth, this.controller.getHistory.bind(this.controller));
+
+    // ── Sharing routes ──
+
+    // Enable sharing for a session (protected)
+    this.router.post("/sessions/:id/share", clerkAuth, this.controller.shareSession.bind(this.controller));
+
+    // Revoke sharing (protected)
+    this.router.delete("/sessions/:id/share", clerkAuth, this.controller.revokeShare.bind(this.controller));
+
+    // Get shared report (PUBLIC — no auth required)
+    this.router.get("/shared/:shareToken", this.controller.getSharedReport.bind(this.controller));
   }
 }
