@@ -109,26 +109,22 @@ export class InterviewService {
   /* ── Generate interview questions ── */
   public async generateQuestions(
     jobRole: string,
-    interviewType: string,
     experience: string,
-    category?: string,
     difficulty?: string,
   ): Promise<any> {
     const diffLabel = difficulty || "Medium";
-    const catLabel = category || interviewType;
 
-    const prompt = `You are an expert technical interviewer.
+    const prompt = `You are an expert interviewer.
 Generate EXACTLY 3 ${diffLabel}-difficulty interview questions for a ${experience} level ${jobRole}.
-The interview category is: ${catLabel}.
-The interview type is: ${interviewType}.
+The questions should be a mix of Technical and Behavioral questions tailored to the candidate's target job role.
 
 Return a JSON object with an array of "questions".
 SCHEMA:
 {
   "questions": [
-    { "id": "q1", "text": "Question text here..." },
-    { "id": "q2", "text": "Question text here..." },
-    { "id": "q3", "text": "Question text here..." }
+    { "id": "q1", "text": "Question text here...", "type": "Technical" },
+    { "id": "q2", "text": "Question text here...", "type": "Behavioral" },
+    { "id": "q3", "text": "Question text here...", "type": "Technical" }
   ]
 }
 `;

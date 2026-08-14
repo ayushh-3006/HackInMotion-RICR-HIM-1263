@@ -24,9 +24,8 @@ export default function DashboardPage() {
   const { getToken } = useAuth();
 
   const [stats, setStats] = useState<Stats | null>(null);
-  const [interviewHistory, setInterviewHistory] = useState<InterviewRecord[]>([]);
-
-  const [atsHistory, setAtsHistory] = useState<any[]>([]);
+  const [atsHistory, setAtsHistory] = useState<InterviewRecord[]>([]);
+  const [interviewsHistory, setInterviewsHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -38,21 +37,21 @@ export default function DashboardPage() {
       const baseUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-      const [statsRes, atsRes, interviewRes] = await Promise.all([
+      const [statsRes, atsRes, interviewsRes] = await Promise.all([
         fetch(`${baseUrl}/dashboard/stats`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`${baseUrl}/ats/history`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch(`${baseUrl}/interview/history`, {
+        fetch(`${baseUrl}/interviews/history`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
 
       let statsData = null;
       let atsData = [];
-      let interviewData = [];
+      let interviewsData = [];
 
       if (statsRes.ok) {
         const statsJson = await statsRes.json();
@@ -68,22 +67,23 @@ export default function DashboardPage() {
         console.warn(`ATS history fetch failed with status: ${atsRes.status}`);
       }
 
-      if (interviewRes.ok) {
-        const interviewJson = await interviewRes.json();
-        if (interviewJson.success) interviewData = interviewJson.data;
+      if (interviewsRes.ok) {
+        const interviewsJson = await interviewsRes.json();
+        if (interviewsJson.success) interviewsData = interviewsJson.data;
       } else {
-        console.warn(`Interview history fetch failed with status: ${interviewRes.status}`);
+        console.warn(
+          `Interviews fetch failed with status: ${interviewsRes.status}`,
+        );
       }
 
       setStats(statsData);
-      setInterviewHistory(interviewData); 
       setAtsHistory(atsData);
+      setInterviewsHistory(interviewsData);
     } catch (err) {
       console.warn("Dashboard fetchData network error or backend unavailable.");
-      // Do not throw or use console.error to prevent Next.js red overlay.
       setStats(null);
-      setInterviewHistory([]);
       setAtsHistory([]);
+      setInterviewsHistory([]);
     } finally {
       setLoading(false);
     }
@@ -144,7 +144,7 @@ export default function DashboardPage() {
         userName={firstName}
         stats={stats}
         atsHistory={atsHistory}
-        interviewHistory={interviewHistory}
+        interviewsHistory={interviewsHistory}
       />
     </div>
   );

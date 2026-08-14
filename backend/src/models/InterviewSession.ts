@@ -37,10 +37,10 @@ export interface IAnswer {
 export interface IInterviewSession extends Document {
   clerkUserId: string;
   jobRole: string;
-  interviewType: string; // 'Technical' or 'Behavioral'
-  category: string; // 'Frontend' | 'Backend' | 'Behavioral' | 'System Design'
-  difficulty: string; // 'Easy' | 'Medium' | 'Hard'
-  questions: { id: string; text: string }[];
+  interviewType: string; // e.g. 'Mixed'
+  category: string; 
+  difficulty: string; 
+  questions: { id: string; text: string; type?: string }[];
   answers: IAnswer[];
   overallScore: number;
   overallFeedback: string;
@@ -89,9 +89,9 @@ const InterviewSessionSchema = new Schema<IInterviewSession>(
     clerkUserId: { type: String, required: true, index: true },
     jobRole: { type: String, required: true },
     interviewType: { type: String, required: true },
-    category: { type: String, default: "Technical" },
+    category: { type: String, default: "Mixed" },
     difficulty: { type: String, default: "Medium" },
-    questions: [{ id: String, text: String }],
+    questions: [{ id: String, text: String, type: { type: String } }],
     answers: [AnswerSchema],
     overallScore: { type: Number, default: 0 },
     overallFeedback: { type: String },

@@ -9,34 +9,31 @@ export class InterviewController {
   /* ── POST /interview/start ── */
   public async startInterview(req: Request, res: Response): Promise<void> {
     try {
-      const { jobRole, interviewType, experience, category, difficulty } =
-        req.body;
+      const { jobRole, experience, difficulty } = req.body;
       const clerkUserId = (req as any).userId;
 
       if (!clerkUserId) {
         res.status(401).json({ error: "Not authenticated" });
         return;
       }
-      if (!jobRole || !interviewType) {
+      if (!jobRole) {
         res
           .status(400)
-          .json({ error: "Missing required fields: jobRole, interviewType" });
+          .json({ error: "Missing required fields: jobRole" });
         return;
       }
 
       const aiResponse = await interviewService.generateQuestions(
         jobRole,
-        interviewType,
         experience || "mid",
-        category,
         difficulty,
       );
 
       const session = new InterviewSession({
         clerkUserId,
         jobRole,
-        interviewType,
-        category: category || interviewType,
+        interviewType: "Mixed",
+        category: "Mixed",
         difficulty: difficulty || "Medium",
         questions: aiResponse.questions,
         answers: [],

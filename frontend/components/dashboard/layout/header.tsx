@@ -1,12 +1,16 @@
 "use client";
 
-import { Share, Loader2 } from "lucide-react";
+import { Share, Loader2, Menu } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
-export function Header() {
+interface HeaderProps {
+  onMenuToggle?: () => void;
+}
+
+export function Header({ onMenuToggle }: HeaderProps) {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const generatePDF = async () => {
@@ -43,9 +47,18 @@ export function Header() {
   };
 
   return (
-    <header className="h-16 border-b border-slate-200 bg-white flex items-center justify-end pl-6 pr-4 sticky top-0 z-10">
+    <header className="h-16 border-b border-slate-200 bg-white flex items-center justify-between md:justify-end px-6 sticky top-0 z-10">
+      {/* Mobile Menu Toggle */}
+      <button
+        onClick={onMenuToggle}
+        className="md:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+        aria-label="Open sidebar"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+
       {/* Right Actions */}
-      <div className="flex items-center gap-4 ml-4">
+      <div className="flex items-center gap-4 ml-auto">
         {/* Share Feedback Report */}
         <motion.button
           whileHover={{ scale: 1.03 }}

@@ -1,7 +1,7 @@
 "use client";
 
-import { Target, ShieldCheck, Mic } from "lucide-react";
-import Link from "next/link";
+import React, { useMemo } from "react";
+import { FileText, Target, Mic, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface MetricCardProps {
@@ -9,24 +9,14 @@ interface MetricCardProps {
   value: React.ReactNode;
   status: string;
   statusColor: string;
-  subtext?: React.ReactNode;
   ringColor: string;
   progress: number;
   icon: React.ReactNode;
 }
 
 interface MetricCardsProps {
-  stats?: {
-    totalDrafts?: number;
-    avgATSScore?: number;
-    totalInterviews?: number;
-  } | null;
-  atsHistory?: Array<{
-    id: string;
-    score: number;
-    jobRole: string | null;
-    createdAt: string;
-  }>;
+  atsHistory?: any[];
+  interviewsHistory?: any[];
 }
 
 const cardVariants = {
@@ -43,32 +33,54 @@ const cardVariants = {
   }),
 };
 
-export function MetricCards({ stats, atsHistory }: MetricCardsProps) {
-  const avgAtsScore = stats?.avgATSScore || 0;
-  const totalDrafts = stats?.totalDrafts || 0;
-  const totalInterviews = stats?.totalInterviews || 0;
+export function MetricCards({
+  atsHistory = [],
+  interviewsHistory = [],
+}: MetricCardsProps) {
+  // Calculations
+  const resumesScanned = atsHistory.length;
 
-  const getAtsColor = (score: number): string => {
+  const avgAtsScore = useMemo(() => {
+    if (resumesScanned === 0) return 0;
+    const sum = atsHistory.reduce((acc, curr) => acc + (curr.score || 0), 0);
+    return Math.round(sum / resumesScanned);
+  }, [atsHistory, resumesScanned]);
+
+  const mockInterviews = interviewsHistory.length;
+
+  const avgInterviewScore = useMemo(() => {
+    if (mockInterviews === 0) return 0;
+    const sum = interviewsHistory.reduce(
+      (acc, curr) => acc + (curr.overallScore || 0),
+      0,
+    );
+    return Math.round(sum / mockInterviews);
+  }, [interviewsHistory, mockInterviews]);
+
+  // Color helpers
+  const getScoreStatus = (score: number): string => {
+    if (score === 0) return "No Data";
+    if (score >= 80) return "Excellent";
+    if (score >= 60) return "Average";
+    return "Needs Work";
+  };
+
+  const getScoreColor = (score: number): string => {
+    if (score === 0) return "bg-slate-100 text-slate-700";
     if (score >= 80) return "bg-emerald-100 text-emerald-700";
     if (score >= 60) return "bg-amber-100 text-amber-700";
-    return "bg-red-100 text-red-700";
+    return "bg-rose-100 text-rose-700";
   };
 
-  const getAtsStatus = (score: number): string => {
-    if (score >= 80) return "Format Passed";
-    if (score >= 60) return "Needs Review";
-    return "Action Needed";
-  };
-
-  const getAtsRing = (score: number): string => {
+  const getRingColor = (score: number): string => {
     if (score >= 80) return "text-emerald-500";
     if (score >= 60) return "text-amber-500";
-    return "text-red-500";
+    return "text-rose-500";
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      {/* Total Resumes Created */}
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+      {/* 1. Resumes Scanned */}
       <motion.div
         custom={0}
         variants={cardVariants}
@@ -76,27 +88,17 @@ export function MetricCards({ stats, atsHistory }: MetricCardsProps) {
         animate="visible"
       >
         <MetricCard
-          title="Total Resumes Created"
-          value={totalDrafts.toString()}
-          status={
-            totalDrafts > 0 ? `${totalDrafts} Drafts Saved` : "No Drafts Yet"
-          }
-          statusColor="bg-blue-100 text-blue-700"
-          subtext={
-            <Link
-              href="/dashboard/ai-resume-builder"
-              className="text-xs font-semibold text-slate-500 mt-2 hover:text-indigo-600 cursor-pointer transition-colors block"
-            >
-              Manage your drafts &gt;
-            </Link>
-          }
-          ringColor="text-blue-500"
-          progress={totalDrafts > 0 ? Math.min(totalDrafts * 20, 100) : 0}
-          icon={<Target className="w-5 h-5 text-blue-500" />}
+          title="Resumes Scanned"
+          value={resumesScanned.toString()}
+          status={resumesScanned > 0 ? "Active" : "Get Started"}
+          statusColor="bg-indigo-100 text-indigo-700"
+          ringColor="text-indigo-500"
+          progress={resumesScanned > 0 ? Math.min(resumesScanned * 10, 100) : 0}
+          icon={<FileText className="w-5 h-5 text-indigo-500" />}
         />
       </motion.div>
 
-      {/* ATS Pass Rating */}
+      {/* 2. Avg ATS Match */}
       <motion.div
         custom={1}
         variants={cardVariants}
@@ -104,22 +106,22 @@ export function MetricCards({ stats, atsHistory }: MetricCardsProps) {
         animate="visible"
       >
         <MetricCard
-          title="Avg ATS Rating"
+          title="Avg ATS Match"
           value={
             <span className="flex items-baseline gap-1">
               {avgAtsScore}
               <span className="text-sm text-slate-400 font-medium">/100</span>
             </span>
           }
-          status={getAtsStatus(avgAtsScore)}
-          statusColor={getAtsColor(avgAtsScore)}
-          ringColor={getAtsRing(avgAtsScore)}
+          status={getScoreStatus(avgAtsScore)}
+          statusColor={getScoreColor(avgAtsScore)}
+          ringColor={getRingColor(avgAtsScore)}
           progress={avgAtsScore}
-          icon={<ShieldCheck className={`w-5 h-5 ${getAtsRing(avgAtsScore)}`} />}
+          icon={<Target className={`w-5 h-5 ${getRingColor(avgAtsScore)}`} />}
         />
       </motion.div>
 
-      {/* Mock Interview Stats */}
+      {/* 3. Mock Interviews */}
       <motion.div
         custom={2}
         variants={cardVariants}
@@ -127,25 +129,40 @@ export function MetricCards({ stats, atsHistory }: MetricCardsProps) {
         animate="visible"
       >
         <MetricCard
-          title="Mock Interview Stats"
-          value={totalInterviews.toString()}
-          status={
-            totalInterviews > 0
-              ? `${totalInterviews} Sessions Completed`
-              : "No Sessions Yet"
-          }
+          title="Mock Interviews"
+          value={mockInterviews.toString()}
+          status={mockInterviews > 0 ? "Active" : "No Sessions"}
           statusColor="bg-purple-100 text-purple-700"
-          subtext={
-            <Link
-              href="/dashboard/mock-interview"
-              className="text-xs font-semibold text-slate-500 mt-2 hover:text-purple-600 cursor-pointer transition-colors block"
-            >
-              Start practicing &gt;
-            </Link>
-          }
           ringColor="text-purple-500"
-          progress={totalInterviews > 0 ? Math.min(totalInterviews * 25, 100) : 0}
+          progress={mockInterviews > 0 ? Math.min(mockInterviews * 10, 100) : 0}
           icon={<Mic className="w-5 h-5 text-purple-500" />}
+        />
+      </motion.div>
+
+      {/* 4. Avg Interview Score */}
+      <motion.div
+        custom={3}
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <MetricCard
+          title="Avg Interview Score"
+          value={
+            <span className="flex items-baseline gap-1">
+              {avgInterviewScore}
+              <span className="text-sm text-slate-400 font-medium">/100</span>
+            </span>
+          }
+          status={getScoreStatus(avgInterviewScore)}
+          statusColor={getScoreColor(avgInterviewScore)}
+          ringColor={getRingColor(avgInterviewScore)}
+          progress={avgInterviewScore}
+          icon={
+            <Activity
+              className={`w-5 h-5 ${getRingColor(avgInterviewScore)}`}
+            />
+          }
         />
       </motion.div>
     </div>
@@ -157,7 +174,6 @@ function MetricCard({
   value,
   status,
   statusColor,
-  subtext,
   ringColor,
   progress,
   icon,
@@ -168,22 +184,23 @@ function MetricCard({
     circumference - ((progress || 0) / 100) * circumference;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group h-full">
-      <h3 className="text-sm font-semibold text-slate-600 mb-3">{title}</h3>
+    <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group h-full flex flex-col justify-between gap-4">
+      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+        {title}
+      </h3>
 
       <div className="flex items-end justify-between">
         <div>
-          <div className="text-3xl font-bold text-slate-900 mb-2">{value}</div>
+          <div className="text-3xl font-black text-slate-900 mb-2">{value}</div>
           <div
-            className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold ${statusColor}`}
+            className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold ${statusColor}`}
           >
             {status}
           </div>
-          {subtext}
         </div>
 
         {/* Circular Chart */}
-        <div className="relative w-24 h-24 flex items-center justify-center">
+        <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
           <svg
             className="w-full h-full transform -rotate-90"
             viewBox="0 0 100 100"
@@ -195,7 +212,7 @@ function MetricCard({
               cy="50"
               r={radius}
               fill="transparent"
-            ></circle>
+            />
             <motion.circle
               className={`${ringColor} stroke-current`}
               strokeWidth="8"
@@ -210,7 +227,7 @@ function MetricCard({
               transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
             />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center shadow-sm rounded-full w-12 h-12 m-auto bg-white border border-slate-100 group-hover:scale-110 transition-transform">
+          <div className="absolute inset-0 flex items-center justify-center shadow-sm rounded-full w-10 h-10 m-auto bg-white border border-slate-100 group-hover:scale-110 transition-transform">
             {icon}
           </div>
         </div>

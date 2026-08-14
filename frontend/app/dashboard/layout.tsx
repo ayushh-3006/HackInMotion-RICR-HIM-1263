@@ -10,15 +10,17 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
   return (
     <div className="flex h-screen bg-[#F8FAFC] font-sans overflow-hidden">
-      {/* New Light Theme Sidebar */}
-      <Sidebar />
+      {/* Sidebar with mobile drawer state */}
+      <Sidebar isOpen={isMobileMenuOpen} setIsOpen={setIsMobileMenuOpen} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* New Light Theme Header */}
-        <Header />
+        {/* Header with mobile menu toggle */}
+        <Header onMenuToggle={() => setIsMobileMenuOpen(true)} />
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-6 md:p-8">{children}</main>

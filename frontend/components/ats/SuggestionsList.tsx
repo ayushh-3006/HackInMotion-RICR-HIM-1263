@@ -11,7 +11,7 @@ export default function SuggestionsList({ suggestions }: SuggestionsListProps) {
   if (!suggestions || suggestions.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-6">
+    <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
       <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-5 flex items-center gap-2">
         <Zap className="w-4 h-4 text-indigo-500" />
         Improvement Suggestions
