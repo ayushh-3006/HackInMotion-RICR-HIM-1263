@@ -19,7 +19,7 @@ import {
   Tooltip,
 } from "recharts";
 
-export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
+export function InsightsColumn({ atsHistory = [], interviewHistory = [] }: { atsHistory?: any[], interviewHistory?: any[] }) {
   // Transform atsHistory into chart data (chronological order)
   const chartData = useMemo(() => {
     if (!atsHistory || atsHistory.length === 0) {
@@ -45,7 +45,7 @@ export function InsightsColumn({ atsHistory = [] }: { atsHistory?: any[] }) {
         score: record.score,
       };
     });
-  }, [interviewHistory]);
+  }, [atsHistory]);
 
   return (
     <div className="flex flex-col w-full">
