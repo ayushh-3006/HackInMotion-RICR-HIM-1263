@@ -75,10 +75,10 @@ function ResetPasswordForm() {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       add({
         title: "Weak password",
-        description: "Password must be at least 6 characters.",
+        description: "Password must be at least 8 characters long.",
         type: "error",
       });
       return;

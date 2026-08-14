@@ -93,7 +93,7 @@ export default function DashboardPage() {
             }),
           });
         } catch (error) {
-          console.error("Error syncing user:", error);
+          console.warn("Error syncing user:", error);
         }
       };
       
