@@ -1,24 +1,24 @@
-import React from 'react';
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
-import { Resume } from '@/types/resume';
+import React from "react";
+import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import { Resume } from "@/types/resume";
 
 const styles = StyleSheet.create({
   page: {
     padding: 30,
-    backgroundColor: '#FFFFFF',
-    fontFamily: 'Helvetica',
+    backgroundColor: "#FFFFFF",
+    fontFamily: "Helvetica",
   },
   header: {
     marginBottom: 10,
   },
   name: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   contactInfo: {
-    flexDirection: 'row',
+    flexDirection: "row",
     fontSize: 8,
-    color: '#444',
+    color: "#444",
     marginTop: 2,
     gap: 8,
   },
@@ -27,9 +27,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 10,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    backgroundColor: '#f1f5f9',
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    backgroundColor: "#f1f5f9",
     padding: 2,
     marginBottom: 4,
   },
@@ -37,21 +37,21 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   entryTitle: {
     fontSize: 9,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   entrySubtitle: {
     fontSize: 8,
-    fontWeight: 'bold',
-    color: '#666',
+    fontWeight: "bold",
+    color: "#666",
   },
   entryDate: {
     fontSize: 8,
-    color: '#666',
+    color: "#666",
   },
   entryDescription: {
     fontSize: 8,
@@ -61,24 +61,34 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 8,
     lineHeight: 1.2,
-  }
+  },
 });
 
 const CompactTheme = ({ data }: { data: any }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
-        <Text style={styles.name}>{data.personalInfo.fullName || 'Your Name'}</Text>
+        <Text style={styles.name}>
+          {data.personalInfo.fullName || "Your Name"}
+        </Text>
         <View style={styles.contactInfo}>
           {data.personalInfo.email && <Text>{data.personalInfo.email}</Text>}
           {data.personalInfo.phone && <Text>{data.personalInfo.phone}</Text>}
-          {data.personalInfo.linkedin && <Text>{data.personalInfo.linkedin}</Text>}
+          {data.personalInfo.linkedin && (
+            <Text>{data.personalInfo.linkedin}</Text>
+          )}
           {data.personalInfo.github && <Text>{data.personalInfo.github}</Text>}
         </View>
         <View style={styles.contactInfo}>
-          {data.personalInfo.twitter && <Text>{data.personalInfo.twitter}</Text>}
-          {data.personalInfo.leetcode && <Text>{data.personalInfo.leetcode}</Text>}
-          {data.personalInfo.codeforces && <Text>{data.personalInfo.codeforces}</Text>}
+          {data.personalInfo.twitter && (
+            <Text>{data.personalInfo.twitter}</Text>
+          )}
+          {data.personalInfo.leetcode && (
+            <Text>{data.personalInfo.leetcode}</Text>
+          )}
+          {data.personalInfo.codeforces && (
+            <Text>{data.personalInfo.codeforces}</Text>
+          )}
         </View>
       </View>
 

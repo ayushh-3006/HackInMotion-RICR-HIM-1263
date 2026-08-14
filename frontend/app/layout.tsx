@@ -14,7 +14,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Resumind - AI Resume Builder & ATS Scanner",
-  description: "Create, optimize, and analyze your resume with AI-powered tools.",
+  description:
+    "Create, optimize, and analyze your resume with AI-powered tools.",
 };
 
 export default function RootLayout({
@@ -24,8 +25,15 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${inter.variable} h-full w-full max-w-full overflow-x-hidden antialiased`} suppressHydrationWarning>
-        <body suppressHydrationWarning className="relative w-full max-w-full overflow-x-hidden">
+      <html
+        lang="en"
+        className={`${inter.variable} h-full w-full max-w-full overflow-x-hidden antialiased`}
+        suppressHydrationWarning
+      >
+        <body
+          suppressHydrationWarning
+          className="relative w-full max-w-full overflow-x-hidden"
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

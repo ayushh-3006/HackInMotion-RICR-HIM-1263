@@ -1,9 +1,9 @@
-import fs from 'fs/promises';
-import { createRequire } from 'module';
+import fs from "fs/promises";
+import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const pdf = require('pdf-parse');
+const pdf = require("pdf-parse");
 
-import Groq from 'groq-sdk';
+import Groq from "groq-sdk";
 
 /**
  * --- INTERFACES ---
@@ -96,21 +96,23 @@ export class PDFExtractor {
       const { PDFParse } = pdf;
       const parser = new PDFParse({ data: dataBuffer });
       const result = await parser.getText();
-      
+
       const cleanText = result.text.trim();
       if (!cleanText) {
         throw new PDFExtractionError("Empty extracted text from PDF");
       }
-      
+
       // Optional: Clean up resources if necessary (destroy() might not exist in all versions but search suggests it)
-      if (typeof parser.destroy === 'function') {
+      if (typeof parser.destroy === "function") {
         await parser.destroy();
       }
-      
+
       return cleanText;
     } catch (error) {
       if (error instanceof PDFExtractionError) throw error;
-      throw new PDFExtractionError(`Failed to extract PDF text: ${error instanceof Error ? error.message : String(error)}`);
+      throw new PDFExtractionError(
+        `Failed to extract PDF text: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 }
@@ -136,7 +138,7 @@ export class BasicChecker {
       experience: /experience/i.test(resumeText),
       education: /education/i.test(resumeText),
       skills: /skills/i.test(resumeText),
-      summary: /summary/i.test(resumeText)
+      summary: /summary/i.test(resumeText),
     };
 
     const wordCount = resumeText.split(/\s+/).filter(Boolean).length;
@@ -149,7 +151,7 @@ export class BasicChecker {
     if (hasEmail) basicScore += 8;
     if (hasPhone) basicScore += 8;
     if (hasLinkedin) basicScore += 4;
-    
+
     if (sections.experience) basicScore += 5;
     if (sections.education) basicScore += 5;
     if (sections.skills) basicScore += 5;
@@ -162,7 +164,7 @@ export class BasicChecker {
       sections,
       wordCount,
       readingLength,
-      basicScore
+      basicScore,
     };
   }
 }
@@ -183,7 +185,10 @@ export class GroqScorer {
    * @param jobDescription Target job description
    * @throws GroqAPIError if API call or parsing fails
    */
-  async score(resumeText: string, jobDescription: string): Promise<AIAnalysisResult> {
+  async score(
+    resumeText: string,
+    jobDescription: string,
+  ): Promise<AIAnalysisResult> {
     try {
       const response = await this.client.chat.completions.create({
         model: "llama-3.3-70b-versatile",
@@ -192,7 +197,8 @@ export class GroqScorer {
         messages: [
           {
             role: "system",
-            content: "You are an ATS scoring engine. Always respond with valid JSON only. No explanation, no markdown, no code blocks."
+            content:
+              "You are an ATS scoring engine. Always respond with valid JSON only. No explanation, no markdown, no code blocks.",
           },
           {
             role: "user",
@@ -212,14 +218,14 @@ export class GroqScorer {
                          "summary": "<feedback>"
                        },
                        "suggestions": [<max 5 short actionable points>]
-                     }`
-          }
-        ]
+                     }`,
+          },
+        ],
       });
 
       const content = response.choices[0]?.message?.content || "";
       const cleanedJson = content.replace(/```json|```/g, "").trim();
-      
+
       try {
         return JSON.parse(cleanedJson) as AIAnalysisResult;
       } catch (parseError) {
@@ -227,7 +233,9 @@ export class GroqScorer {
       }
     } catch (error) {
       if (error instanceof GroqAPIError) throw error;
-      throw new GroqAPIError(`Groq API call failed: ${error instanceof Error ? error.message : String(error)}`);
+      throw new GroqAPIError(
+        `Groq API call failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 }
@@ -277,7 +285,7 @@ export class ATSAnalyzer {
       finalScore,
       basicChecks,
       aiAnalysis,
-      resumeText
+      resumeText,
     };
   }
 
@@ -286,7 +294,10 @@ export class ATSAnalyzer {
    * @param resumeText Raw resume text
    * @param jobDescription Optional job description for AI scoring
    */
-  async analyzeText(resumeText: string, jobDescription?: string): Promise<ATSResult> {
+  async analyzeText(
+    resumeText: string,
+    jobDescription?: string,
+  ): Promise<ATSResult> {
     const basicChecks = this.basicChecker.runChecks(resumeText);
     let aiAnalysis: AIAnalysisResult | null = null;
 
@@ -305,7 +316,7 @@ export class ATSAnalyzer {
       finalScore,
       basicChecks,
       aiAnalysis,
-      resumeText
+      resumeText,
     };
   }
 }

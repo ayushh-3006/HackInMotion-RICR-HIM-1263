@@ -1,9 +1,18 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
-import { Share2, Link as LinkIcon, ExternalLink, Copy, XCircle, Loader2, Clock, Globe } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
+import {
+  Share2,
+  Link as LinkIcon,
+  ExternalLink,
+  Copy,
+  XCircle,
+  Loader2,
+  Clock,
+  Globe,
+} from "lucide-react";
+import { toast } from "sonner";
 
 interface Session {
   _id: string;
@@ -29,18 +38,19 @@ export default function ShareReportsPage() {
   const fetchSharedSessions = async () => {
     try {
       const token = await getToken();
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       const res = await fetch(`${API_URL}/interview/history`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      
+
       // Filter only public sessions
       const shared = data.data.filter((s: Session) => s.isPublic);
       setSessions(shared);
     } catch (error: any) {
-      toast.error('Failed to load shared reports');
+      toast.error("Failed to load shared reports");
     } finally {
       setLoading(false);
     }
@@ -49,14 +59,18 @@ export default function ShareReportsPage() {
   const handleRevoke = async (sessionId: string) => {
     try {
       const token = await getToken();
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-      const res = await fetch(`${API_URL}/interview/sessions/${sessionId}/share`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Failed to revoke access');
-      toast.success('Share link revoked');
-      setSessions(prev => prev.filter(s => s._id !== sessionId));
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const res = await fetch(
+        `${API_URL}/interview/sessions/${sessionId}/share`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (!res.ok) throw new Error("Failed to revoke access");
+      toast.success("Share link revoked");
+      setSessions((prev) => prev.filter((s) => s._id !== sessionId));
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -65,7 +79,7 @@ export default function ShareReportsPage() {
   const copyLink = (shareToken: string) => {
     const url = `${window.location.origin}/shared/reports/${shareToken}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard!');
+    toast.success("Link copied to clipboard!");
   };
 
   if (loading) {
@@ -83,8 +97,12 @@ export default function ShareReportsPage() {
           <Share2 className="w-5 h-5 text-indigo-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Shared Reports</h1>
-          <p className="text-sm text-slate-500 font-medium mt-0.5">Manage your public mock interview scorecards</p>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+            Shared Reports
+          </h1>
+          <p className="text-sm text-slate-500 font-medium mt-0.5">
+            Manage your public mock interview scorecards
+          </p>
         </div>
       </div>
 
@@ -93,9 +111,12 @@ export default function ShareReportsPage() {
           <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
             <Globe className="w-8 h-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-2">No Shared Reports</h3>
+          <h3 className="text-lg font-bold text-slate-900 mb-2">
+            No Shared Reports
+          </h3>
           <p className="text-slate-500 text-sm max-w-sm mx-auto mb-6">
-            You haven't shared any interview reports yet. Go to your Mock Interview history to share a report.
+            You haven't shared any interview reports yet. Go to your Mock
+            Interview history to share a report.
           </p>
           <a
             href="/dashboard/mock-interview/history"
@@ -106,24 +127,35 @@ export default function ShareReportsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {sessions.map(session => (
-            <div key={session._id} className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
+          {sessions.map((session) => (
+            <div
+              key={session._id}
+              className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow"
+            >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-slate-900 text-lg">{session.jobRole}</h3>
+                  <h3 className="font-bold text-slate-900 text-lg">
+                    {session.jobRole}
+                  </h3>
                   <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-[10px] font-bold uppercase tracking-wider">
                     Public
                   </span>
                 </div>
                 <p className="text-sm text-slate-500 font-medium">
-                  {session.category} · {session.difficulty} · Score: <span className="font-bold text-slate-700">{session.overallScore}/100</span>
+                  {session.category} · {session.difficulty} · Score:{" "}
+                  <span className="font-bold text-slate-700">
+                    {session.overallScore}/100
+                  </span>
                 </p>
                 <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-2">
                   <Clock className="w-3.5 h-3.5" />
-                  Shared on {new Date(session.sharedAt || session.createdAt).toLocaleDateString()}
+                  Shared on{" "}
+                  {new Date(
+                    session.sharedAt || session.createdAt,
+                  ).toLocaleDateString()}
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => copyLink(session.shareToken!)}

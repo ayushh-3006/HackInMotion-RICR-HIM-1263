@@ -18,7 +18,12 @@ export class UserService {
         if (lastName) user.lastName = lastName;
         await user.save();
       } else {
-        user = await userRepository.create({ clerkUserId: clerkId, email, firstName, lastName } as any);
+        user = await userRepository.create({
+          clerkUserId: clerkId,
+          email,
+          firstName,
+          lastName,
+        } as any);
       }
     } else {
       user.email = email;

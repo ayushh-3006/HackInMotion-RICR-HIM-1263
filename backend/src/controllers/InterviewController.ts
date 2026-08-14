@@ -1,16 +1,16 @@
-import { Request, Response } from 'express';
-import { InterviewService } from '../services/InterviewService.js';
-import { InterviewSession } from '../models/InterviewSession.js';
-import { v4 as uuidv4 } from 'uuid';
+import { Request, Response } from "express";
+import { InterviewService } from "../services/InterviewService.js";
+import { InterviewSession } from "../models/InterviewSession.js";
+import { v4 as uuidv4 } from "uuid";
 
 const interviewService = new InterviewService();
 
 export class InterviewController {
-
   /* ── POST /interview/start ── */
   public async startInterview(req: Request, res: Response): Promise<void> {
     try {
-      const { jobRole, interviewType, experience, category, difficulty } = req.body;
+      const { jobRole, interviewType, experience, category, difficulty } =
+        req.body;
       const clerkUserId = (req as any).userId;
 
       if (!clerkUserId) {
@@ -18,16 +18,18 @@ export class InterviewController {
         return;
       }
       if (!jobRole || !interviewType) {
-        res.status(400).json({ error: "Missing required fields: jobRole, interviewType" });
+        res
+          .status(400)
+          .json({ error: "Missing required fields: jobRole, interviewType" });
         return;
       }
 
       const aiResponse = await interviewService.generateQuestions(
         jobRole,
         interviewType,
-        experience || 'mid',
+        experience || "mid",
         category,
-        difficulty
+        difficulty,
       );
 
       const session = new InterviewSession({
@@ -35,10 +37,10 @@ export class InterviewController {
         jobRole,
         interviewType,
         category: category || interviewType,
-        difficulty: difficulty || 'Medium',
+        difficulty: difficulty || "Medium",
         questions: aiResponse.questions,
         answers: [],
-        status: 'in-progress'
+        status: "in-progress",
       });
 
       await session.save();
@@ -46,7 +48,9 @@ export class InterviewController {
       res.status(201).json({ success: true, session });
     } catch (error: any) {
       console.error("Error in startInterview:", error);
-      res.status(500).json({ error: error.message || "Failed to start interview" });
+      res
+        .status(500)
+        .json({ error: error.message || "Failed to start interview" });
     }
   }
 
@@ -67,20 +71,23 @@ export class InterviewController {
 
       const transcript = await interviewService.transcribeAudio(
         file.buffer,
-        file.originalname || 'audio.webm'
+        file.originalname || "audio.webm",
       );
 
       res.status(200).json({ success: true, transcript });
     } catch (error: any) {
       console.error("Error in transcribeAudio:", error);
-      res.status(500).json({ error: error.message || "Failed to transcribe audio" });
+      res
+        .status(500)
+        .json({ error: error.message || "Failed to transcribe audio" });
     }
   }
 
   /* ── POST /interview/submit-answer ── */
   public async submitAnswer(req: Request, res: Response): Promise<void> {
     try {
-      const { sessionId, questionId, transcribedText, audioDurationSeconds } = req.body;
+      const { sessionId, questionId, transcribedText, audioDurationSeconds } =
+        req.body;
 
       if (!sessionId || !questionId || !transcribedText) {
         res.status(400).json({ error: "Missing required fields" });
@@ -93,7 +100,7 @@ export class InterviewController {
         return;
       }
 
-      const question = session.questions.find(q => q.id === questionId);
+      const question = session.questions.find((q) => q.id === questionId);
       if (!question) {
         res.status(404).json({ error: "Question not found" });
         return;
@@ -103,7 +110,7 @@ export class InterviewController {
       const evaluation = await interviewService.evaluateAnswer(
         question.text,
         transcribedText,
-        audioDurationSeconds || 0
+        audioDurationSeconds || 0,
       );
 
       const newAnswer = {
@@ -118,8 +125,8 @@ export class InterviewController {
         wpm: evaluation.wpm,
         fillerWords: evaluation.fillerWords,
         confidenceLabel: evaluation.confidenceLabel,
-        idealAnswer: evaluation.idealAnswer || '',
-        audioDurationSeconds: evaluation.audioDurationSeconds || 0
+        idealAnswer: evaluation.idealAnswer || "",
+        audioDurationSeconds: evaluation.audioDurationSeconds || 0,
       };
 
       session.answers.push(newAnswer as any);
@@ -128,7 +135,9 @@ export class InterviewController {
       res.status(200).json({ success: true, evaluation, session });
     } catch (error: any) {
       console.error("Error in submitAnswer:", error);
-      res.status(500).json({ error: error.message || "Failed to submit answer" });
+      res
+        .status(500)
+        .json({ error: error.message || "Failed to submit answer" });
     }
   }
 
@@ -150,7 +159,7 @@ export class InterviewController {
 
       let totalContent = 0;
       let totalTone = 0;
-      session.answers.forEach(a => {
+      session.answers.forEach((a) => {
         totalContent += a.contentScore;
         totalTone += a.toneScore;
       });
@@ -161,14 +170,16 @@ export class InterviewController {
       const overallScore = Math.round((avgContent + avgTone) / 2);
 
       session.overallScore = overallScore;
-      session.status = 'completed';
+      session.status = "completed";
       session.overallFeedback = `Content: ${avgContent}/100 | Delivery: ${avgTone}/100`;
       await session.save();
 
       res.status(200).json({ success: true, session });
     } catch (error: any) {
       console.error("Error in completeInterview:", error);
-      res.status(500).json({ error: error.message || "Failed to complete interview" });
+      res
+        .status(500)
+        .json({ error: error.message || "Failed to complete interview" });
     }
   }
 
@@ -189,7 +200,9 @@ export class InterviewController {
       res.status(200).json({ success: true, data: sessions });
     } catch (error: any) {
       console.error("Error in getHistory:", error);
-      res.status(500).json({ error: error.message || "Failed to fetch history" });
+      res
+        .status(500)
+        .json({ error: error.message || "Failed to fetch history" });
     }
   }
 
@@ -216,7 +229,7 @@ export class InterviewController {
 
       // Generate share token if one doesn't exist
       if (!session.shareToken) {
-        session.shareToken = uuidv4().replace(/-/g, '').slice(0, 16);
+        session.shareToken = uuidv4().replace(/-/g, "").slice(0, 16);
       }
       session.isPublic = true;
       session.sharedAt = new Date();
@@ -225,11 +238,13 @@ export class InterviewController {
       res.status(200).json({
         success: true,
         shareToken: session.shareToken,
-        shareUrl: `/shared/reports/${session.shareToken}`
+        shareUrl: `/shared/reports/${session.shareToken}`,
       });
     } catch (error: any) {
       console.error("Error in shareSession:", error);
-      res.status(500).json({ error: error.message || "Failed to share session" });
+      res
+        .status(500)
+        .json({ error: error.message || "Failed to share session" });
     }
   }
 
@@ -261,7 +276,9 @@ export class InterviewController {
       res.status(200).json({ success: true, message: "Share link revoked" });
     } catch (error: any) {
       console.error("Error in revokeShare:", error);
-      res.status(500).json({ error: error.message || "Failed to revoke share" });
+      res
+        .status(500)
+        .json({ error: error.message || "Failed to revoke share" });
     }
   }
 
@@ -270,9 +287,14 @@ export class InterviewController {
     try {
       const { shareToken } = req.params;
 
-      const session = await InterviewSession.findOne({ shareToken, isPublic: true }).lean();
+      const session = await InterviewSession.findOne({
+        shareToken,
+        isPublic: true,
+      }).lean();
       if (!session) {
-        res.status(404).json({ error: "Report not found or link has been revoked" });
+        res
+          .status(404)
+          .json({ error: "Report not found or link has been revoked" });
         return;
       }
 
@@ -288,7 +310,7 @@ export class InterviewController {
         sharedAt: session.sharedAt,
         createdAt: session.createdAt,
         questions: session.questions,
-        answers: session.answers.map(a => ({
+        answers: session.answers.map((a) => ({
           questionId: a.questionId,
           transcribedText: a.transcribedText,
           contentScore: a.contentScore,
@@ -307,7 +329,9 @@ export class InterviewController {
       res.status(200).json({ success: true, data: safeData });
     } catch (error: any) {
       console.error("Error in getSharedReport:", error);
-      res.status(500).json({ error: error.message || "Failed to fetch shared report" });
+      res
+        .status(500)
+        .json({ error: error.message || "Failed to fetch shared report" });
     }
   }
 }

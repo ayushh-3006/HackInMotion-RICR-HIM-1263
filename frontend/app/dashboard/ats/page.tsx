@@ -1,13 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useCallback } from 'react';
-import { useAuth } from '@clerk/nextjs';
-import { toast } from 'sonner';
-import { UploadCloud, FileText, Loader2, Briefcase, FileSearch, X, Sparkles, RotateCcw } from 'lucide-react';
-import ScoreGauge from '@/components/ats/ScoreGauge';
-import SkillTagList from '@/components/ats/SkillTagList';
-import SuggestionsList from '@/components/ats/SuggestionsList';
-import SectionScores from '@/components/ats/SectionScores';
+import React, { useState, useRef, useCallback } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { toast } from "sonner";
+import {
+  UploadCloud,
+  FileText,
+  Loader2,
+  Briefcase,
+  FileSearch,
+  X,
+  Sparkles,
+  RotateCcw,
+} from "lucide-react";
+import ScoreGauge from "@/components/ats/ScoreGauge";
+import SkillTagList from "@/components/ats/SkillTagList";
+import SuggestionsList from "@/components/ats/SuggestionsList";
+import SectionScores from "@/components/ats/SectionScores";
 
 /* ──────── Types ──────── */
 interface ATSResult {
@@ -23,8 +32,8 @@ interface ATSResult {
 
 /* ──────── Constants ──────── */
 const ACCEPTED_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -34,12 +43,13 @@ export default function ATSCheckerPage() {
 
   /* Form state */
   const [file, setFile] = useState<File | null>(null);
-  const [jobRole, setJobRole] = useState('');
-  const [jobSkills, setJobSkills] = useState('');
-  const [experience, setExperience] = useState('Fresher');
+  const [jobRole, setJobRole] = useState("");
+  const [jobSkills, setJobSkills] = useState("");
+  const [experience, setExperience] = useState("Fresher");
 
-  const defaultSkills = ['React', 'Express', 'Node', 'MongoDB', '.NET'];
-  const [availableSkills, setAvailableSkills] = useState<string[]>(defaultSkills);
+  const defaultSkills = ["React", "Express", "Node", "MongoDB", ".NET"];
+  const [availableSkills, setAvailableSkills] =
+    useState<string[]>(defaultSkills);
 
   /* UI state */
   const [loading, setLoading] = useState(false);
@@ -50,18 +60,21 @@ export default function ATSCheckerPage() {
   /* ── File validation helper ── */
   const validateAndSetFile = useCallback((f: File) => {
     if (!ACCEPTED_TYPES.includes(f.type)) {
-      toast.error('Unsupported file type. Please upload a PDF or DOCX.');
+      toast.error("Unsupported file type. Please upload a PDF or DOCX.");
       return;
     }
     if (f.size > MAX_FILE_SIZE) {
-      toast.error('File too large. Maximum size is 5 MB.');
+      toast.error("File too large. Maximum size is 5 MB.");
       return;
     }
     setFile(f);
   }, []);
 
   /* ── Drag & Drop handlers ── */
-  const onDragOver = (e: React.DragEvent) => { e.preventDefault(); setDragActive(true); };
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
   const onDragLeave = () => setDragActive(false);
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -76,9 +89,12 @@ export default function ATSCheckerPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!file) { toast.error('Please upload your resume.'); return; }
+    if (!file) {
+      toast.error("Please upload your resume.");
+      return;
+    }
     if (!jobRole.trim() && !jobSkills.trim()) {
-      toast.error('Provide a Job Role or Required Skills.');
+      toast.error("Provide a Job Role or Required Skills.");
       return;
     }
 
@@ -87,29 +103,34 @@ export default function ATSCheckerPage() {
 
     try {
       const token = await getToken();
-      if (!token) { toast.error('Not authenticated. Please sign in.'); setLoading(false); return; }
+      if (!token) {
+        toast.error("Not authenticated. Please sign in.");
+        setLoading(false);
+        return;
+      }
 
       const fd = new FormData();
-      fd.append('resumeFile', file);
-      fd.append('jobRole', jobRole);
-      fd.append('jobSkills', jobSkills);
-      fd.append('experience', experience);
+      fd.append("resumeFile", file);
+      fd.append("jobRole", jobRole);
+      fd.append("jobSkills", jobSkills);
+      fd.append("experience", experience);
 
-      const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const base =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
       const res = await fetch(`${base}/ats/calculate-file`, {
-        method: 'POST',
+        method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: fd,
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Analysis failed');
+      if (!res.ok) throw new Error(data.error || "Analysis failed");
 
       setResult(data);
-      toast.success('Resume analyzed successfully!');
+      toast.success("Resume analyzed successfully!");
     } catch (err: any) {
-      toast.error(err.message || 'Something went wrong.');
+      toast.error(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -118,7 +139,6 @@ export default function ATSCheckerPage() {
   /* ──────── Render ──────── */
   return (
     <div className="w-full max-w-6xl mx-auto space-y-8">
-
       {/* ── Header ── */}
       <div>
         <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
@@ -126,14 +146,17 @@ export default function ATSCheckerPage() {
           ATS Score Checker
         </h1>
         <p className="text-sm text-slate-500 mt-1 font-medium">
-          Upload your resume, enter the target role and skills, and let our AI tell you exactly how to improve.
+          Upload your resume, enter the target role and skills, and let our AI
+          tell you exactly how to improve.
         </p>
       </div>
 
       {/* ── Form Card ── */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
           {/* Left — Dropzone */}
           <div className="space-y-3">
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -142,10 +165,10 @@ export default function ATSCheckerPage() {
             <div
               className={`relative flex flex-col items-center justify-center w-full h-60 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${
                 dragActive
-                  ? 'border-indigo-400 bg-indigo-50/60'
+                  ? "border-indigo-400 bg-indigo-50/60"
                   : file
-                    ? 'border-indigo-300 bg-indigo-50/40'
-                    : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-slate-100/60'
+                    ? "border-indigo-300 bg-indigo-50/40"
+                    : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-slate-100/60"
               }`}
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
@@ -163,10 +186,15 @@ export default function ATSCheckerPage() {
                 <div className="flex flex-col items-center text-indigo-600">
                   <FileText size={40} className="mb-3 opacity-80" />
                   <p className="font-bold text-sm">{file.name}</p>
-                  <p className="text-xs text-indigo-400 mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <p className="text-xs text-indigo-400 mt-1">
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFile(null);
+                    }}
                     className="mt-3 text-xs font-bold text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors"
                   >
                     <X size={14} /> Remove
@@ -175,7 +203,9 @@ export default function ATSCheckerPage() {
               ) : (
                 <div className="flex flex-col items-center text-slate-400">
                   <UploadCloud size={40} className="mb-3 opacity-60" />
-                  <p className="font-bold text-sm text-slate-600">Click or drag to upload</p>
+                  <p className="font-bold text-sm text-slate-600">
+                    Click or drag to upload
+                  </p>
                   <p className="text-xs mt-1">PDF or DOCX · Max 5 MB</p>
                 </div>
               )}
@@ -185,16 +215,23 @@ export default function ATSCheckerPage() {
           {/* Right — Inputs */}
           <div className="space-y-5 flex flex-col">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Target Job Role</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                Target Job Role
+              </label>
               <div className="relative">
-                <Briefcase size={16} className="absolute left-3.5 top-3 text-slate-400" />
+                <Briefcase
+                  size={16}
+                  className="absolute left-3.5 top-3 text-slate-400"
+                />
                 <select
                   value={jobRole}
                   onChange={(e) => setJobRole(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow appearance-none"
                 >
                   <option value="">Select a role...</option>
-                  <option value="Full Stack Developer">Full Stack Developer</option>
+                  <option value="Full Stack Developer">
+                    Full Stack Developer
+                  </option>
                   <option value="Frontend Developer">Frontend Developer</option>
                   <option value="Backend Developer">Backend Developer</option>
                   <option value="Software Engineer">Software Engineer</option>
@@ -202,14 +239,20 @@ export default function ATSCheckerPage() {
                   <option value="Product Manager">Product Manager</option>
                   <option value="DevOps Engineer">DevOps Engineer</option>
                   <option value="UI/UX Designer">UI/UX Designer</option>
-                  <option value="Mobile App Developer">Mobile App Developer</option>
-                  <option value="QA Automation Engineer">QA Automation Engineer</option>
+                  <option value="Mobile App Developer">
+                    Mobile App Developer
+                  </option>
+                  <option value="QA Automation Engineer">
+                    QA Automation Engineer
+                  </option>
                 </select>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Experience Level</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                Experience Level
+              </label>
               <select
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
@@ -225,7 +268,9 @@ export default function ATSCheckerPage() {
 
             <div className="flex-1 flex flex-col">
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Required Skills / Job Description</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  Required Skills / Job Description
+                </label>
                 {availableSkills.length < defaultSkills.length && (
                   <button
                     type="button"
@@ -268,22 +313,35 @@ export default function ATSCheckerPage() {
       {/* ── Results ── */}
       {result && (
         <div className="space-y-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
           {/* Score + Section Scores */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <ScoreGauge score={result.score} />
             <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6">
-              <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">AI Summary</h3>
-              <p className="text-slate-600 text-sm leading-relaxed font-medium mb-6">{result.aiSummary}</p>
-              <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-4">Section Performance</h4>
+              <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">
+                AI Summary
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed font-medium mb-6">
+                {result.aiSummary}
+              </p>
+              <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-4">
+                Section Performance
+              </h4>
               <SectionScores scores={result.sectionScores} />
             </div>
           </div>
 
           {/* Skills */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SkillTagList title="Matched Skills" skills={result.matchedSkills} type="matched" />
-            <SkillTagList title="Missing Skills" skills={result.missingSkills} type="missing" />
+            <SkillTagList
+              title="Matched Skills"
+              skills={result.matchedSkills}
+              type="matched"
+            />
+            <SkillTagList
+              title="Missing Skills"
+              skills={result.missingSkills}
+              type="missing"
+            />
           </div>
 
           {/* Suggestions */}

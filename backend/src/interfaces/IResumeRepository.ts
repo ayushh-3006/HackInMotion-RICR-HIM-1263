@@ -5,10 +5,9 @@ export interface SaveResumeData {
   jobDescription: string;
   pdfUrl: string;
 }
- 
+
 export interface IResumeRepository {
   save(data: SaveResumeData): Promise<{ id: string }>;
   findByUserId(userId: string): Promise<any[]>;
   findById(id: string): Promise<any | null>;
 }
- 

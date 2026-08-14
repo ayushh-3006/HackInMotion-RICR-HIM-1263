@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState, Suspense } from "react";
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  ShieldCheck,
-} from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -116,7 +111,8 @@ function ResetPasswordForm() {
     } catch (err: any) {
       add({
         title: "Reset failed",
-        description: err.errors?.[0]?.message || "Invalid code or link may have expired.",
+        description:
+          err.errors?.[0]?.message || "Invalid code or link may have expired.",
         type: "error",
       });
     } finally {

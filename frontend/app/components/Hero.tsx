@@ -1,23 +1,22 @@
-"use client"
-import HoverBorderGradientDemo from '@/components/hover-border-gradient-demo'
-import ShinyText from '@/components/ShinyText'
-import ButtonWithIconDemo from '@/components/Buttons/button-witn-icon'
-import { Button } from '@/components/Buttons/button'
-import React from 'react'
-import Image from 'next/image'
-import { ContainerScroll } from '@/components/ui/container-scroll-animation'
-import { LogoCloud } from '@/components/logo-cloud'
-import { Glitter } from '@/components/ui/glitter'
-import { useAuth } from '@clerk/nextjs'
-import Link from 'next/link'
+"use client";
+import HoverBorderGradientDemo from "@/components/hover-border-gradient-demo";
+import ShinyText from "@/components/ShinyText";
+import ButtonWithIconDemo from "@/components/Buttons/button-witn-icon";
+import { Button } from "@/components/Buttons/button";
+import React from "react";
+import Image from "next/image";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { LogoCloud } from "@/components/logo-cloud";
+import { Glitter } from "@/components/ui/glitter";
+import { useAuth } from "@clerk/nextjs";
+import Link from "next/link";
 
 const Hero = () => {
-  const { userId } = useAuth()
-  const destinationUrl = userId ? "/dashboard" : "/register"
+  const { userId } = useAuth();
+  const destinationUrl = userId ? "/dashboard" : "/register";
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-hidden relative pb-6 sm:pb-10">
-
       {/* Base background color */}
       <div className="absolute inset-0 z-0 bg-white" />
 
@@ -25,20 +24,18 @@ const Hero = () => {
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.15) 1px, transparent 0)",
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.15) 1px, transparent 0)",
           backgroundSize: "20px 20px",
           maskImage: "linear-gradient(to bottom, black 10%, transparent 60%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 10%, transparent 60%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black 10%, transparent 60%)",
         }}
       />
 
       <div className="relative z-10 w-full max-w-full flex flex-col items-center justify-center">
-
-
         <div className="absolute top-[40%] md:top-[50%] left-1/2 -translate-x-1/2 w-full max-w-full -z-10 flex justify-center items-center pointer-events-none select-none -mt-60 overflow-hidden">
-
           <div className="relative w-full max-w-7xl flex justify-center">
-
             {/* Glow Image */}
             <Image
               src="/Hero/Blue.webp"
@@ -55,19 +52,18 @@ const Hero = () => {
             <div className="absolute inset-0 pointer-events-none w-full h-full">
               <Glitter density={0.08} size={1.2} />
             </div>
-
           </div>
         </div>
 
         <ContainerScroll
           titleComponent={
-            <div className='flex flex-col items-center justify-center w-full px-4 gap-8 mb-8 md:mb-24 mt-60'>
+            <div className="flex flex-col items-center justify-center w-full px-4 gap-8 mb-8 md:mb-24 mt-60">
               <div className="">
                 <HoverBorderGradientDemo />
               </div>
 
-              <div className='flex flex-col items-center justify-center text-center gap-6'>
-                <h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold max-w-2xl tracking-tight text-neutral-900 font-manrope'>
+              <div className="flex flex-col items-center justify-center text-center gap-6">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold max-w-2xl tracking-tight text-neutral-900 font-manrope">
                   Build Smarter Resumes. Get Hired Faster{" "}
                   <span>
                     <ShinyText
@@ -84,16 +80,18 @@ const Hero = () => {
                     />
                   </span>
                 </h1>
-                <p className='text-sm md:text-lg max-w-2xl text-neutral-600 font-light px-2'>
-                  Create, optimize, and analyze your resume with AI-powered tools from ATS scoring to role-based enhancements, all in one place.
+                <p className="text-sm md:text-lg max-w-2xl text-neutral-600 font-light px-2">
+                  Create, optimize, and analyze your resume with AI-powered
+                  tools from ATS scoring to role-based enhancements, all in one
+                  place.
                 </p>
               </div>
 
-              <div className='flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4'>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4">
                 <Link href={destinationUrl}>
                   <ButtonWithIconDemo />
                 </Link>
-                <a 
+                <a
                   href="#how-it-works"
                   className="bg-white text-[#1C4ED6] border border-[#1C4ED6] hover:bg-[#1C4ED6] hover:text-white rounded-full h-12 px-8 font-manrope font-medium text-sm transition-all duration-300 shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center active:bg-[#1C4ED6] active:text-white"
                 >
@@ -121,11 +119,8 @@ const Hero = () => {
 
         <LogoCloud />
       </section>
-
-
-
     </div>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

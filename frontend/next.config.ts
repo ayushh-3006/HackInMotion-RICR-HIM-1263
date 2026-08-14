@@ -7,7 +7,8 @@ if (!process.env.CLERK_SECRET_KEY) {
 
 const nextConfig: NextConfig = {
   env: {
-    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY || "sk_test_placeholder_clerk_secret_key",
+    CLERK_SECRET_KEY:
+      process.env.CLERK_SECRET_KEY || "sk_test_placeholder_clerk_secret_key",
   },
   images: {
     qualities: [75, 100],

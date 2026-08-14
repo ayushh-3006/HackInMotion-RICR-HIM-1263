@@ -1,26 +1,26 @@
-import React from 'react';
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
-import { Resume } from '@/types/resume';
+import React from "react";
+import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import { Resume } from "@/types/resume";
 
 const styles = StyleSheet.create({
   page: {
     padding: 40,
-    backgroundColor: '#FFFFFF',
-    fontFamily: 'Helvetica',
+    backgroundColor: "#FFFFFF",
+    fontFamily: "Helvetica",
   },
   header: {
     marginBottom: 25,
   },
   name: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1e40af', // Blue accent
+    fontWeight: "bold",
+    color: "#1e40af", // Blue accent
   },
   contactInfo: {
-    flexDirection: 'row',
+    flexDirection: "row",
     fontSize: 9,
     marginTop: 5,
-    color: '#64748b',
+    color: "#64748b",
     gap: 10,
   },
   section: {
@@ -28,10 +28,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#1e40af',
+    fontWeight: "bold",
+    color: "#1e40af",
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: "#e2e8f0",
     marginBottom: 10,
     paddingBottom: 4,
   },
@@ -39,50 +39,58 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 2,
   },
   entryTitle: {
     fontSize: 11,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontWeight: "bold",
+    color: "#1e293b",
   },
   entrySubtitle: {
     fontSize: 10,
-    color: '#3b82f6',
-    fontWeight: 'bold',
+    color: "#3b82f6",
+    fontWeight: "bold",
   },
   entryDate: {
     fontSize: 9,
-    color: '#64748b',
+    color: "#64748b",
   },
   entryDescription: {
     fontSize: 9,
     marginTop: 4,
-    color: '#475569',
+    color: "#475569",
     lineHeight: 1.5,
   },
   text: {
     fontSize: 10,
     lineHeight: 1.5,
-    color: '#475569',
-  }
+    color: "#475569",
+  },
 });
 
 const ModernTheme = ({ data }: { data: any }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
-        <Text style={styles.name}>{data.personalInfo.fullName || 'Your Name'}</Text>
+        <Text style={styles.name}>
+          {data.personalInfo.fullName || "Your Name"}
+        </Text>
         <View style={styles.contactInfo}>
           {data.personalInfo.email && <Text>{data.personalInfo.email}</Text>}
           {data.personalInfo.phone && <Text>{data.personalInfo.phone}</Text>}
-          {data.personalInfo.linkedin && <Text>{data.personalInfo.linkedin}</Text>}
+          {data.personalInfo.linkedin && (
+            <Text>{data.personalInfo.linkedin}</Text>
+          )}
           {data.personalInfo.github && <Text>{data.personalInfo.github}</Text>}
-          {data.personalInfo.twitter && <Text>{data.personalInfo.twitter}</Text>}
-          {data.personalInfo.leetcode && <Text>{data.personalInfo.leetcode}</Text>}
+          {data.personalInfo.twitter && (
+            <Text>{data.personalInfo.twitter}</Text>
+          )}
+          {data.personalInfo.leetcode && (
+            <Text>{data.personalInfo.leetcode}</Text>
+          )}
         </View>
       </View>
 

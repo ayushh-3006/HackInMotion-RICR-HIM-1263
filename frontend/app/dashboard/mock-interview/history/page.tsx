@@ -1,14 +1,28 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@clerk/nextjs';
-import { toast } from 'sonner';
+import React, { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { toast } from "sonner";
 import {
-  History, Loader2, ChevronDown, ChevronUp, ArrowLeft,
-  Award, Clock, Mic, Target, Zap, AlertTriangle, TrendingUp, Calendar
-} from 'lucide-react';
+  History,
+  Loader2,
+  ChevronDown,
+  ChevronUp,
+  ArrowLeft,
+  Award,
+  Clock,
+  Mic,
+  Target,
+  Zap,
+  AlertTriangle,
+  TrendingUp,
+  Calendar,
+} from "lucide-react";
 
-interface FillerWord { word: string; count: number; }
+interface FillerWord {
+  word: string;
+  count: number;
+}
 
 interface Answer {
   questionId: string;
@@ -40,26 +54,30 @@ interface Session {
 }
 
 function getScoreColor(score: number) {
-  if (score >= 80) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
-  if (score >= 60) return 'text-blue-600 bg-blue-50 border-blue-200';
-  if (score >= 40) return 'text-amber-600 bg-amber-50 border-amber-200';
-  return 'text-red-600 bg-red-50 border-red-200';
+  if (score >= 80) return "text-emerald-600 bg-emerald-50 border-emerald-200";
+  if (score >= 60) return "text-blue-600 bg-blue-50 border-blue-200";
+  if (score >= 40) return "text-amber-600 bg-amber-50 border-amber-200";
+  return "text-red-600 bg-red-50 border-red-200";
 }
 
 function getDifficultyColor(d: string) {
-  if (d === 'Easy') return 'text-emerald-600 bg-emerald-50';
-  if (d === 'Hard') return 'text-red-600 bg-red-50';
-  return 'text-amber-600 bg-amber-50';
+  if (d === "Easy") return "text-emerald-600 bg-emerald-50";
+  if (d === "Hard") return "text-red-600 bg-red-50";
+  return "text-amber-600 bg-amber-50";
 }
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function formatTime(dateStr: string) {
   const d = new Date(dateStr);
-  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 }
 
 export default function InterviewHistoryPage() {
@@ -74,9 +92,10 @@ export default function InterviewHistoryPage() {
       const token = await getToken();
       if (!token) return;
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       const res = await fetch(`${API_URL}/interview/history`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await res.json();
@@ -84,7 +103,7 @@ export default function InterviewHistoryPage() {
 
       setSessions(data.data || []);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to fetch interview history');
+      toast.error(err.message || "Failed to fetch interview history");
     } finally {
       setLoading(false);
     }
@@ -99,7 +118,9 @@ export default function InterviewHistoryPage() {
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={32} className="text-indigo-600 animate-spin" />
-          <p className="text-sm text-slate-500 font-medium">Loading interview history…</p>
+          <p className="text-sm text-slate-500 font-medium">
+            Loading interview history…
+          </p>
         </div>
       </div>
     );
@@ -122,7 +143,7 @@ export default function InterviewHistoryPage() {
               Interview History
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">
-              {sessions.length} past session{sessions.length !== 1 ? 's' : ''}
+              {sessions.length} past session{sessions.length !== 1 ? "s" : ""}
             </p>
           </div>
         </div>
@@ -141,9 +162,12 @@ export default function InterviewHistoryPage() {
           <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Mic className="w-8 h-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-bold text-slate-700 mb-2">No interviews yet</h3>
+          <h3 className="text-lg font-bold text-slate-700 mb-2">
+            No interviews yet
+          </h3>
           <p className="text-sm text-slate-500 max-w-sm mx-auto mb-6">
-            Start your first mock interview to receive AI-powered feedback on your answers.
+            Start your first mock interview to receive AI-powered feedback on
+            your answers.
           </p>
           <a
             href="/dashboard/mock-interview"
@@ -156,35 +180,62 @@ export default function InterviewHistoryPage() {
 
       {/* Session Cards */}
       <div className="space-y-4">
-        {sessions.map(session => {
+        {sessions.map((session) => {
           const isExpanded = expandedSession === session._id;
-          const avgWpm = session.answers.length > 0
-            ? Math.round(session.answers.reduce((s, a) => s + (a.wpm || 0), 0) / session.answers.length)
-            : 0;
-          const totalFillers = session.answers.reduce((s, a) =>
-            s + (a.fillerWords || []).reduce((fs, f) => fs + f.count, 0), 0
+          const avgWpm =
+            session.answers.length > 0
+              ? Math.round(
+                  session.answers.reduce((s, a) => s + (a.wpm || 0), 0) /
+                    session.answers.length,
+                )
+              : 0;
+          const totalFillers = session.answers.reduce(
+            (s, a) =>
+              s + (a.fillerWords || []).reduce((fs, f) => fs + f.count, 0),
+            0,
           );
 
           return (
-            <div key={session._id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
+            <div
+              key={session._id}
+              className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-shadow hover:shadow-md"
+            >
               {/* Summary Row */}
               <button
-                onClick={() => setExpandedSession(isExpanded ? null : session._id)}
+                onClick={() =>
+                  setExpandedSession(isExpanded ? null : session._id)
+                }
                 className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left"
               >
                 <div className="flex items-center gap-4 min-w-0">
                   {/* Score Badge */}
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center border shrink-0 ${getScoreColor(session.overallScore)}`}>
-                    <span className="text-xl font-black">{session.overallScore}</span>
+                  <div
+                    className={`w-14 h-14 rounded-xl flex items-center justify-center border shrink-0 ${getScoreColor(session.overallScore)}`}
+                  >
+                    <span className="text-xl font-black">
+                      {session.overallScore}
+                    </span>
                   </div>
                   {/* Info */}
                   <div className="min-w-0">
-                    <h3 className="font-bold text-slate-900 text-sm truncate">{session.jobRole}</h3>
+                    <h3 className="font-bold text-slate-900 text-sm truncate">
+                      {session.jobRole}
+                    </h3>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <span className="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-full">{session.category}</span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${getDifficultyColor(session.difficulty)}`}>{session.difficulty}</span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${session.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                        {session.status === 'completed' ? 'Completed' : 'In Progress'}
+                      <span className="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-full">
+                        {session.category}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${getDifficultyColor(session.difficulty)}`}
+                      >
+                        {session.difficulty}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${session.status === "completed" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}
+                      >
+                        {session.status === "completed"
+                          ? "Completed"
+                          : "In Progress"}
                       </span>
                     </div>
                   </div>
@@ -193,16 +244,29 @@ export default function InterviewHistoryPage() {
                 <div className="flex items-center gap-6 shrink-0">
                   {/* Quick Stats */}
                   <div className="hidden md:flex items-center gap-4 text-xs text-slate-500">
-                    <span className="flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {session.answers.length}/{session.questions.length} Qs</span>
-                    <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {avgWpm} WPM</span>
+                    <span className="flex items-center gap-1">
+                      <Target className="w-3.5 h-3.5" />{" "}
+                      {session.answers.length}/{session.questions.length} Qs
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5" /> {avgWpm} WPM
+                    </span>
                   </div>
                   {/* Date */}
                   <div className="text-right hidden sm:block">
-                    <p className="text-xs font-semibold text-slate-600">{formatDate(session.createdAt)}</p>
-                    <p className="text-[10px] text-slate-400">{formatTime(session.createdAt)}</p>
+                    <p className="text-xs font-semibold text-slate-600">
+                      {formatDate(session.createdAt)}
+                    </p>
+                    <p className="text-[10px] text-slate-400">
+                      {formatTime(session.createdAt)}
+                    </p>
                   </div>
                   {/* Chevron */}
-                  {isExpanded ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+                  {isExpanded ? (
+                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                  )}
                 </div>
               </button>
 
@@ -212,40 +276,81 @@ export default function InterviewHistoryPage() {
                   {/* Delivery Summary */}
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     <div className="p-3 bg-white border border-slate-200 rounded-xl text-center">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Avg WPM</p>
-                      <p className={`text-xl font-black ${avgWpm >= 130 && avgWpm <= 160 ? 'text-emerald-600' : 'text-amber-500'}`}>{avgWpm}</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        Avg WPM
+                      </p>
+                      <p
+                        className={`text-xl font-black ${avgWpm >= 130 && avgWpm <= 160 ? "text-emerald-600" : "text-amber-500"}`}
+                      >
+                        {avgWpm}
+                      </p>
                     </div>
                     <div className="p-3 bg-white border border-slate-200 rounded-xl text-center">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fillers</p>
-                      <p className={`text-xl font-black ${totalFillers <= 4 ? 'text-emerald-600' : totalFillers <= 8 ? 'text-amber-500' : 'text-red-500'}`}>{totalFillers}</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        Fillers
+                      </p>
+                      <p
+                        className={`text-xl font-black ${totalFillers <= 4 ? "text-emerald-600" : totalFillers <= 8 ? "text-amber-500" : "text-red-500"}`}
+                      >
+                        {totalFillers}
+                      </p>
                     </div>
                     <div className="p-3 bg-white border border-slate-200 rounded-xl text-center">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Score</p>
-                      <p className={`text-xl font-black ${session.overallScore >= 80 ? 'text-emerald-600' : session.overallScore >= 60 ? 'text-blue-500' : 'text-amber-500'}`}>{session.overallScore}/100</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        Score
+                      </p>
+                      <p
+                        className={`text-xl font-black ${session.overallScore >= 80 ? "text-emerald-600" : session.overallScore >= 60 ? "text-blue-500" : "text-amber-500"}`}
+                      >
+                        {session.overallScore}/100
+                      </p>
                     </div>
                   </div>
 
                   {/* Per-Question Details */}
                   <div className="space-y-4">
                     {session.answers.map((ans, idx) => {
-                      const q = session.questions.find(sq => sq.id === ans.questionId);
+                      const q = session.questions.find(
+                        (sq) => sq.id === ans.questionId,
+                      );
                       return (
-                        <div key={idx} className="bg-white border border-slate-200 rounded-xl p-4">
+                        <div
+                          key={idx}
+                          className="bg-white border border-slate-200 rounded-xl p-4"
+                        >
                           <h4 className="text-sm font-bold text-slate-800 mb-2">
-                            <span className="text-indigo-500">Q{idx + 1}.</span> {q?.text}
+                            <span className="text-indigo-500">Q{idx + 1}.</span>{" "}
+                            {q?.text}
                           </h4>
-                          <p className="text-xs text-slate-500 italic mb-3 line-clamp-2">"{ans.transcribedText}"</p>
+                          <p className="text-xs text-slate-500 italic mb-3 line-clamp-2">
+                            "{ans.transcribedText}"
+                          </p>
                           <div className="flex items-center gap-3 flex-wrap">
-                            <span className={`text-xs font-bold px-2 py-1 rounded-lg border ${getScoreColor(ans.contentScore)}`}>Content: {ans.contentScore}</span>
-                            <span className={`text-xs font-bold px-2 py-1 rounded-lg border ${getScoreColor(ans.toneScore)}`}>Delivery: {ans.toneScore}</span>
-                            <span className="text-xs font-bold px-2 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-200">{ans.wpm || 0} WPM</span>
+                            <span
+                              className={`text-xs font-bold px-2 py-1 rounded-lg border ${getScoreColor(ans.contentScore)}`}
+                            >
+                              Content: {ans.contentScore}
+                            </span>
+                            <span
+                              className={`text-xs font-bold px-2 py-1 rounded-lg border ${getScoreColor(ans.toneScore)}`}
+                            >
+                              Delivery: {ans.toneScore}
+                            </span>
+                            <span className="text-xs font-bold px-2 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-200">
+                              {ans.wpm || 0} WPM
+                            </span>
                             {ans.confidenceLabel && (
-                              <span className={`text-xs font-bold px-2 py-1 rounded-lg border ${
-                                ans.confidenceLabel === 'Confident' ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
-                                : ans.confidenceLabel === 'Hesitant' ? 'bg-amber-50 text-amber-600 border-amber-200'
-                                : ans.confidenceLabel === 'Fast-Paced' ? 'bg-red-50 text-red-600 border-red-200'
-                                : 'bg-blue-50 text-blue-600 border-blue-200'
-                              }`}>
+                              <span
+                                className={`text-xs font-bold px-2 py-1 rounded-lg border ${
+                                  ans.confidenceLabel === "Confident"
+                                    ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                                    : ans.confidenceLabel === "Hesitant"
+                                      ? "bg-amber-50 text-amber-600 border-amber-200"
+                                      : ans.confidenceLabel === "Fast-Paced"
+                                        ? "bg-red-50 text-red-600 border-red-200"
+                                        : "bg-blue-50 text-blue-600 border-blue-200"
+                                }`}
+                              >
                                 {ans.confidenceLabel}
                               </span>
                             )}

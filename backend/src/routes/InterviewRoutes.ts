@@ -11,12 +11,16 @@ const audioUpload = multer({
   fileFilter: (req, file, cb) => {
     // Gracefully accept all audio/video mimetypes to avoid strict validation crashes.
     // If it's a blob, it might be audio/webm, video/webm, audio/mp4, etc.
-    if (file.mimetype.startsWith('audio/') || file.mimetype.startsWith('video/') || file.mimetype === 'application/octet-stream') {
+    if (
+      file.mimetype.startsWith("audio/") ||
+      file.mimetype.startsWith("video/") ||
+      file.mimetype === "application/octet-stream"
+    ) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type: expected audio or video'));
+      cb(new Error("Invalid file type: expected audio or video"));
     }
-  }
+  },
 });
 
 export class InterviewRoutes {
@@ -31,38 +35,69 @@ export class InterviewRoutes {
 
   private initializeRoutes() {
     // Start a new interview session
-    this.router.post("/start", clerkAuth, this.controller.startInterview.bind(this.controller));
+    this.router.post(
+      "/start",
+      clerkAuth,
+      this.controller.startInterview.bind(this.controller),
+    );
 
     // Transcribe audio → text
     this.router.post(
       "/transcribe",
       clerkAuth,
       audioUpload.single("audio"),
-      this.controller.transcribeAudio.bind(this.controller)
+      this.controller.transcribeAudio.bind(this.controller),
     );
 
     // Submit an answer for evaluation
-    this.router.post("/submit-answer", clerkAuth, this.controller.submitAnswer.bind(this.controller));
+    this.router.post(
+      "/submit-answer",
+      clerkAuth,
+      this.controller.submitAnswer.bind(this.controller),
+    );
 
     // Complete the interview session
-    this.router.post("/complete", clerkAuth, this.controller.completeInterview.bind(this.controller));
+    this.router.post(
+      "/complete",
+      clerkAuth,
+      this.controller.completeInterview.bind(this.controller),
+    );
 
     // Fetch past interview sessions
-    this.router.get("/history", clerkAuth, this.controller.getHistory.bind(this.controller));
+    this.router.get(
+      "/history",
+      clerkAuth,
+      this.controller.getHistory.bind(this.controller),
+    );
 
     // Analyze video frames for body language
     const visionController = new VisionAnalysisController();
-    this.router.post("/analyze-video-frames", clerkAuth, visionController.analyzeVideoFrames.bind(visionController));
+    this.router.post(
+      "/analyze-video-frames",
+      clerkAuth,
+      visionController.analyzeVideoFrames.bind(visionController),
+    );
 
     // ── Sharing routes ──
 
     // Enable sharing for a session (protected)
-    this.router.post("/sessions/:id/share", clerkAuth, this.controller.shareSession.bind(this.controller));
+    this.router.post(
+      "/sessions/:id/share",
+      clerkAuth,
+      this.controller.shareSession.bind(this.controller),
+    );
 
     // Revoke sharing (protected)
-    this.router.delete("/sessions/:id/share", clerkAuth, this.controller.revokeShare.bind(this.controller));
+    this.router.delete(
+      "/sessions/:id/share",
+      clerkAuth,
+      this.controller.revokeShare.bind(this.controller),
+    );
 
     // Get shared report (PUBLIC — no auth required)
-    this.router.get("/shared/:shareToken", this.controller.getSharedReport.bind(this.controller));
+    this.router.get(
+      "/shared/:shareToken",
+      this.controller.getSharedReport.bind(this.controller),
+    );
   }
 }

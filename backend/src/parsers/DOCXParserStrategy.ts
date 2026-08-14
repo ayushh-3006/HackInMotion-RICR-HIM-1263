@@ -1,12 +1,13 @@
-import { IDocumentParser } from './IDocumentParser.js';
-import mammoth from 'mammoth';
+import { IDocumentParser } from "./IDocumentParser.js";
+import mammoth from "mammoth";
 
 // SRP: This class only handles DOCX extraction
 export class DOCXParserStrategy implements IDocumentParser {
   canHandle(mimetype: string): boolean {
     return (
-      mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-      mimetype === 'application/msword'
+      mimetype ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      mimetype === "application/msword"
     );
   }
 
