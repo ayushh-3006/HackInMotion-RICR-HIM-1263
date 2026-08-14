@@ -2,6 +2,8 @@ import { Router } from "express";
 import multer from "multer";
 import { ATSController } from "../controllers/ATSController.js";
 
+import { clerkAuth } from "../middlewares/clerkAuth.js";
+
 // SRP: Only sets up routes and middleware
 export class ATSRouter {
   public router: Router;
@@ -13,11 +15,13 @@ export class ATSRouter {
   }
 
   private registerRoutes(): void {
-    this.router.post("/calculate", this.controller.calculateFromText);
+    this.router.post("/calculate", clerkAuth, this.controller.calculateFromText);
     this.router.post(
       "/calculate-file",
+      clerkAuth,
       this.upload.single("resumeFile"),
       this.controller.calculateFromFile,
     );
+    this.router.get("/history", clerkAuth, this.controller.getHistory);
   }
 }

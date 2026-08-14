@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUp, X, Shield, FileText, Sparkles } from "lucide-react";
+import { ArrowUp, X, Shield, FileText } from "lucide-react";
+import Image from "next/image";
 
 // Inline Brand Icons (Clean standard SVG paths)
 const LinkedInIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -77,10 +78,10 @@ const Footer = () => {
         <div className="w-full pt-10 pb-8 flex flex-col gap-6">
           {/* Main Layout: Logo Card Shifted Further Left + Options Grid on Right */}
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 flex flex-col md:flex-row items-center md:items-start justify-between gap-10 lg:gap-20">
-            {/* Double-Size Logo Card Shifted Further Left */}
+            {/* Logo Shifted Further Left */}
             <div className="flex items-center justify-start shrink-0 -ml-1 sm:-ml-3 lg:-ml-5">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-blue-600 via-blue-500 to-indigo-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/20 flex items-center justify-center hover:scale-105 transition-all duration-300 cursor-pointer">
-                <Sparkles className="w-12 h-12 text-white" />
+              <div className="hover:scale-105 transition-all duration-300 cursor-pointer">
+                <Image src="/logo.png" alt="Resumind Logo" width={112} height={112} className="object-contain" />
               </div>
             </div>
 

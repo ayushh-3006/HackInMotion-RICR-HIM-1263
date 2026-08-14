@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ATSAnalyzer } from "../services/ATSAnalyzerModule.js";
 import { ParserFactory } from "../parsers/ParserFactory.js";
+import { ATSResult } from "../models/ATSResult.js";
 
 export class ATSController {
   constructor(
@@ -33,7 +34,20 @@ export class ATSController {
         resumeText,
         jobDescription,
       );
-      res.status(200).json(this.mapResult(result));
+      const mapped = this.mapResult(result);
+      
+      const clerkUserId = (req as any).userId;
+      if (clerkUserId) {
+        await ATSResult.create({
+          clerkUserId,
+          jobRole: jobRole || "General",
+          score: mapped.score,
+          matchedSkills: mapped.matchedSkills,
+          missingSkills: mapped.missingSkills,
+        });
+      }
+
+      res.status(200).json(mapped);
     } catch (err: any) {
       res.status(500).json({ error: err.message || "Internal Server Error" });
     }
@@ -75,7 +89,20 @@ export class ATSController {
         resumeText,
         jobDescription,
       );
-      res.status(200).json(this.mapResult(result));
+      const mapped = this.mapResult(result);
+      
+      const clerkUserId = (req as any).userId;
+      if (clerkUserId) {
+        await ATSResult.create({
+          clerkUserId,
+          jobRole: jobRole || "General",
+          score: mapped.score,
+          matchedSkills: mapped.matchedSkills,
+          missingSkills: mapped.missingSkills,
+        });
+      }
+
+      res.status(200).json(mapped);
     } catch (err: any) {
       res.status(err.message?.includes("Unsupported") ? 415 : 500).json({
         error: err.message || "Internal Server Error",
@@ -137,4 +164,24 @@ export class ATSController {
       atsCompatible: finalScore >= 60,
     };
   }
+
+  getHistory = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const clerkUserId = (req as any).userId;
+      if (!clerkUserId) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+      }
+
+      const history = await ATSResult.find({ clerkUserId })
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .lean();
+
+      res.status(200).json({ success: true, data: history });
+    } catch (err: any) {
+      console.error("Error fetching ATS history:", err);
+      res.status(500).json({ error: "Failed to fetch history" });
+    }
+  };
 }

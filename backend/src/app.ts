@@ -96,28 +96,6 @@ app.get("/api/dashboard/stats", clerkAuth, async (req: Request, res: Response) =
   }
 });
 
-// Mock ATS History Route
-app.get("/api/ats/history", (req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    data: [
-      {
-        id: "1",
-        score: 85,
-        jobRole: "Frontend Developer",
-        fileName: "resume_v1.pdf",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        score: 62,
-        jobRole: "Software Engineer",
-        fileName: "resume_old.pdf",
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ],
-  });
-});
 
 // Interview routes
 import { InterviewRoutes } from "./routes/InterviewRoutes.js";
