@@ -49,9 +49,13 @@ export const useAudioAnalyzer = () => {
     }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
     }
     if (audioContextRef.current) {
-      audioContextRef.current.close();
+      if (audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close().catch(() => {});
+      }
+      audioContextRef.current = null;
     }
     setVolume(0);
   }, []);

@@ -1,16 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import {
-  Home,
-  FileText,
-  Target,
-  Mic,
-  Share2,
-  Video
-} from 'lucide-react';
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, FileText, Target, Mic, Share2, Video } from "lucide-react";
