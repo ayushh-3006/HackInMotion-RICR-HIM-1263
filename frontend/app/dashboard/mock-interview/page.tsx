@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { useAudioAnalyzer } from '@/hooks/useAudioAnalyzer';
+import { useMediaRecorder } from '@/hooks/useMediaRecorder';
 
 /* ──────── Types ──────── */
 type ViewState = 'setup' | 'active' | 'loading' | 'results';
@@ -225,6 +226,7 @@ export default function MockInterviewPage() {
 
   const { isListening, transcript, interimTranscript, startListening, stopListening, metrics: speechMetrics } = useSpeechRecognition();
   const { volume, startAnalyzing, stopAnalyzing } = useAudioAnalyzer();
+  const mediaRecorder = useMediaRecorder();
 
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -234,6 +236,13 @@ export default function MockInterviewPage() {
       synthRef.current = window.speechSynthesis;
     }
   }, []);
+
+  useEffect(() => {
+    if (mediaRecorder.error) {
+      toast.error(mediaRecorder.error.message || 'Recording error occurred.');
+      setIsRecording(false);
+    }
+  }, [mediaRecorder.error]);
 
   /* Keep editable transcript in sync with live recognition */
   useEffect(() => {
@@ -342,7 +351,7 @@ export default function MockInterviewPage() {
   };
 
   /* ── Toggle recording ── */
-  const toggleRecording = () => {
+  const toggleRecording = async () => {
     if (isRecording) {
       stopListening();
       stopAnalyzing();
@@ -354,6 +363,7 @@ export default function MockInterviewPage() {
       setIsAiSpeaking(false);
       startListening();
       startAnalyzing();
+      await mediaRecorder.startRecording();
       setIsRecording(true);
       setRecordingStartTime(Date.now());
       setElapsedTime(0);
@@ -363,12 +373,30 @@ export default function MockInterviewPage() {
 
   /* ── Submit Answer ── */
   const submitAnswer = async () => {
-    const finalText = editableTranscript.trim();
-    if (!finalText) return toast.error("No answer text to submit.");
+    let finalText = editableTranscript.trim();
     if (!session) return;
 
     setIsSubmitting(true);
-    if (isRecording) { stopListening(); stopAnalyzing(); setIsRecording(false); }
+    let recordedData: { blob: Blob, mimeType: string } | null = null;
+    
+    if (isRecording || mediaRecorder.state === 'recording') { 
+      stopListening(); 
+      stopAnalyzing(); 
+      setIsRecording(false); 
+      try {
+        if (mediaRecorder.state === 'recording') {
+          recordedData = await mediaRecorder.stopRecording();
+        }
+      } catch (e) {
+        console.error('Error stopping recorder', e);
+      }
+    } else if (mediaRecorder.state === 'recording') {
+      try {
+        recordedData = await mediaRecorder.stopRecording();
+      } catch (e) {
+        console.error('Error stopping recorder', e);
+      }
+    }
 
     // Switch to loading view
     setView('loading');
@@ -378,6 +406,33 @@ export default function MockInterviewPage() {
       const token = await getToken();
       const durationSeconds = Math.max(1, Math.floor((Date.now() - recordingStartTime) / 1000));
       const questionId = session.questions[currentQuestionIndex].id;
+
+      if (recordedData) {
+        const formData = new FormData();
+        const extension = recordedData.mimeType.includes('mp4') ? 'mp4' : recordedData.mimeType.includes('ogg') ? 'ogg' : 'webm';
+        const file = new File([recordedData.blob], `audio.${extension}`, { type: recordedData.mimeType });
+        formData.append('audio', file);
+        
+        try {
+          const uploadRes = await fetch(`${API_URL}/interview/transcribe`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+          });
+          const uploadData = await uploadRes.json();
+          if (uploadRes.ok && uploadData.transcript) {
+            finalText = uploadData.transcript;
+            setEditableTranscript(finalText);
+          }
+        } catch (uploadErr) {
+          console.error("Transcription upload failed", uploadErr);
+          // fallback to local transcript if upload fails
+        }
+      }
+
+      if (!finalText) {
+        throw new Error("No answer text to submit.");
+      }
 
       // Step animation
       await new Promise(r => setTimeout(r, 800));
