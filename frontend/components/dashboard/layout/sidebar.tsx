@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, FileText, Target, Mic, Share2, Video, Library } from "lucide-react";
+import Image from "next/image";
 
 const mainLinks = [
   { name: "Overview", href: "/dashboard", icon: Home },
@@ -26,21 +27,8 @@ export function Sidebar() {
       {/* Logo Area */}
       <div className="h-16 flex items-center px-6 border-b border-slate-100">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="bg-indigo-600 p-1.5 rounded-lg text-white shadow-sm shadow-indigo-200 group-hover:scale-105 transition-transform">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-5 h-5"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5Z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
+          <div className="group-hover:scale-105 transition-transform">
+            <Image src="/logo.png" alt="Resumind Logo" width={32} height={32} className="object-contain" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none">Resumind</h1>

@@ -22,15 +22,15 @@ export function ThreeDMarquee({ images, className = "" }: ThreeDMarqueeProps) {
 
   return (
     <div
-      className={`relative h-full w-full overflow-hidden bg-gray-950 ${className}`}
+      className={`relative h-full w-full overflow-hidden bg-slate-50 ${className}`}
       style={{
         perspective: "900px",
       }}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-gray-950 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-gray-950 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-gray-950 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-gray-950 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-slate-50 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-slate-50 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-slate-50 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-slate-50 to-transparent" />
 
       {/* 3D rotated grid */}
       <div
@@ -121,7 +121,7 @@ function MarqueeCard({ src, index }: { src: string; index: number }) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4, delay: index * 0.04 }}
-      className="relative w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 shadow-lg"
+      className="relative w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md"
       style={{ aspectRatio: "16/10" }}
     >
       <Image
@@ -129,12 +129,12 @@ function MarqueeCard({ src, index }: { src: string; index: number }) {
         alt={`Preview ${index}`}
         fill
         priority
-        className="object-cover transition-transform duration-500 hover:scale-105"
+        className="object-cover transition-transform duration-500 hover:scale-105 invert hue-rotate-180"
         sizes="(max-width: 768px) 50vw, 25vw"
         unoptimized // Allow external URLs without next.config domains config
       />
       {/* Subtle inner glow overlay */}
-      <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10" />
+      <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-slate-900/5" />
     </motion.div>
   );
 }

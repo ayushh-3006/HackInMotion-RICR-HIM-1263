@@ -3,6 +3,8 @@ import multer from "multer";
 import { ATSController } from "../controllers/ATSController.js";
 import { clerkAuth } from "../middlewares/clerkAuth.js";
 
+import { clerkAuth } from "../middlewares/clerkAuth.js";
+
 // SRP: Only sets up routes and middleware
 export class ATSRouter {
   public router: Router;

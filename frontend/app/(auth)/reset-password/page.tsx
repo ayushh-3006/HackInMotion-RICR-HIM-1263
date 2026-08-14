@@ -32,8 +32,8 @@ function useToast() {
           animate={{ opacity: 1, y: 0 }}
           className={`rounded-xl border px-4 py-3 text-sm shadow-2xl backdrop-blur-md ${
             t.type === "error"
-              ? "border-red-500/30 bg-red-950/80 text-red-200"
-              : "border-emerald-500/30 bg-emerald-950/80 text-emerald-200"
+              ? "border-red-500/30 bg-red-50 text-red-700"
+              : "border-emerald-500/30 bg-emerald-50 text-emerald-700"
           }`}
         >
           <p className="font-semibold">{t.title}</p>
@@ -137,13 +137,13 @@ function ResetPasswordForm() {
         {!done ? (
           <>
             <div className="flex flex-col gap-1.5">
-              <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/15 border border-violet-500/20">
-                <ShieldCheck size={20} className="text-violet-400" />
+              <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 border border-indigo-100">
+                <ShieldCheck size={20} className="text-indigo-600" />
               </div>
-              <h1 className="text-3xl font-bold tracking-tight text-white">
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900">
                 Reset your password
               </h1>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-slate-500">
                 Create a new strong password for your account.
               </p>
             </div>
@@ -157,7 +157,7 @@ function ResetPasswordForm() {
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="reset-code"
-                  className="text-xs font-medium text-zinc-400"
+                  className="text-xs font-medium text-slate-500"
                 >
                   Verification Code
                 </label>
@@ -167,7 +167,7 @@ function ResetPasswordForm() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="Enter the 6-digit code"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/30"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-indigo-500 focus:bg-slate-50 focus:ring-1 focus:ring-indigo-500/30"
                 />
               </div>
 
@@ -175,7 +175,7 @@ function ResetPasswordForm() {
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="reset-password"
-                  className="text-xs font-medium text-zinc-400"
+                  className="text-xs font-medium text-slate-500"
                 >
                   New Password
                 </label>
@@ -186,12 +186,12 @@ function ResetPasswordForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a new password"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/30"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-indigo-500 focus:bg-slate-50 focus:ring-1 focus:ring-indigo-500/30"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-3 flex items-center text-zinc-500 hover:text-zinc-300 transition-colors"
+                    className="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
                   >
                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
@@ -202,7 +202,7 @@ function ResetPasswordForm() {
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="reset-confirm"
-                  className="text-xs font-medium text-zinc-400"
+                  className="text-xs font-medium text-slate-500"
                 >
                   Confirm New Password
                 </label>
@@ -213,22 +213,22 @@ function ResetPasswordForm() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat your new password"
-                    className={`w-full rounded-lg border bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:ring-1 ${
+                    className={`w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:ring-1 ${
                       confirmPassword && confirmPassword !== password
-                        ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
-                        : "border-white/10 focus:border-violet-500/70 focus:ring-violet-500/30"
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                        : "border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/30"
                     }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute inset-y-0 right-3 flex items-center text-zinc-500 hover:text-zinc-300 transition-colors"
+                    className="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
                   >
                     {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                 </div>
                 {confirmPassword && confirmPassword !== password && (
-                  <p className="text-[11px] text-red-400">
+                  <p className="text-[11px] text-red-500">
                     Passwords do not match
                   </p>
                 )}
@@ -257,14 +257,14 @@ function ResetPasswordForm() {
             animate={{ opacity: 1, scale: 1 }}
             className="flex flex-col gap-4 text-center"
           >
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/20">
-              <ShieldCheck size={24} className="text-emerald-400" />
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 border border-emerald-100">
+              <ShieldCheck size={24} className="text-emerald-600" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">
+              <h2 className="text-2xl font-bold text-slate-900">
                 Password updated
               </h2>
-              <p className="mt-2 text-sm text-zinc-500 leading-relaxed">
+              <p className="mt-2 text-sm text-slate-500 leading-relaxed">
                 Your password has been successfully reset. Redirecting you to
                 the dashboard...
               </p>
@@ -272,11 +272,11 @@ function ResetPasswordForm() {
           </motion.div>
         )}
 
-        <p className="text-center text-sm text-zinc-500">
+        <p className="text-center text-sm text-slate-500">
           Remember your password?{" "}
           <Link
             href="/login"
-            className="font-semibold text-violet-400 hover:text-violet-300 transition-colors"
+            className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
           >
             Sign In
           </Link>
@@ -288,7 +288,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="text-zinc-500 text-sm">Loading…</div>}>
+    <Suspense fallback={<div className="text-slate-500 text-sm">Loading…</div>}>
       <ResetPasswordForm />
     </Suspense>
   );
