@@ -1,6 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { ATSController } from "../controllers/ATSController.js";
+import { clerkAuth } from "../middlewares/clerkAuth.js";
 
 import { clerkAuth } from "../middlewares/clerkAuth.js";
 

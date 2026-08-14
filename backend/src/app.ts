@@ -6,6 +6,9 @@ import { connectDB } from "./config/db.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import { syncUser } from "./middlewares/authMiddleware.js";
+import { clerkAuth } from "./middlewares/clerkAuth.js";
+import mongoose from "mongoose";
+import path from "path";
 
 // Load environment variables
 dotenv.config();
@@ -18,11 +21,13 @@ const app = express();
 // Webhook routes (MUST be before express.json() because it needs raw body)
 app.use("/api/webhooks", webhookRoutes);
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true,
+}));
 app.use(express.json());
 
 // Database readiness check middleware
-import mongoose from "mongoose";
 app.use((req: Request, res: Response, next: express.NextFunction) => {
   if (mongoose.connection.readyState !== 1) {
     res.status(503).json({
@@ -53,19 +58,40 @@ import { ParserFactory } from "./parsers/ParserFactory.js";
 
 // Resume Routes
 import resumeRoutes from "./routes/ResumeRoutes.js";
-import path from "path";
 
 app.use("/api/resume", resumeRoutes);
-app.use("/uploads", express.static(path.resolve("uploads")));
 
-import { clerkAuth } from "./middlewares/clerkAuth.js";
+// Secure file serving — requires authentication and blocks directory traversal
+app.get("/api/uploads/:filename", clerkAuth, (req: Request, res: Response) => {
+  const filename = req.params.filename as string;
+
+  // Block directory traversal attacks
+  if (filename.includes("..") || filename.includes("/") || filename.includes("\\")) {
+    res.status(400).json({ error: "Invalid filename." });
+    return;
+  }
+
+  const filePath = path.resolve("uploads", filename);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).json({ error: "File not found." });
+    }
+  });
+});
+
 import { ResumeDraft } from "./models/ResumeDraft.js";
 import { InterviewSession } from "./models/InterviewSession.js";
 
-const groqApiKey = process.env.GROQ_API_KEY || "";
+import { ATSRepository } from "./repositories/ATSRepository.js";
+
+const groqApiKey = process.env.GROQ_API_KEY;
+if (!groqApiKey) {
+  throw new Error("FATAL: GROQ_API_KEY environment variable is not set. Server cannot start.");
+}
 const atsController = new ATSController(
   new ATSAnalyzer(groqApiKey),
   new ParserFactory(),
+  new ATSRepository()
 );
 app.use("/api/ats", new ATSRouter(atsController).router);
 
