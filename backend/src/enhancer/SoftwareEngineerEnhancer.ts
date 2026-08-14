@@ -1,5 +1,5 @@
 import { BaseRoleEnhancer } from "./BaseRoleEnhancer.js";
- 
+
 /**
  * OOP — Inheritance: Extends BaseRoleEnhancer, gets enhance() for free.
  *
@@ -10,7 +10,7 @@ export class SoftwareEngineerEnhancer extends BaseRoleEnhancer {
   getRoleName(): string {
     return "Software Engineer";
   }
- 
+
   protected getRoleContext(): string {
     return `Role focus: Software Engineer.
 Please emphasize the following in the resume:
@@ -21,4 +21,3 @@ Please emphasize the following in the resume:
 - Quantified engineering impact (e.g. "reduced load time by 60%")`;
   }
 }
- 

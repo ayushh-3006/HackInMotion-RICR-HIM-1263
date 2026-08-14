@@ -1,23 +1,30 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
-import { toast } from 'sonner';
-import { ChatInterface } from '@/components/ai-builder/chat-interface';
-import { ResumePreview } from '@/components/ai-builder/resume-preview';
-import { Sparkles, Download, Save, Loader2 } from 'lucide-react';
-import dynamic from 'next/dynamic';
+import React, { useState } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { toast } from "sonner";
+import { ChatInterface } from "@/components/ai-builder/chat-interface";
+import { ResumePreview } from "@/components/ai-builder/resume-preview";
+import { Sparkles, Download, Save, Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
 
-const PDFViewer = dynamic(() => import('@react-pdf/renderer').then(mod => mod.PDFViewer), {
-  ssr: false,
-  loading: () => <div className="flex items-center justify-center h-full w-full text-neutral-400"><Loader2 className="animate-spin w-8 h-8" /></div>
-});
-import CompactTheme from '@/components/ResumeThemes/CompactTheme';
-import DefaultTheme from '@/components/ResumeThemes/DefaultTheme';
-import ModernTheme from '@/components/ResumeThemes/ModernTheme';
-import ProfessionalTheme from '@/components/ResumeThemes/ProfessionalTheme';
+const PDFViewer = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full w-full text-neutral-400">
+        <Loader2 className="animate-spin w-8 h-8" />
+      </div>
+    ),
+  },
+);
+import CompactTheme from "@/components/ResumeThemes/CompactTheme";
+import DefaultTheme from "@/components/ResumeThemes/DefaultTheme";
+import ModernTheme from "@/components/ResumeThemes/ModernTheme";
+import ProfessionalTheme from "@/components/ResumeThemes/ProfessionalTheme";
 interface ChatMessage {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 }
 
@@ -29,7 +36,7 @@ export default function AIResumeBuilderPage() {
   const [isExporting, setIsExporting] = useState(false);
 
   const handleSendMessage = async (content: string) => {
-    const newMessages: ChatMessage[] = [...messages, { role: 'user', content }];
+    const newMessages: ChatMessage[] = [...messages, { role: "user", content }];
     setMessages(newMessages);
     setIsSending(true);
 
@@ -37,57 +44,82 @@ export default function AIResumeBuilderPage() {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/resume-builder/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/resume-builder/generate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            chatHistory: newMessages,
+            currentData: resumeData,
+          }),
         },
-        body: JSON.stringify({
-          chatHistory: newMessages,
-          currentData: resumeData
-        })
-      });
+      );
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to generate resume");
+      if (!response.ok)
+        throw new Error(data.error || "Failed to generate resume");
 
       setResumeData(data.data);
-      setMessages([...newMessages, { role: 'assistant', content: "I've updated your resume based on your input! Check the preview." }]);
+      setMessages([
+        ...newMessages,
+        {
+          role: "assistant",
+          content:
+            "I've updated your resume based on your input! Check the preview.",
+        },
+      ]);
     } catch (error: any) {
       toast.error(error.message || "An error occurred");
-      setMessages([...newMessages, { role: 'assistant', content: "Sorry, I encountered an error while updating your resume." }]);
+      setMessages([
+        ...newMessages,
+        {
+          role: "assistant",
+          content: "Sorry, I encountered an error while updating your resume.",
+        },
+      ]);
     } finally {
       setIsSending(false);
     }
   };
 
-  const [theme, setTheme] = useState('default');
+  const [theme, setTheme] = useState("default");
 
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const { pdf } = await import('@react-pdf/renderer');
+      const { pdf } = await import("@react-pdf/renderer");
       let DocumentComponent;
 
       switch (theme) {
-        case 'compact':
-          DocumentComponent = (await import('@/components/ResumeThemes/CompactTheme')).default;
+        case "compact":
+          DocumentComponent = (
+            await import("@/components/ResumeThemes/CompactTheme")
+          ).default;
           break;
-        case 'modern':
-          DocumentComponent = (await import('@/components/ResumeThemes/ModernTheme')).default;
+        case "modern":
+          DocumentComponent = (
+            await import("@/components/ResumeThemes/ModernTheme")
+          ).default;
           break;
-        case 'professional':
-          DocumentComponent = (await import('@/components/ResumeThemes/ProfessionalTheme')).default;
+        case "professional":
+          DocumentComponent = (
+            await import("@/components/ResumeThemes/ProfessionalTheme")
+          ).default;
           break;
         default:
-          DocumentComponent = (await import('@/components/ResumeThemes/DefaultTheme')).default;
+          DocumentComponent = (
+            await import("@/components/ResumeThemes/DefaultTheme")
+          ).default;
           break;
       }
 
       const blob = await pdf(<DocumentComponent data={resumeData} />).toBlob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = `Resume_${Date.now()}.pdf`;
       document.body.appendChild(a);
@@ -108,18 +140,23 @@ export default function AIResumeBuilderPage() {
       const token = await getToken();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/resume-builder/save`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/resume-builder/save`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: resumeData.basics?.fullName
+              ? `${resumeData.basics.fullName}'s Resume`
+              : "My Resume",
+            theme,
+            ...resumeData,
+          }),
         },
-        body: JSON.stringify({
-          title: resumeData.basics?.fullName ? `${resumeData.basics.fullName}'s Resume` : 'My Resume',
-          theme,
-          ...resumeData
-        })
-      });
+      );
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Failed to save draft");
@@ -128,7 +165,7 @@ export default function AIResumeBuilderPage() {
     } catch (error: any) {
       toast.error(error.message || "Failed to save draft");
     }
-  }
+  };
 
   return (
     <div className="flex flex-col h-[calc(100vh-theme(spacing.16))]">
@@ -138,7 +175,9 @@ export default function AIResumeBuilderPage() {
             <Sparkles className="w-6 h-6 text-[#1C4ED6]" />
             AI Resume Builder
           </h1>
-          <p className="text-sm text-neutral-500 mt-1">Chat with our AI to build your perfect resume</p>
+          <p className="text-sm text-neutral-500 mt-1">
+            Chat with our AI to build your perfect resume
+          </p>
         </div>
         <div className="flex gap-3 items-center">
           <select
@@ -162,7 +201,11 @@ export default function AIResumeBuilderPage() {
             disabled={isExporting || Object.keys(resumeData).length === 0}
             className="flex items-center gap-2 px-4 py-2 bg-[#1C4ED6] text-white rounded-lg hover:bg-[#1C4ED6]/90 disabled:opacity-50 font-medium text-sm transition-colors"
           >
-            {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+            {isExporting ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Download size={16} />
+            )}
             Export PDF
           </button>
         </div>
@@ -192,10 +235,15 @@ export default function AIResumeBuilderPage() {
               showToolbar={false}
               className="rounded-[20px] overflow-hidden border-none"
             >
-              {theme === 'compact' ? <CompactTheme data={resumeData} /> :
-                theme === 'modern' ? <ModernTheme data={resumeData} /> :
-                  theme === 'professional' ? <ProfessionalTheme data={resumeData} /> :
-                    <DefaultTheme data={resumeData} />}
+              {theme === "compact" ? (
+                <CompactTheme data={resumeData} />
+              ) : theme === "modern" ? (
+                <ModernTheme data={resumeData} />
+              ) : theme === "professional" ? (
+                <ProfessionalTheme data={resumeData} />
+              ) : (
+                <DefaultTheme data={resumeData} />
+              )}
             </PDFViewer>
           )}
         </div>

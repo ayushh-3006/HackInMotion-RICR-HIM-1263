@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 
 export const useAudioAnalyzer = () => {
   const [volume, setVolume] = useState(0);
@@ -11,20 +11,21 @@ export const useAudioAnalyzer = () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-      
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+
+      const AudioContextClass =
+        window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContextClass();
       audioContextRef.current = audioContext;
-      
+
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 256;
       analyserRef.current = analyser;
-      
+
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
-      
+
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      
+
       const updateVolume = () => {
         analyser.getByteFrequencyData(dataArray);
         let sum = 0;
@@ -35,9 +36,8 @@ export const useAudioAnalyzer = () => {
         setVolume(avg);
         animationFrameRef.current = requestAnimationFrame(updateVolume);
       };
-      
+
       updateVolume();
-      
     } catch (err) {
       console.error("Error accessing microphone for analyzer", err);
     }
@@ -48,7 +48,7 @@ export const useAudioAnalyzer = () => {
       cancelAnimationFrame(animationFrameRef.current);
     }
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
     }
     if (audioContextRef.current) {
       audioContextRef.current.close();

@@ -2,14 +2,14 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 const authRoutes = [
-  '/login', 
-  '/register', 
-  '/forgot-password',
-  '/reset-password'
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
 ];
 
 const isAuthRoute = (req: any) => {
-  return authRoutes.some(route => req.nextUrl.pathname.startsWith(route));
+  return authRoutes.some((route) => req.nextUrl.pathname.startsWith(route));
 };
 
 export default clerkMiddleware(async (auth, req) => {
@@ -19,7 +19,7 @@ export default clerkMiddleware(async (auth, req) => {
     // If user is already logged in and tries to access an auth route,
     // redirect them to the dashboard.
     if (authState?.userId && isAuthRoute(req)) {
-      const dashboardUrl = new URL('/dashboard', req.url);
+      const dashboardUrl = new URL("/dashboard", req.url);
       return NextResponse.redirect(dashboardUrl);
     }
   } catch (error) {
@@ -30,8 +30,8 @@ export default clerkMiddleware(async (auth, req) => {
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Always run for API routes
-    '/(api|trpc)(.*)',
+    "/(api|trpc)(.*)",
   ],
 };

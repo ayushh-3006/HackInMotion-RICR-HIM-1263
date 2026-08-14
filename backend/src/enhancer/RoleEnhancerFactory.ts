@@ -20,7 +20,9 @@ export class RoleEnhancerFactory {
       case "data-scientist":
         return new DataScientistEnhancer(aiProvider);
       default:
-        throw new Error(`Unsupported role: ${role}. Supported: software-engineer, product-manager, data-scientist.`);
+        throw new Error(
+          `Unsupported role: ${role}. Supported: software-engineer, product-manager, data-scientist.`,
+        );
     }
   }
 

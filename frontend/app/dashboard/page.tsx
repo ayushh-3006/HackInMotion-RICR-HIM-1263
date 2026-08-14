@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useUser, useAuth } from "@clerk/nextjs";
@@ -22,7 +22,7 @@ interface InterviewRecord {
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
   const { getToken } = useAuth();
-  
+
   const [stats, setStats] = useState<Stats | null>(null);
   const [interviewHistory, setInterviewHistory] = useState<InterviewRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,11 +33,16 @@ export default function DashboardPage() {
       const token = await getToken();
       if (!token) return;
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-      
-      const [statsRes, historyRes] = await Promise.all([
-        fetch(`${baseUrl}/dashboard/stats`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${baseUrl}/dashboard/history`, { headers: { Authorization: `Bearer ${token}` } }),
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+      const [statsRes, atsRes] = await Promise.all([
+        fetch(`${baseUrl}/dashboard/stats`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${baseUrl}/ats/history`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
 
       let statsData = null;
@@ -47,14 +52,18 @@ export default function DashboardPage() {
         const statsJson = await statsRes.json();
         if (statsJson.success) statsData = statsJson.data;
       } else {
-        console.warn(`Stats fetch failed with status: ${statsRes.status}. Using fallback data.`);
+        console.warn(
+          `Stats fetch failed with status: ${statsRes.status}. Using fallback data.`,
+        );
       }
 
       if (historyRes.ok) {
         const historyJson = await historyRes.json();
         if (historyJson.success) atsData = historyJson.data;
       } else {
-        console.warn(`History fetch failed with status: ${historyRes.status}. Using fallback data.`);
+        console.warn(
+          `ATS history fetch failed with status: ${atsRes.status}. Using fallback data.`,
+        );
       }
 
       setStats(statsData);
@@ -94,7 +103,7 @@ export default function DashboardPage() {
           console.warn("Error syncing user:", error);
         }
       };
-      
+
       syncUser();
     }
   }, [user]);
@@ -104,18 +113,23 @@ export default function DashboardPage() {
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={32} className="text-indigo-600 animate-spin" />
-          <p className="text-sm text-slate-500 font-medium">Loading your dashboard…</p>
+          <p className="text-sm text-slate-500 font-medium">
+            Loading your dashboard…
+          </p>
         </div>
       </div>
     );
   }
 
-  const firstName = user?.firstName || user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] || "there";
+  const firstName =
+    user?.firstName ||
+    user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] ||
+    "there";
 
   return (
     <div id="dashboard-content" className="w-full h-full pb-10">
-      <DashboardOverview 
-        userName={firstName} 
+      <DashboardOverview
+        userName={firstName}
         stats={stats}
         interviewHistory={interviewHistory}
       />

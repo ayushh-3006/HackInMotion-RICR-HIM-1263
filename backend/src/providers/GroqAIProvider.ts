@@ -17,25 +17,14 @@ const client = new Groq({ apiKey: process.env.GROQ_API_KEY! });
  * Nothing else changes.
  */
 
-function parseDefensiveJson(result: string): any {
-    try {
-        const jsonMatch = result.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-        const cleanStr = jsonMatch ? jsonMatch[1].trim() : result.trim();
-        return JSON.parse(cleanStr);
-    } catch (e) {
-        console.error("Failed to parse AI JSON response:", result);
-        throw new Error("AI response was not valid JSON");
-    }
-}
-
 export class AIProvider implements IAIProvider {
-    async enhance(resumeText: string, jobDescription: string): Promise<any> {
-        const response = await client.chat.completions.create({
-            model: "llama-3.1-8b-instant",
-            messages: [
-                {
-                    role: "system",
-                    content: `You are an expert resume parser and enhancer.
+  async enhance(resumeText: string, jobDescription: string): Promise<any> {
+    const response = await client.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert resume parser and enhancer.
                     Your goal is to extract information from a raw resume text and enhance it to match a specific job description.
                     
                     STRICT RULES:
@@ -58,29 +47,37 @@ export class AIProvider implements IAIProvider {
                         "skills": [{ "category": "string", "items": ["string"] }],
                         "extraCurricular": ["string"]
                     }`,
-                },
-                {
-                    role: "user",
-                    content: `JOB DESCRIPTION:\n${jobDescription}\n\nRAW RESUME TEXT:\n${resumeText}`,
-                },
-            ],
-            temperature: 0.2, // Lower temperature for more stable JSON
-            response_format: { type: "json_object" }
-        });
+        },
+        {
+          role: "user",
+          content: `JOB DESCRIPTION:\n${jobDescription}\n\nRAW RESUME TEXT:\n${resumeText}`,
+        },
+      ],
+      temperature: 0.2, // Lower temperature for more stable JSON
+      response_format: { type: "json_object" },
+    });
 
-        const result = response.choices[0]?.message?.content;
-        if (!result) throw new Error("AI returned empty response");
+    const result = response.choices[0]?.message?.content;
+    if (!result) throw new Error("AI returned empty response");
 
-        return parseDefensiveJson(result);
+    try {
+      return JSON.parse(result);
+    } catch (e) {
+      console.error("Failed to parse AI JSON response:", result);
+      throw new Error("AI response was not valid JSON");
     }
+  }
 
-    async buildResumeFromChat(chatHistory: any[], currentData: any): Promise<any> {
-        const response = await client.chat.completions.create({
-            model: "llama-3.1-8b-instant",
-            messages: [
-                {
-                    role: "system",
-                    content: `You are an expert AI Resume Builder.
+  async buildResumeFromChat(
+    chatHistory: any[],
+    currentData: any,
+  ): Promise<any> {
+    const response = await client.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert AI Resume Builder.
                     Your goal is to iteratively build and refine a JSON resume based on a conversation with the user.
                     
                     STRICT RULES:
@@ -136,16 +133,21 @@ export class AIProvider implements IAIProvider {
                             "date": "string"
                         }]
                     }`,
-                },
-                ...chatHistory
-            ],
-            temperature: 0.2,
-            response_format: { type: "json_object" }
-        });
+        },
+        ...chatHistory,
+      ],
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+    });
 
-        const result = response.choices[0]?.message?.content;
-        if (!result) throw new Error("AI returned empty response");
+    const result = response.choices[0]?.message?.content;
+    if (!result) throw new Error("AI returned empty response");
 
-        return parseDefensiveJson(result);
+    try {
+      return JSON.parse(result);
+    } catch (e) {
+      console.error("Failed to parse AI JSON response:", result);
+      throw new Error("AI response was not valid JSON");
     }
+  }
 }

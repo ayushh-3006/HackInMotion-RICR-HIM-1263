@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface IEnhancedResume extends Document {
   userId: string;
@@ -18,7 +18,10 @@ const EnhancedResumeSchema: Schema = new Schema(
     jobDescription: { type: String, required: true },
     pdfUrl: { type: String, required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export const EnhancedResume = mongoose.model<IEnhancedResume>('EnhancedResume', EnhancedResumeSchema);
+export const EnhancedResume = mongoose.model<IEnhancedResume>(
+  "EnhancedResume",
+  EnhancedResumeSchema,
+);

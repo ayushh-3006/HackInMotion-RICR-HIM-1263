@@ -34,7 +34,7 @@ export default function AuthLayout({
             <BrainCircuit size={16} className="text-white" />
           </div>
           <span className="text-sm font-semibold tracking-tight text-white">
-            AI Career Coach
+            resumind
           </span>
         </Link>
 

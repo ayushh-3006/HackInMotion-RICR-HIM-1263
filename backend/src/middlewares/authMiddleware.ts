@@ -3,14 +3,20 @@ import { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
 import { UserService } from "../services/user.service.js";
 
-const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+const clerkClient = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
 const userService = new UserService();
 
 // Base Clerk authentication middleware
 export const protectRoute = requireAuth();
 
 // Middleware to lazily sync Clerk user with MongoDB on authenticated requests
-export const syncUser = async (req: Request, res: Response, next: NextFunction) => {
+export const syncUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const authReq = req as any;
     console.log("syncUser middleware hit. req.auth:", authReq.auth);
@@ -24,15 +30,19 @@ export const syncUser = async (req: Request, res: Response, next: NextFunction) 
     // If missing, fetch from Clerk and sync to DB
     if (!user) {
       if (!process.env.CLERK_SECRET_KEY) {
-        console.warn("CLERK_SECRET_KEY is missing. Skipping user sync for:", clerkId);
+        console.warn(
+          "CLERK_SECRET_KEY is missing. Skipping user sync for:",
+          clerkId,
+        );
         return next();
       }
 
       const clerkUser = await clerkClient.users.getUser(clerkId);
       const email = clerkUser.emailAddresses[0]?.emailAddress;
-      
+
       if (email) {
-        const name = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
+        const name =
+          `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim();
         user = await userService.syncClerkUser(clerkId, email, name);
         console.log(`Lazily synced user ${clerkId} to MongoDB`);
       }

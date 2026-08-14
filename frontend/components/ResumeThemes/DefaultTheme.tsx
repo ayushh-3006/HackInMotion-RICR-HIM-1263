@@ -1,31 +1,38 @@
-import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
-import { Resume } from '@/types/resume';
+import React from "react";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Font,
+} from "@react-pdf/renderer";
+import { Resume } from "@/types/resume";
 
 // Create styles
 const styles = StyleSheet.create({
   page: {
     padding: 40,
-    backgroundColor: '#FFFFFF',
-    fontFamily: 'Helvetica',
+    backgroundColor: "#FFFFFF",
+    fontFamily: "Helvetica",
   },
   header: {
     marginBottom: 20,
     borderBottomWidth: 2,
-    borderBottomColor: '#000',
+    borderBottomColor: "#000",
     paddingBottom: 10,
   },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    fontWeight: "bold",
+    textTransform: "uppercase",
   },
   contactInfo: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     fontSize: 10,
     marginTop: 5,
-    color: '#333',
+    color: "#333",
   },
   contactItem: {
     marginRight: 10,
@@ -35,10 +42,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    fontWeight: "bold",
+    textTransform: "uppercase",
     borderBottomWidth: 1,
-    borderBottomColor: '#000',
+    borderBottomColor: "#000",
     marginBottom: 8,
     paddingBottom: 2,
   },
@@ -46,18 +53,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    fontWeight: 'bold',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    fontWeight: "bold",
   },
   entryTitle: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   entrySubtitle: {
     fontSize: 10,
-    fontStyle: 'italic',
-    color: '#444',
+    fontStyle: "italic",
+    color: "#444",
   },
   entryDate: {
     fontSize: 10,
@@ -72,14 +79,14 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
   },
   skillList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   skillItem: {
     fontSize: 10,
     marginRight: 8,
     marginBottom: 4,
-  }
+  },
 });
 
 const DefaultTheme = ({ data }: { data: any }) => (
@@ -87,16 +94,46 @@ const DefaultTheme = ({ data }: { data: any }) => (
     <Page size="A4" style={styles.page}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.name}>{data.personalInfo.fullName || 'Your Name'}</Text>
+        <Text style={styles.name}>
+          {data.personalInfo.fullName || "Your Name"}
+        </Text>
         <View style={styles.contactInfo}>
-          {data.personalInfo.email && <Text style={styles.contactItem}>{data.personalInfo.email}</Text>}
-          {data.personalInfo.phone && <Text style={styles.contactItem}>{data.personalInfo.phone}</Text>}
-          {data.personalInfo.linkedin && <Text style={styles.contactItem}>LinkedIn: {data.personalInfo.linkedin}</Text>}
-          {data.personalInfo.github && <Text style={styles.contactItem}>GitHub: {data.personalInfo.github}</Text>}
-          {data.personalInfo.twitter && <Text style={styles.contactItem}>Twitter: {data.personalInfo.twitter}</Text>}
-          {data.personalInfo.leetcode && <Text style={styles.contactItem}>LeetCode: {data.personalInfo.leetcode}</Text>}
-          {data.personalInfo.codeforces && <Text style={styles.contactItem}>CodeForces: {data.personalInfo.codeforces}</Text>}
-          {data.personalInfo.portfolio && <Text style={styles.contactItem}>{data.personalInfo.portfolio}</Text>}
+          {data.personalInfo.email && (
+            <Text style={styles.contactItem}>{data.personalInfo.email}</Text>
+          )}
+          {data.personalInfo.phone && (
+            <Text style={styles.contactItem}>{data.personalInfo.phone}</Text>
+          )}
+          {data.personalInfo.linkedin && (
+            <Text style={styles.contactItem}>
+              LinkedIn: {data.personalInfo.linkedin}
+            </Text>
+          )}
+          {data.personalInfo.github && (
+            <Text style={styles.contactItem}>
+              GitHub: {data.personalInfo.github}
+            </Text>
+          )}
+          {data.personalInfo.twitter && (
+            <Text style={styles.contactItem}>
+              Twitter: {data.personalInfo.twitter}
+            </Text>
+          )}
+          {data.personalInfo.leetcode && (
+            <Text style={styles.contactItem}>
+              LeetCode: {data.personalInfo.leetcode}
+            </Text>
+          )}
+          {data.personalInfo.codeforces && (
+            <Text style={styles.contactItem}>
+              CodeForces: {data.personalInfo.codeforces}
+            </Text>
+          )}
+          {data.personalInfo.portfolio && (
+            <Text style={styles.contactItem}>
+              {data.personalInfo.portfolio}
+            </Text>
+          )}
         </View>
       </View>
 

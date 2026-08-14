@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/components/lib/utils"
+import { cn } from "@/components/lib/utils";
 import { Menu, X } from "lucide-react";
 import {
   motion,
@@ -11,7 +11,6 @@ import {
 import Image from "next/image";
 
 import React, { useRef, useState } from "react";
-
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -62,14 +61,17 @@ export const Navbar = ({ children, className }: NavbarProps) => {
 
   return (
     <div
-      className={cn("fixed inset-x-0 top-6 z-[60] w-full max-w-full px-4 lg:px-8", className)}
+      className={cn(
+        "fixed inset-x-0 top-6 z-[60] w-full max-w-full px-4 lg:px-8",
+        className,
+      )}
     >
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
           ? React.cloneElement(
-            child as React.ReactElement<{ visible?: boolean }>,
-            { visible },
-          )
+              child as React.ReactElement<{ visible?: boolean }>,
+              { visible },
+            )
           : child,
       )}
     </div>
@@ -254,7 +256,7 @@ export const NavbarLogo = () => {
         href="#"
         className="relative z-20 flex items-center space-x-2 px-2 py-1"
       >
-        <span className="font-bold text-white text-lg tracking-tight">resumind</span>
+        <span className="font-bold text-white text-lg tracking-tight">Resumind</span>
         {/* <Image src="/Logo/full.png" className="w-[130px] h-auto object-contain" alt="Logo" width={200} height={60} /> */}
       </a>
     </div>
@@ -275,16 +277,16 @@ export const NavbarButton = ({
   className?: string;
   variant?: "primary" | "secondary" | "dark" | "gradient";
 } & (
-    | React.ComponentPropsWithoutRef<"a">
-    | React.ComponentPropsWithoutRef<"button">
-  )) => {
+  React.ComponentPropsWithoutRef<"a"> | React.ComponentPropsWithoutRef<"button">
+)) => {
   const baseStyles =
     "px-4 py-2 rounded-xl text-[14px] font-medium relative inline-flex items-center justify-center cursor-pointer transition-all duration-200 inline-block text-center whitespace-nowrap border border-transparent";
 
   const variantStyles = {
     primary:
       "bg-blue-600/90 text-white hover:scale-[1.02] hover:brightness-105",
-    secondary: "bg-transparent shadow-none text-white/80 hover:text-white hover:bg-[rgba(255,255,255,0.05)]",
+    secondary:
+      "bg-transparent shadow-none text-white/80 hover:text-white hover:bg-[rgba(255,255,255,0.05)]",
     dark: "bg-black text-white hover:scale-[1.02]",
     gradient:
       "bg-gradient-to-b from-blue-500/90 to-blue-600/90 text-white hover:scale-[1.02] hover:brightness-105",

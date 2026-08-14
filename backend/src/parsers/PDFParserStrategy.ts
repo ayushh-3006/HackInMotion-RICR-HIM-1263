@@ -1,10 +1,10 @@
-import { IDocumentParser } from './IDocumentParser.js';
-import { PDFParse } from 'pdf-parse';
+import { IDocumentParser } from "./IDocumentParser.js";
+import { PDFParse } from "pdf-parse";
 
 // SRP: This class only handles PDF extraction
 export class PDFParserStrategy implements IDocumentParser {
   canHandle(mimetype: string): boolean {
-    return mimetype === 'application/pdf';
+    return mimetype === "application/pdf";
   }
 
   async extractText(buffer: Buffer): Promise<string> {

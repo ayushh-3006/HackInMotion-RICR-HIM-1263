@@ -8,9 +8,11 @@ export class PDFResumeParser implements IResumeParser {
       parser = new PDFParse({ data: fileBuffer });
       const data = await parser.getText();
 
-      if (!data?.text || data.text.trim().length === 0) {
-        throw new Error("Could not extract text from PDF. Make sure it is not a scanned image.");
-      }
+    if (!data.text || data.text.trim().length === 0) {
+      throw new Error(
+        "Could not extract text from PDF. Make sure it is not a scanned image.",
+      );
+    }
 
       return data.text.trim();
     } catch (error: any) {

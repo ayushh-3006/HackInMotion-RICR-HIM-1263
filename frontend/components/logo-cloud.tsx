@@ -12,12 +12,7 @@ export function LogoCloud() {
           "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
       }}
     >
-      <InfiniteSlider
-        gap={64}
-        reverse
-        speed={60}
-        speedOnHover={20}
-      >
+      <InfiniteSlider gap={64} reverse speed={60} speedOnHover={20}>
         {logos.map((logo, index) => (
           <div
             key={`logo-${logo.alt}-${index}`}

@@ -16,7 +16,7 @@ export class ResumeController {
       new PDFResumeParser(),
       new GroqAIProvider(),
       new PuppeteerGenerator(),
-      new ResumeRepository()
+      new ResumeRepository(),
     );
   }
 
@@ -45,7 +45,7 @@ export class ResumeController {
         file.buffer,
         jobDescription,
         role,
-        userId
+        userId,
       );
 
       res.status(200).json({ success: true, data: result });
@@ -66,7 +66,9 @@ export class ResumeController {
 
   getResumeById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const resume = await this.resumeService.getResumeById(req.params.id as string);
+      const resume = await this.resumeService.getResumeById(
+        req.params.id as string,
+      );
       res.status(200).json({ success: true, data: resume });
     } catch (err: any) {
       res.status(404).json({ error: err.message });
