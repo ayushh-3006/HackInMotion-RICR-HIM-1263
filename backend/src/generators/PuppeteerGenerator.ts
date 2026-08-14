@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 import { IPDFGenerator } from "../interfaces/IPDFGenerator.js";
@@ -23,26 +23,26 @@ export class PuppeteerGenerator implements IPDFGenerator {
     // 2. Launch Puppeteer
     const browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     try {
       const page = await browser.newPage();
-      
+
       // Set content and wait for it to be loaded
-      await page.setContent(htmlContent, { waitUntil: 'load' });
+      await page.setContent(htmlContent, { waitUntil: "load" });
 
       // Generate PDF with professional margins
       await page.pdf({
         path: filePath,
-        format: 'A4',
+        format: "A4",
         printBackground: true,
         margin: {
-          top: '40px',
-          bottom: '40px',
-          left: '50px',
-          right: '50px'
-        }
+          top: "40px",
+          bottom: "40px",
+          left: "50px",
+          right: "50px",
+        },
       });
 
       return filePath;

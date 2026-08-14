@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import { Sidebar } from "@/components/dashboard/layout/sidebar";
@@ -21,9 +21,7 @@ export default function DashboardLayout({
         <Header />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto p-6 md:p-8">{children}</main>
       </div>
 
       <Toaster position="bottom-right" richColors />

@@ -1,15 +1,25 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Camera, Square, AlertCircle } from 'lucide-react';
-import { BodyLanguageAnalyzer, BodyLanguageMetrics } from '@/lib/BodyLanguageAnalyzer';
+import React, { useEffect, useRef, useState } from "react";
+import { Camera, Square, AlertCircle } from "lucide-react";
+import {
+  BodyLanguageAnalyzer,
+  BodyLanguageMetrics,
+} from "@/lib/BodyLanguageAnalyzer";
 
 interface VideoInterviewRecorderProps {
-  onRecordingComplete: (audioBlob: Blob, sampledFrames: string[], metrics: BodyLanguageMetrics[]) => void;
+  onRecordingComplete: (
+    audioBlob: Blob,
+    sampledFrames: string[],
+    metrics: BodyLanguageMetrics[],
+  ) => void;
   isAiSpeaking: boolean;
 }
 
-export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: VideoInterviewRecorderProps) {
+export function VideoInterviewRecorder({
+  onRecordingComplete,
+  isAiSpeaking,
+}: VideoInterviewRecorderProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -19,10 +29,10 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  
+
   const analyzerRef = useRef<BodyLanguageAnalyzer | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  
+
   const framesRef = useRef<string[]>([]);
   const metricsRef = useRef<BodyLanguageMetrics[]>([]);
   const lastSampleTimeRef = useRef<number>(0);
@@ -30,7 +40,10 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
   useEffect(() => {
     async function setupCamera() {
       try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
         setStream(mediaStream);
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
@@ -42,7 +55,7 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
         analyzer.fftSize = 256;
         source.connect(analyzer);
         const dataArray = new Uint8Array(analyzer.frequencyBinCount);
-        
+
         const updateAudioLevel = () => {
           analyzer.getByteFrequencyData(dataArray);
           const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
@@ -53,16 +66,17 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
 
         analyzerRef.current = new BodyLanguageAnalyzer();
         await analyzerRef.current.initialize();
-
       } catch (err) {
-        setError("Please allow camera and microphone access to use this feature.");
+        setError(
+          "Please allow camera and microphone access to use this feature.",
+        );
       }
     }
     setupCamera();
 
     return () => {
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -72,19 +86,28 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
 
   const processVideoFrames = () => {
     if (!videoRef.current || !canvasRef.current || !analyzerRef.current) return;
-    
+
     const timestampMs = performance.now();
-    const metrics = analyzerRef.current.analyzeFrame(videoRef.current, timestampMs);
-    
+    const metrics = analyzerRef.current.analyzeFrame(
+      videoRef.current,
+      timestampMs,
+    );
+
     if (metrics && isRecording) {
       metricsRef.current.push(metrics);
     }
 
     if (isRecording && timestampMs - lastSampleTimeRef.current > 3000) {
-      const ctx = canvasRef.current.getContext('2d');
+      const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-        const base64Frame = canvasRef.current.toDataURL('image/jpeg', 0.5);
+        ctx.drawImage(
+          videoRef.current,
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height,
+        );
+        const base64Frame = canvasRef.current.toDataURL("image/jpeg", 0.5);
         framesRef.current.push(base64Frame);
         lastSampleTimeRef.current = timestampMs;
       }
@@ -104,12 +127,14 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
     lastSampleTimeRef.current = performance.now();
 
     // Use video/webm since the stream contains video. Whisper API accepts webm.
-    mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
+    mediaRecorderRef.current = new MediaRecorder(stream, {
+      mimeType: "video/webm",
+    });
     mediaRecorderRef.current.ondataavailable = (e) => {
       if (e.data.size > 0) audioChunksRef.current.push(e.data);
     };
     mediaRecorderRef.current.onstop = () => {
-      const blob = new Blob(audioChunksRef.current, { type: 'video/webm' });
+      const blob = new Blob(audioChunksRef.current, { type: "video/webm" });
       onRecordingComplete(blob, framesRef.current, metricsRef.current);
     };
     mediaRecorderRef.current.start(1000); // Request data every second to prevent empty blobs
@@ -118,7 +143,10 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
 
   const stopRecording = () => {
     setIsRecording(false);
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
       mediaRecorderRef.current.stop();
     }
   };
@@ -139,12 +167,7 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
             muted
             className="w-full h-full object-cover transform scale-x-[-1]"
           />
-          <canvas
-            ref={canvasRef}
-            width={640}
-            height={480}
-            className="hidden"
-          />
+          <canvas ref={canvasRef} width={640} height={480} className="hidden" />
 
           <div className="absolute inset-0 pointer-events-none">
             <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-20">
@@ -173,13 +196,15 @@ export function VideoInterviewRecorder({ onRecordingComplete, isAiSpeaking }: Vi
                   </div>
                 )}
               </div>
-              
+
               <div className="flex gap-1 items-end h-4">
                 {[1, 2, 3, 4, 5].map((bar) => (
                   <div
                     key={bar}
                     className="w-1 bg-emerald-400 rounded-full transition-all duration-75"
-                    style={{ height: `${Math.max(4, (audioLevel / 255) * 16 * (bar / 3))}px` }}
+                    style={{
+                      height: `${Math.max(4, (audioLevel / 255) * 16 * (bar / 3))}px`,
+                    }}
                   />
                 ))}
               </div>

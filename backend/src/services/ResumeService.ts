@@ -19,10 +19,10 @@ import RoleEnhancerFactory from "../enhancer/RoleEnhancerFactory.js";
  */
 export class ResumeService {
   constructor(
-    private parser: IResumeParser,        // Knows HOW to extract text from PDF
-    private aiProvider: IAIProvider,      // Knows HOW to call AI
-    private pdfGenerator: IPDFGenerator,  // Knows HOW to create a PDF
-    private repository: IResumeRepository // Knows HOW to save to DB
+    private parser: IResumeParser, // Knows HOW to extract text from PDF
+    private aiProvider: IAIProvider, // Knows HOW to call AI
+    private pdfGenerator: IPDFGenerator, // Knows HOW to create a PDF
+    private repository: IResumeRepository, // Knows HOW to save to DB
   ) {}
 
   /**
@@ -33,21 +33,22 @@ export class ResumeService {
     fileBuffer: Buffer,
     jobDescription: string,
     role: string,
-    userId: string
+    userId: string,
   ): Promise<{ id: string; pdfUrl: string; enhancedText: string }> {
-
     const originalText = await this.parser.parse(fileBuffer);
 
     const roleEnhancer = RoleEnhancerFactory.create(role, this.aiProvider);
 
     // AI now returns a structured object
-    const enhancedData = await roleEnhancer.enhance(originalText, jobDescription);
+    const enhancedData = await roleEnhancer.enhance(
+      originalText,
+      jobDescription,
+    );
 
     const fileName = `resume-${uuidv4()}.pdf`;
     // PuppeteerGenerator accepts the data object
     await this.pdfGenerator.generate(enhancedData, fileName);
     const pdfUrl = `/uploads/${fileName}`;
-
 
     const saved = await this.repository.save({
       userId,
@@ -60,11 +61,9 @@ export class ResumeService {
     return { id: saved.id, pdfUrl, enhancedText: JSON.stringify(enhancedData) };
   }
 
-
   async getMyResumes(userId: string): Promise<any[]> {
     return this.repository.findByUserId(userId);
   }
-
 
   async getResumeById(id: string): Promise<any> {
     const resume = await this.repository.findById(id);
@@ -75,7 +74,6 @@ export class ResumeService {
 
     return resume;
   }
-
 
   getAvailableRoles(): string[] {
     return RoleEnhancerFactory.getAvailableRoles();

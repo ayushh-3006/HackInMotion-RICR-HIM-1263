@@ -8,7 +8,19 @@ dotenv.config();
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY! });
 
 /* ── Filler‑word scanner ── */
-const FILLER_WORDS = ["um", "uh", "like", "you know", "basically", "actually", "so", "right", "i mean", "sort of", "kind of"];
+const FILLER_WORDS = [
+  "um",
+  "uh",
+  "like",
+  "you know",
+  "basically",
+  "actually",
+  "so",
+  "right",
+  "i mean",
+  "sort of",
+  "kind of",
+];
 
 export interface FillerResult {
   word: string;
@@ -29,7 +41,11 @@ function scanFillerWords(text: string): FillerResult[] {
   return results;
 }
 
-function classifyConfidence(wpm: number, fillerTotal: number, toneScore: number): string {
+function classifyConfidence(
+  wpm: number,
+  fillerTotal: number,
+  toneScore: number,
+): string {
   if (wpm > 170) return "Fast-Paced";
   if (wpm < 110 || fillerTotal > 8 || toneScore < 50) return "Hesitant";
   if (toneScore >= 70 && fillerTotal <= 4) return "Confident";
@@ -37,9 +53,11 @@ function classifyConfidence(wpm: number, fillerTotal: number, toneScore: number)
 }
 
 export class InterviewService {
-
   /* ── Audio → Text via Groq Whisper ── */
-  public async transcribeAudio(audioBuffer: Buffer, originalName: string): Promise<string> {
+  public async transcribeAudio(
+    audioBuffer: Buffer,
+    originalName: string,
+  ): Promise<string> {
     // Groq's Whisper API requires a File-like object; we write a temp file
     const tmpDir = path.resolve("uploads", "tmp");
     if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
@@ -59,7 +77,11 @@ export class InterviewService {
       return (transcription as any).text ?? String(transcription);
     } finally {
       // Clean up temp file
-      try { fs.unlinkSync(tmpPath); } catch { /* ignore */ }
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* ignore */
+      }
     }
   }
 
@@ -69,7 +91,7 @@ export class InterviewService {
     interviewType: string,
     experience: string,
     category?: string,
-    difficulty?: string
+    difficulty?: string,
   ): Promise<any> {
     const diffLabel = difficulty || "Medium";
     const catLabel = category || interviewType;
@@ -94,7 +116,7 @@ SCHEMA:
       model: "llama-3.1-8b-instant",
       messages: [{ role: "system", content: prompt }],
       temperature: 0.7,
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
     });
 
     const content = response.choices[0]?.message?.content;
@@ -107,11 +129,17 @@ SCHEMA:
   public async evaluateAnswer(
     questionText: string,
     transcribedText: string,
-    audioDurationSeconds: number
+    audioDurationSeconds: number,
   ): Promise<any> {
     // Calculate metrics locally
-    const wordCount = transcribedText.trim().split(/\s+/).filter(w => w.length > 0).length;
-    const wpm = audioDurationSeconds > 0 ? Math.round((wordCount / audioDurationSeconds) * 60) : 0;
+    const wordCount = transcribedText
+      .trim()
+      .split(/\s+/)
+      .filter((w) => w.length > 0).length;
+    const wpm =
+      audioDurationSeconds > 0
+        ? Math.round((wordCount / audioDurationSeconds) * 60)
+        : 0;
     const fillerWords = scanFillerWords(transcribedText);
     const fillerTotal = fillerWords.reduce((sum, f) => sum + f.count, 0);
 
@@ -150,7 +178,7 @@ Return ONLY valid JSON matching this exact schema:
       model: "llama-3.1-8b-instant",
       messages: [{ role: "system", content: prompt }],
       temperature: 0.3,
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
     });
 
     const content = response.choices[0]?.message?.content;
@@ -159,7 +187,11 @@ Return ONLY valid JSON matching this exact schema:
     const aiResult = JSON.parse(content);
 
     // Classify confidence based on metrics
-    const confidenceLabel = classifyConfidence(wpm, fillerTotal, aiResult.toneScore || 0);
+    const confidenceLabel = classifyConfidence(
+      wpm,
+      fillerTotal,
+      aiResult.toneScore || 0,
+    );
 
     return {
       ...aiResult,
@@ -167,7 +199,7 @@ Return ONLY valid JSON matching this exact schema:
       fillerWords,
       fillerTotal,
       confidenceLabel,
-      audioDurationSeconds
+      audioDurationSeconds,
     };
   }
 }

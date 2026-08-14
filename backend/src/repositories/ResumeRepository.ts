@@ -1,4 +1,7 @@
-import { IResumeRepository, SaveResumeData } from "../interfaces/IResumeRepository.js";
+import {
+  IResumeRepository,
+  SaveResumeData,
+} from "../interfaces/IResumeRepository.js";
 import { EnhancedResume } from "../models/EnhancedResume.js";
 
 export class ResumeRepository implements IResumeRepository {

@@ -13,48 +13,57 @@ export class ResumeBuilderController {
 
   constructor() {
     this.builderService = new ResumeBuilderService(
-        new ResumeBuilderRepository(),
-        new AIProvider(),
-        new PuppeteerGenerator()
+      new ResumeBuilderRepository(),
+      new AIProvider(),
+      new PuppeteerGenerator(),
     );
   }
 
   generate = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { chatHistory, currentData } = req.body;
-        if (!chatHistory) {
-            res.status(400).json({ success: false, error: "chatHistory is required" });
-            return;
-        }
+      const { chatHistory, currentData } = req.body;
+      if (!chatHistory) {
+        res
+          .status(400)
+          .json({ success: false, error: "chatHistory is required" });
+        return;
+      }
 
-        const newResume = await this.builderService.generateResume(chatHistory, currentData || {});
-        res.status(200).json({ success: true, data: newResume });
+      const newResume = await this.builderService.generateResume(
+        chatHistory,
+        currentData || {},
+      );
+      res.status(200).json({ success: true, data: newResume });
     } catch (err: any) {
-        res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: err.message });
     }
   };
 
   export = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { resumeData, theme } = req.body;
-        if (!resumeData) {
-            res.status(400).json({ success: false, error: "resumeData is required" });
-            return;
-        }
+      const { resumeData, theme } = req.body;
+      if (!resumeData) {
+        res
+          .status(400)
+          .json({ success: false, error: "resumeData is required" });
+        return;
+      }
 
-        const filePath = await this.builderService.exportPdf(resumeData, theme || "default");
-        
-        // Send file and clean up
-        res.download(filePath, `resume_${Date.now()}.pdf`, (err) => {
-            if (err) console.error("Error downloading file:", err);
-            // Cleanup the generated file
-            fs.unlink(filePath, (unlinkErr) => {
-                if (unlinkErr) console.error("Error deleting temp file:", unlinkErr);
-            });
+      const filePath = await this.builderService.exportPdf(
+        resumeData,
+        theme || "default",
+      );
+
+      // Send file and clean up
+      res.download(filePath, `resume_${Date.now()}.pdf`, (err) => {
+        if (err) console.error("Error downloading file:", err);
+        // Cleanup the generated file
+        fs.unlink(filePath, (unlinkErr) => {
+          if (unlinkErr) console.error("Error deleting temp file:", unlinkErr);
         });
-
+      });
     } catch (err: any) {
-        res.status(500).json({ success: false, error: err.message });
+      res.status(500).json({ success: false, error: err.message });
     }
   };
 
@@ -69,10 +78,19 @@ export class ResumeBuilderController {
           theme,
           data: req.body,
         });
-        res.status(200).json({ success: true, message: "Draft updated", id: result.id });
+        res
+          .status(200)
+          .json({ success: true, message: "Draft updated", id: result.id });
       } else {
-        const result = await this.builderService.saveDraft(userId, title, req.body, theme);
-        res.status(201).json({ success: true, message: "Draft saved", id: result.id });
+        const result = await this.builderService.saveDraft(
+          userId,
+          title,
+          req.body,
+          theme,
+        );
+        res
+          .status(201)
+          .json({ success: true, message: "Draft saved", id: result.id });
       }
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });

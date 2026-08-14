@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface IResumeDraft extends Document {
   userId: string;
@@ -13,10 +13,13 @@ const ResumeDraftSchema: Schema = new Schema(
   {
     userId: { type: String, required: true },
     title: { type: String, required: true },
-    theme: { type: String, required: true, default: 'default' },
+    theme: { type: String, required: true, default: "default" },
     data: { type: Schema.Types.Mixed, required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export const ResumeDraft = mongoose.model<IResumeDraft>('ResumeDraft', ResumeDraftSchema);
+export const ResumeDraft = mongoose.model<IResumeDraft>(
+  "ResumeDraft",
+  ResumeDraftSchema,
+);

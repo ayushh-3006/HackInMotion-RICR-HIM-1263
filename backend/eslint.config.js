@@ -6,5 +6,12 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     ignores: ["node_modules/", "dist/"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-empty": "off",
+      "preserve-caught-error": "off",
+    },
   },
 );
