@@ -20,7 +20,7 @@ const mainLinks = [
   { name: 'Overview', href: '/dashboard', icon: Home },
   { name: 'ATS Score Checker', href: '/dashboard/ats', icon: FileText },
   { name: 'AI Resume Builder', href: '/dashboard/ai-resume-builder', icon: Target },
-  { name: 'Resume Enhancer', href: '/dashboard/mock-interview', icon: Mic },
+  { name: 'Mock Interview', href: '/dashboard/mock-interview', icon: Mic },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart2 },
 ];
 

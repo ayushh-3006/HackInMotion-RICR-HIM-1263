@@ -3,7 +3,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { toast } from 'sonner';
-import { UploadCloud, FileText, Loader2, Briefcase, FileSearch, X, Sparkles } from 'lucide-react';
+import { UploadCloud, FileText, Loader2, Briefcase, FileSearch, X, Sparkles, RotateCcw } from 'lucide-react';
 import ScoreGauge from '@/components/ats/ScoreGauge';
 import SkillTagList from '@/components/ats/SkillTagList';
 import SuggestionsList from '@/components/ats/SuggestionsList';
@@ -36,7 +36,10 @@ export default function ATSCheckerPage() {
   const [file, setFile] = useState<File | null>(null);
   const [jobRole, setJobRole] = useState('');
   const [jobSkills, setJobSkills] = useState('');
-  const [experience, setExperience] = useState('');
+  const [experience, setExperience] = useState('Fresher');
+
+  const defaultSkills = ['React', 'Express', 'Node', 'MongoDB', '.NET'];
+  const [availableSkills, setAvailableSkills] = useState<string[]>(defaultSkills);
 
   /* UI state */
   const [loading, setLoading] = useState(false);
@@ -185,29 +188,54 @@ export default function ATSCheckerPage() {
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Target Job Role</label>
               <div className="relative">
                 <Briefcase size={16} className="absolute left-3.5 top-3 text-slate-400" />
-                <input
-                  type="text"
+                <select
                   value={jobRole}
                   onChange={(e) => setJobRole(e.target.value)}
-                  placeholder="e.g. Senior Frontend Developer"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow placeholder:text-slate-400 placeholder:font-normal"
-                />
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow appearance-none"
+                >
+                  <option value="">Select a role...</option>
+                  <option value="Full Stack Developer">Full Stack Developer</option>
+                  <option value="Frontend Developer">Frontend Developer</option>
+                  <option value="Backend Developer">Backend Developer</option>
+                  <option value="Software Engineer">Software Engineer</option>
+                  <option value="Data Scientist">Data Scientist</option>
+                  <option value="Product Manager">Product Manager</option>
+                  <option value="DevOps Engineer">DevOps Engineer</option>
+                  <option value="UI/UX Designer">UI/UX Designer</option>
+                  <option value="Mobile App Developer">Mobile App Developer</option>
+                  <option value="QA Automation Engineer">QA Automation Engineer</option>
+                </select>
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Experience Level</label>
-              <input
-                type="text"
+              <select
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
-                placeholder="e.g. 3–5 years"
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow placeholder:text-slate-400 placeholder:font-normal"
-              />
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow appearance-none"
+              >
+                <option value="Fresher">Fresher</option>
+                <option value="1-3 years">1-3 years</option>
+                <option value="3-5 years">3-5 years</option>
+                <option value="5-7 years">5-7 years</option>
+                <option value="7-10 years">7-10 years</option>
+              </select>
             </div>
 
             <div className="flex-1 flex flex-col">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Required Skills / Job Description</label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Required Skills / Job Description</label>
+                {availableSkills.length < defaultSkills.length && (
+                  <button
+                    type="button"
+                    onClick={() => setAvailableSkills(defaultSkills)}
+                    className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-indigo-500 transition-colors uppercase tracking-wider"
+                  >
+                    <RotateCcw size={12} /> Reset Chips
+                  </button>
+                )}
+              </div>
               <textarea
                 value={jobSkills}
                 onChange={(e) => setJobSkills(e.target.value)}
@@ -244,10 +272,10 @@ export default function ATSCheckerPage() {
           {/* Score + Section Scores */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <ScoreGauge score={result.score} />
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-6">
-              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">AI Summary</h3>
+            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">AI Summary</h3>
               <p className="text-slate-600 text-sm leading-relaxed font-medium mb-6">{result.aiSummary}</p>
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Section Performance</h4>
+              <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-4">Section Performance</h4>
               <SectionScores scores={result.sectionScores} />
             </div>
           </div>
