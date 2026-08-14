@@ -8,9 +8,13 @@ import Image from 'next/image'
 import { ContainerScroll } from '@/components/ui/container-scroll-animation'
 import { LogoCloud } from '@/components/logo-cloud'
 import { Glitter } from '@/components/ui/glitter'
-
+import { useAuth } from '@clerk/nextjs'
+import Link from 'next/link'
 
 const Hero = () => {
+  const { userId } = useAuth()
+  const destinationUrl = userId ? "/dashboard" : "/register"
+
   return (
     <div className="min-h-screen w-full max-w-full overflow-hidden relative pb-6 sm:pb-10">
 
@@ -86,7 +90,9 @@ const Hero = () => {
               </div>
 
               <div className='flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4'>
-                <ButtonWithIconDemo />
+                <Link href={destinationUrl}>
+                  <ButtonWithIconDemo />
+                </Link>
                 <a 
                   href="#how-it-works"
                   className="bg-white text-[#1C4ED6] border border-[#1C4ED6] hover:bg-[#1C4ED6] hover:text-white rounded-full h-12 px-8 font-manrope font-medium text-sm transition-all duration-300 shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center active:bg-[#1C4ED6] active:text-white"
