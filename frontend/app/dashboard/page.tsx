@@ -25,6 +25,8 @@ export default function DashboardPage() {
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [interviewHistory, setInterviewHistory] = useState<InterviewRecord[]>([]);
+
+  const [atsHistory, setAtsHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -36,43 +38,52 @@ export default function DashboardPage() {
       const baseUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-      const [statsRes, atsRes] = await Promise.all([
+      const [statsRes, atsRes, interviewRes] = await Promise.all([
         fetch(`${baseUrl}/dashboard/stats`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`${baseUrl}/ats/history`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
+        fetch(`${baseUrl}/interview/history`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
 
       let statsData = null;
       let atsData = [];
+      let interviewData = [];
 
       if (statsRes.ok) {
         const statsJson = await statsRes.json();
         if (statsJson.success) statsData = statsJson.data;
       } else {
-        console.warn(
-          `Stats fetch failed with status: ${statsRes.status}. Using fallback data.`,
-        );
+        console.warn(`Stats fetch failed with status: ${statsRes.status}`);
       }
 
       if (atsRes.ok) {
-        const historyJson = await atsRes.json();
-        if (historyJson.success) atsData = historyJson.data;
+        const atsJson = await atsRes.json();
+        if (atsJson.success) atsData = atsJson.data;
       } else {
-        console.warn(
-          `ATS history fetch failed with status: ${atsRes.status}. Using fallback data.`,
-        );
+        console.warn(`ATS history fetch failed with status: ${atsRes.status}`);
+      }
+
+      if (interviewRes.ok) {
+        const interviewJson = await interviewRes.json();
+        if (interviewJson.success) interviewData = interviewJson.data;
+      } else {
+        console.warn(`Interview history fetch failed with status: ${interviewRes.status}`);
       }
 
       setStats(statsData);
-      setInterviewHistory(atsData);
+      setInterviewHistory(interviewData); 
+      setAtsHistory(atsData);
     } catch (err) {
       console.warn("Dashboard fetchData network error or backend unavailable.");
       // Do not throw or use console.error to prevent Next.js red overlay.
       setStats(null);
       setInterviewHistory([]);
+      setAtsHistory([]);
     } finally {
       setLoading(false);
     }
@@ -86,7 +97,8 @@ export default function DashboardPage() {
     if (user) {
       const syncUser = async () => {
         try {
-          await fetch("http://localhost:5000/api/users/sync", {
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+          await fetch(`${baseUrl}/users/sync`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -131,7 +143,8 @@ export default function DashboardPage() {
       <DashboardOverview
         userName={firstName}
         stats={stats}
-        atsHistory={interviewHistory}
+        atsHistory={atsHistory}
+        interviewHistory={interviewHistory}
       />
     </div>
   );

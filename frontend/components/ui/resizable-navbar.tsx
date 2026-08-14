@@ -256,8 +256,8 @@ export const NavbarLogo = () => {
         href="#"
         className="relative z-20 flex items-center space-x-2 px-2 py-1"
       >
+        <Image src="/logo.png" alt="Resumind Logo" width={32} height={32} className="rounded-lg" />
         <span className="font-bold text-white text-lg tracking-tight">Resumind</span>
-        {/* <Image src="/Logo/full.png" className="w-[130px] h-auto object-contain" alt="Logo" width={200} height={60} /> */}
       </a>
     </div>
   );

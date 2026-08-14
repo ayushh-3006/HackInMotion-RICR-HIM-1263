@@ -37,8 +37,8 @@ function useToast() {
           exit={{ opacity: 0, scale: 0.95 }}
           className={`rounded-xl border px-4 py-3 text-sm shadow-2xl backdrop-blur-md ${
             t.type === "error"
-              ? "border-red-500/30 bg-red-950/80 text-red-200"
-              : "border-emerald-500/30 bg-emerald-950/80 text-emerald-200"
+              ? "border-red-500/30 bg-red-50 text-red-700"
+              : "border-emerald-500/30 bg-emerald-50 text-emerald-700"
           }`}
         >
           <p className="font-semibold">{t.title}</p>
@@ -71,7 +71,7 @@ function Input({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-xs font-medium text-zinc-400">
+      <label htmlFor={id} className="text-xs font-medium text-slate-500">
         {label}
       </label>
       <div className="relative">
@@ -81,7 +81,7 @@ function Input({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/70 focus:bg-white/8 focus:ring-1 focus:ring-violet-500/30"
+          className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-indigo-500 focus:bg-slate-50 focus:ring-1 focus:ring-indigo-500/30"
         />
         {suffix && (
           <div className="absolute inset-y-0 right-3 flex items-center">
@@ -195,10 +195,10 @@ export default function LoginPage() {
       >
         {/* Header */}
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             Sign in to account
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-slate-500">
             Welcome back! Enter your details to access your account.
           </p>
         </div>
@@ -230,7 +230,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                className="text-slate-400 hover:text-slate-600 transition-colors"
               >
                 {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
@@ -241,7 +241,7 @@ export default function LoginPage() {
           <div className="flex justify-end -mt-1">
             <Link
               href="/forgot-password"
-              className="text-xs text-zinc-500 hover:text-violet-400 transition-colors"
+              className="text-xs text-slate-500 hover:text-indigo-600 transition-colors"
             >
               Forgot password?
             </Link>
@@ -276,7 +276,7 @@ export default function LoginPage() {
                 redirectUrlComplete: "/dashboard",
               })
             }
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-white/10"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -302,19 +302,19 @@ export default function LoginPage() {
 
         {/* Divider */}
         <div className="relative flex items-center gap-3">
-          <div className="h-px flex-1 bg-white/8" />
-          <span className="text-[11px] text-zinc-600">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-[11px] text-slate-400">
             New to AI Career Coach?
           </span>
-          <div className="h-px flex-1 bg-white/8" />
+          <div className="h-px flex-1 bg-slate-200" />
         </div>
 
         {/* Sign up link */}
-        <p className="text-center text-sm text-zinc-500">
+        <p className="text-center text-sm text-slate-500">
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="font-semibold text-violet-400 hover:text-violet-300 transition-colors"
+            className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
           >
             Create Account
           </Link>

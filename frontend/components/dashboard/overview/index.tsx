@@ -20,12 +20,14 @@ interface DashboardOverviewProps {
     totalInterviews?: number;
   } | null;
   atsHistory?: InterviewRecord[];
+  interviewHistory?: InterviewRecord[];
 }
 
 export function DashboardOverview({
   userName,
   stats,
   atsHistory,
+  interviewHistory,
 }: DashboardOverviewProps) {
   return (
     <div className="w-full max-w-[1400px] mx-auto space-y-6">
@@ -38,7 +40,7 @@ export function DashboardOverview({
         </div>
 
         <div className="xl:col-span-1 flex flex-col gap-6">
-          <InsightsColumn interviewHistory={atsHistory} />
+          <InsightsColumn interviewHistory={interviewHistory || atsHistory} />
         </div>
       </div>
     </div>

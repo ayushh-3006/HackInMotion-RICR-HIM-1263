@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ATSAnalyzer } from "../services/ATSAnalyzerModule.js";
 import { ParserFactory } from "../parsers/ParserFactory.js";
-import { IATSRepository } from "../interfaces/IATSRepository.js";
+import { ATSResult } from "../models/ATSResult.js";
 
 import { ATSService } from "../services/ATSService.js";
 
@@ -24,28 +24,32 @@ export class ATSController {
         return;
       }
 
-      let result;
-      try {
-        result = await this.analyzer.analyzeText(resumeText, jobDescription);
-      } catch (aiError) {
-        console.error("AI Error:", aiError);
-        res.status(502).json({ error: "Failed to communicate with AI provider" });
-        return;
-      }
+      // Construct a job description for the AI
+      const jobDescription = this.constructJD(
+        jobRole,
+        experience,
+        jobSkills,
+        filters,
+      );
 
-      const mappedResult = this.mapResult(result);
-      const userId = (req as any).auth?.userId || (req as any).userId;
-
-      if (userId) {
-        await this.repository.save({
-          userId,
-          score: mappedResult.score,
-          jobRole: "Parsed from Text",
-          fileName: "Pasted Text",
+      const result = await this.analyzer.analyzeText(
+        resumeText,
+        jobDescription,
+      );
+      const mapped = this.mapResult(result);
+      
+      const clerkUserId = (req as any).userId;
+      if (clerkUserId) {
+        await ATSResult.create({
+          clerkUserId,
+          jobRole: jobRole || "General",
+          score: mapped.score,
+          matchedSkills: mapped.matchedSkills,
+          missingSkills: mapped.missingSkills,
         });
       }
 
-      res.status(200).json(mappedResult);
+      res.status(200).json(mapped);
     } catch (err: any) {
       res.status(500).json({ error: err.message || "Internal Server Error" });
     }
@@ -83,19 +87,32 @@ export class ATSController {
         return;
       }
 
-      const mappedResult = this.mapResult(result);
-      const userId = (req as any).auth?.userId || (req as any).userId;
+      // Construct a job description for the AI
+      const jobDescription = this.constructJD(
+        jobRole,
+        experience,
+        jobSkills,
+        filters,
+      );
 
-      if (userId) {
-        await this.repository.save({
-          userId,
-          score: mappedResult.score,
-          jobRole: "Parsed from Document",
-          fileName: file.originalname || "Uploaded File",
+      const result = await this.analyzer.analyzeText(
+        resumeText,
+        jobDescription,
+      );
+      const mapped = this.mapResult(result);
+      
+      const clerkUserId = (req as any).userId;
+      if (clerkUserId) {
+        await ATSResult.create({
+          clerkUserId,
+          jobRole: jobRole || "General",
+          score: mapped.score,
+          matchedSkills: mapped.matchedSkills,
+          missingSkills: mapped.missingSkills,
         });
       }
 
-      res.status(200).json(mappedResult);
+      res.status(200).json(mapped);
     } catch (err: any) {
       res.status(err.message?.includes("Unsupported") ? 415 : 500).json({
         error: err.message || "Internal Server Error",
@@ -149,46 +166,23 @@ export class ATSController {
     };
   }
 
-  match = async (req: Request, res: Response): Promise<void> => {
+  getHistory = async (req: Request, res: Response): Promise<void> => {
     try {
-      if (!this.atsService) {
-        res.status(501).json({ error: "ATSService is not configured." });
+      const clerkUserId = (req as any).userId;
+      if (!clerkUserId) {
+        res.status(401).json({ error: "Not authenticated" });
         return;
       }
 
-      const file = (req as any).file;
-      const { jobDescription } = req.body;
+      const history = await ATSResult.find({ clerkUserId })
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .lean();
 
-      if (!file) {
-        res.status(400).json({ error: "resume file is required" });
-        return;
-      }
-
-      if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
-        res.status(400).json({ error: "jobDescription (string) is required" });
-        return;
-      }
-
-      const userId = (req as any).auth?.userId || (req as any).userId;
-      if (!userId) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-      }
-
-      const result = await this.atsService.matchResumeToJob(
-        userId,
-        file.buffer,
-        file.mimetype,
-        jobDescription,
-        file.originalname || "Uploaded File"
-      );
-
-      res.status(200).json({ success: true, data: result });
+      res.status(200).json({ success: true, data: history });
     } catch (err: any) {
-      res.status(err.message?.includes("Unsupported") ? 415 : 500).json({
-        success: false,
-        error: err.message || "Internal Server Error",
-      });
+      console.error("Error fetching ATS history:", err);
+      res.status(500).json({ error: "Failed to fetch history" });
     }
   };
 }

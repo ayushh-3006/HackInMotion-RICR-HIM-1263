@@ -135,6 +135,7 @@ app.get("/api/dashboard/stats", clerkAuth, async (req: Request, res: Response) =
   }
 });
 
+
 // Interview routes
 const interviewController = new InterviewController();
 app.use("/api/interview", new InterviewRoutes(interviewController).router);
