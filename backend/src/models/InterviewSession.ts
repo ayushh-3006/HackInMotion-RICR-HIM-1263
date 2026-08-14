@@ -33,7 +33,7 @@ export interface IInterviewSession extends Document {
   overallFeedback: string;
   status: 'in-progress' | 'completed';
   isPublic: boolean;
-  shareToken: string | null;
+  shareToken?: string;
   sharedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -72,7 +72,7 @@ const InterviewSessionSchema = new Schema<IInterviewSession>({
   overallFeedback: { type: String },
   status: { type: String, enum: ['in-progress', 'completed'], default: 'in-progress' },
   isPublic: { type: Boolean, default: false },
-  shareToken: { type: String, default: null, index: { unique: true, sparse: true } },
+  shareToken: { type: String, index: { unique: true, sparse: true } },
   sharedAt: { type: Date, default: null }
 }, {
   timestamps: true
