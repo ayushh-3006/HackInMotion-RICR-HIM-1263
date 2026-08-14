@@ -254,7 +254,7 @@ export class InterviewController {
       }
 
       session.isPublic = false;
-      session.shareToken = null;
+      session.shareToken = undefined;
       session.sharedAt = null;
       await session.save();
 
