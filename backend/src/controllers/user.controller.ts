@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Webhook } from "svix";
 import { UserService } from "../services/user.service.js";
 import User from "../models/User.js";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -47,6 +48,10 @@ export const clerkWebhookHandler = async (req: Request, res: Response) => {
 
 export const syncUser = async (req: Request, res: Response): Promise<any> => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ success: false, message: "Database connection unavailable" });
+    }
+
     const { clerkUserId, email, firstName, lastName, profilePicture } = req.body;
 
     if (!clerkUserId || !email) {
@@ -56,7 +61,7 @@ export const syncUser = async (req: Request, res: Response): Promise<any> => {
     const user = await User.findOneAndUpdate(
       { clerkUserId },
       { clerkUserId, email, firstName, lastName, profilePicture },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
     return res.status(200).json({ success: true, data: user });
