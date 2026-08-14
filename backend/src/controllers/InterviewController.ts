@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { InterviewService } from '../services/InterviewService.js';
 import { InterviewSession } from '../models/InterviewSession.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const interviewService = new InterviewService();
 
@@ -189,6 +190,124 @@ export class InterviewController {
     } catch (error: any) {
       console.error("Error in getHistory:", error);
       res.status(500).json({ error: error.message || "Failed to fetch history" });
+    }
+  }
+
+  /* ── POST /interview/sessions/:id/share ── */
+  public async shareSession(req: Request, res: Response): Promise<void> {
+    try {
+      const clerkUserId = (req as any).userId;
+      if (!clerkUserId) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+      }
+
+      const session = await InterviewSession.findById(req.params.id);
+      if (!session) {
+        res.status(404).json({ error: "Session not found" });
+        return;
+      }
+
+      // Verify ownership
+      if (session.clerkUserId !== clerkUserId) {
+        res.status(403).json({ error: "You do not own this session" });
+        return;
+      }
+
+      // Generate share token if one doesn't exist
+      if (!session.shareToken) {
+        session.shareToken = uuidv4().replace(/-/g, '').slice(0, 16);
+      }
+      session.isPublic = true;
+      session.sharedAt = new Date();
+      await session.save();
+
+      res.status(200).json({
+        success: true,
+        shareToken: session.shareToken,
+        shareUrl: `/shared/reports/${session.shareToken}`
+      });
+    } catch (error: any) {
+      console.error("Error in shareSession:", error);
+      res.status(500).json({ error: error.message || "Failed to share session" });
+    }
+  }
+
+  /* ── DELETE /interview/sessions/:id/share ── */
+  public async revokeShare(req: Request, res: Response): Promise<void> {
+    try {
+      const clerkUserId = (req as any).userId;
+      if (!clerkUserId) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+      }
+
+      const session = await InterviewSession.findById(req.params.id);
+      if (!session) {
+        res.status(404).json({ error: "Session not found" });
+        return;
+      }
+
+      if (session.clerkUserId !== clerkUserId) {
+        res.status(403).json({ error: "You do not own this session" });
+        return;
+      }
+
+      session.isPublic = false;
+      session.shareToken = null;
+      session.sharedAt = null;
+      await session.save();
+
+      res.status(200).json({ success: true, message: "Share link revoked" });
+    } catch (error: any) {
+      console.error("Error in revokeShare:", error);
+      res.status(500).json({ error: error.message || "Failed to revoke share" });
+    }
+  }
+
+  /* ── GET /interview/shared/:shareToken (PUBLIC) ── */
+  public async getSharedReport(req: Request, res: Response): Promise<void> {
+    try {
+      const { shareToken } = req.params;
+
+      const session = await InterviewSession.findOne({ shareToken, isPublic: true }).lean();
+      if (!session) {
+        res.status(404).json({ error: "Report not found or link has been revoked" });
+        return;
+      }
+
+      // Return non-sensitive evaluation data only
+      const safeData = {
+        jobRole: session.jobRole,
+        interviewType: session.interviewType,
+        category: session.category,
+        difficulty: session.difficulty,
+        overallScore: session.overallScore,
+        overallFeedback: session.overallFeedback,
+        status: session.status,
+        sharedAt: session.sharedAt,
+        createdAt: session.createdAt,
+        questions: session.questions,
+        answers: session.answers.map(a => ({
+          questionId: a.questionId,
+          transcribedText: a.transcribedText,
+          contentScore: a.contentScore,
+          toneScore: a.toneScore,
+          feedback: a.feedback,
+          strengths: a.strengths,
+          improvements: a.improvements,
+          wpm: a.wpm,
+          fillerWords: a.fillerWords,
+          confidenceLabel: a.confidenceLabel,
+          idealAnswer: a.idealAnswer,
+          audioDurationSeconds: a.audioDurationSeconds,
+        })),
+      };
+
+      res.status(200).json({ success: true, data: safeData });
+    } catch (error: any) {
+      console.error("Error in getSharedReport:", error);
+      res.status(500).json({ error: error.message || "Failed to fetch shared report" });
     }
   }
 }
