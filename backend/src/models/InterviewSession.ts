@@ -72,8 +72,6 @@ const InterviewSessionSchema = new Schema<IInterviewSession>({
   overallFeedback: { type: String },
   status: { type: String, enum: ['in-progress', 'completed'], default: 'in-progress' },
   isPublic: { type: Boolean, default: false },
-  shareToken: { type: String, index: { unique: true, sparse: true } },
-  sharedAt: { type: Date }
   shareToken: { type: String, default: null, index: { unique: true, sparse: true } },
   sharedAt: { type: Date, default: null }
 }, {
