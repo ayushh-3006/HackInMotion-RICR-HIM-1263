@@ -7,6 +7,15 @@ import multer from "multer";
 const audioUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    // Gracefully accept all audio/video mimetypes to avoid strict validation crashes.
+    // If it's a blob, it might be audio/webm, video/webm, audio/mp4, etc.
+    if (file.mimetype.startsWith('audio/') || file.mimetype.startsWith('video/') || file.mimetype === 'application/octet-stream') {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type: expected audio or video'));
+    }
+  }
 });
 
 export class InterviewRoutes {
