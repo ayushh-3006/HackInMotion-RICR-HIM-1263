@@ -34,8 +34,8 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
   const offset = circ - (animated / 100) * circ;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-8 flex flex-col items-center justify-center h-full">
-      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-6">Match Score</h3>
+    <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col items-center justify-center h-full">
+      <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-6">Match Score</h3>
       <div className="relative">
         <svg width="180" height="180" style={{ transform: 'rotate(-90deg)' }}>
           <circle cx="90" cy="90" r={r} fill="none" stroke="#F1F5F9" strokeWidth={strokeW} />

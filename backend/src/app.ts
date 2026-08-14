@@ -47,6 +47,13 @@ const groqApiKey = process.env.GROQ_API_KEY || "";
 const atsController = new ATSController(new ATSAnalyzer(groqApiKey), new ParserFactory());
 app.use("/api/ats", new ATSRouter(atsController).router);
 
+// Interview routes
+import { InterviewRoutes } from "./routes/InterviewRoutes.js";
+import { InterviewController } from "./controllers/InterviewController.js";
+
+const interviewController = new InterviewController();
+app.use("/api/interview", new InterviewRoutes(interviewController).router);
+
 // Health check route
 app.get("/api/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok", message: "Server is healthy" });

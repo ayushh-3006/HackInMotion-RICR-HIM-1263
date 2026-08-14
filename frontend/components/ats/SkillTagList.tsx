@@ -16,8 +16,8 @@ export default function SkillTagList({ title, skills, type }: SkillTagListProps)
   const Icon = isMatched ? CheckCircle2 : XCircle;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-6 h-full">
-      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+    <div className="bg-white rounded-2xl border border-slate-200 p-6 h-full">
+      <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-4 flex items-center gap-2">
         <Icon className={`w-4 h-4 ${isMatched ? 'text-emerald-500' : 'text-rose-500'}`} />
         {title}
         <span className="ml-auto text-xs font-bold px-2 py-0.5 bg-slate-100 rounded-full text-slate-500">

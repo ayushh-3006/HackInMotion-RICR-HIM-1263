@@ -1,0 +1,43 @@
+import { Router } from "express";
+import { InterviewController } from "../controllers/InterviewController.js";
+import { clerkAuth } from "../middlewares/clerkAuth.js";
+import multer from "multer";
+
+// In-memory upload for audio blobs (max 25 MB)
+const audioUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024 },
+});
+
+export class InterviewRoutes {
+  public router: Router;
+  private controller: InterviewController;
+
+  constructor(controller: InterviewController) {
+    this.router = Router();
+    this.controller = controller;
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes() {
+    // Start a new interview session
+    this.router.post("/start", clerkAuth, this.controller.startInterview.bind(this.controller));
+
+    // Transcribe audio → text
+    this.router.post(
+      "/transcribe",
+      clerkAuth,
+      audioUpload.single("audio"),
+      this.controller.transcribeAudio.bind(this.controller)
+    );
+
+    // Submit an answer for evaluation
+    this.router.post("/submit-answer", clerkAuth, this.controller.submitAnswer.bind(this.controller));
+
+    // Complete the interview session
+    this.router.post("/complete", clerkAuth, this.controller.completeInterview.bind(this.controller));
+
+    // Fetch past interview sessions
+    this.router.get("/history", clerkAuth, this.controller.getHistory.bind(this.controller));
+  }
+}
