@@ -2,24 +2,25 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Home, 
-  FileText, 
-  Target, 
-  Mic, 
-  BarChart2, 
-  PenTool, 
-  ShieldCheck, 
-  BookOpen, 
+import {
+  Home,
+  FileText,
+  Target,
+  Mic,
+  BarChart2,
+  PenTool,
+  ShieldCheck,
+  BookOpen,
   Share2,
   ChevronUp
 } from 'lucide-react';
 
+
 const mainLinks = [
   { name: 'Overview', href: '/dashboard', icon: Home },
   { name: 'ATS Score Checker', href: '/dashboard/ats', icon: FileText },
-  { name: 'JD Matcher & Rewriter', href: '/dashboard/jd-matcher', icon: Target },
-  { name: 'Mock Interview Studio', href: '/dashboard/mock-interview', icon: Mic },
+  { name: 'AI Resume Builder', href: '/dashboard/ai-resume-builder', icon: Target },
+  { name: 'Resume Enhancer', href: '/dashboard/mock-interview', icon: Mic },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart2 },
 ];
 
@@ -71,11 +72,10 @@ export function Sidebar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
                     ? 'bg-indigo-50 text-indigo-700 shadow-sm'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
                 {link.name}
@@ -96,11 +96,10 @@ export function Sidebar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    isActive
+                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
                       ? 'bg-indigo-50 text-indigo-700'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
+                    }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
                   {link.name}
