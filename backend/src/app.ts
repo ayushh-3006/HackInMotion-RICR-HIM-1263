@@ -26,15 +26,29 @@ app.use(syncUser); // Lazily sync Clerk users on any authenticated API call
 // User routes
 app.use("/api/users", userRoutes);
 
-// ATS routes
-import { ATSRouter } from "./routes/ATSRouter.js";
-import { ATSController } from "./controllers/ATSController.js";
-import { ATSAnalyzer } from "./services/ATSAnalyzerModule.js";
-import { ParserFactory } from "./parsers/ParserFactory.js";
+// Mock Dashboard Stats Route
+app.get("/api/dashboard/stats", (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      totalDrafts: 12,
+      totalATSScans: 45,
+      totalPDFs: 8,
+      avgATSScore: 82,
+    },
+  });
+});
 
-const groqApiKey = process.env.GROQ_API_KEY || "";
-const atsController = new ATSController(new ATSAnalyzer(groqApiKey), new ParserFactory());
-app.use("/api/ats", new ATSRouter(atsController).router);
+// Mock ATS History Route
+app.get("/api/ats/history", (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    data: [
+      { id: "1", score: 85, jobRole: "Frontend Developer", fileName: "resume_v1.pdf", createdAt: new Date().toISOString() },
+      { id: "2", score: 62, jobRole: "Software Engineer", fileName: "resume_old.pdf", createdAt: new Date(Date.now() - 86400000).toISOString() }
+    ],
+  });
+});
 
 // Health check route
 app.get("/api/health", (req: Request, res: Response) => {
