@@ -201,8 +201,7 @@ export function ActiveSuggestions() {
               </AnimatePresence>
             </div>
           );
-        })
-        )}
+        })}
       </div>
     </div>
   );
