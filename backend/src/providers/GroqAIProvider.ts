@@ -154,4 +154,32 @@ export class AIProvider implements IAIProvider {
       throw new Error("AI response was not valid JSON");
     }
   }
+
+  async enhanceBullet(bulletPoint: string, role: string): Promise<string> {
+    const response = await client.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [
+        {
+          role: "system",
+          content: `You are an Expert Resume Writer AI. 
+Your task is to upgrade the provided resume bullet point to be ATS-friendly and highly impactful for the target role.
+STRICT RULES:
+1. Start with a strong action verb.
+2. Incorporate metrics or results where possible, or improve the wording significantly.
+3. Tailor the tone and keywords for the target role.
+4. RETURN ONLY THE ENHANCED STRING. Do not include quotes, markdown, conversational filler, or explanations.`,
+        },
+        {
+          role: "user",
+          content: `TARGET ROLE: ${role}\nBULLET POINT: ${bulletPoint}`,
+        },
+      ],
+      temperature: 0.7,
+    });
+
+    const result = response.choices[0]?.message?.content;
+    if (!result) throw new Error("AI returned empty response");
+    
+    return result.trim();
+  }
 }

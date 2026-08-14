@@ -12,6 +12,12 @@ const controller = new ResumeBuilderController();
 router.post("/generate", clerkAuth, controller.generate);
 
 /**
+ * POST /api/resume-builder/enhance-bullet
+ * Enhances a single resume bullet point
+ */
+router.post("/enhance-bullet", clerkAuth, controller.enhanceBullet);
+
+/**
  * POST /api/resume-builder/export
  * Exports the resume JSON to a PDF
  */

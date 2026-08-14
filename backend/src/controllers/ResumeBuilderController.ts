@@ -128,4 +128,24 @@ export class ResumeBuilderController {
       res.status(500).json({ success: false, error: err.message });
     }
   };
+
+  enhanceBullet = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { bulletPoint, role } = req.body;
+      if (!bulletPoint || !role) {
+        res
+          .status(400)
+          .json({ success: false, error: "bulletPoint and role are required" });
+        return;
+      }
+
+      const enhancedBullet = await this.builderService.enhanceBullet(
+        bulletPoint,
+        role,
+      );
+      res.status(200).json({ success: true, data: enhancedBullet });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  };
 }

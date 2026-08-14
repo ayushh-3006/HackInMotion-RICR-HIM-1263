@@ -74,4 +74,11 @@ export class ResumeBuilderService {
     if (!existing) throw new Error("Draft not found or access denied.");
     await this.repository.delete(id, userId);
   }
+
+  async enhanceBullet(bulletPoint: string, role: string): Promise<string> {
+    if (!this.aiProvider.enhanceBullet) {
+      throw new Error("AI Provider does not support bullet enhancement.");
+    }
+    return this.aiProvider.enhanceBullet(bulletPoint, role);
+  }
 }
