@@ -15,6 +15,7 @@ export class BodyLanguageAnalyzer {
   private poseLandmarker: PoseLandmarker | null = null;
   private isInitialized = false;
   private lastVideoTime = -1;
+  private lastTimestampMs = -1;
 
   public async initialize() {
     if (this.isInitialized) return;
@@ -27,7 +28,7 @@ export class BodyLanguageAnalyzer {
       this.faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
-          delegate: "GPU",
+          delegate: "CPU",
         },
         outputFaceBlendshapes: true,
         runningMode: "VIDEO",
@@ -37,7 +38,7 @@ export class BodyLanguageAnalyzer {
       this.poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath: `https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task`,
-          delegate: "GPU",
+          delegate: "CPU",
         },
         runningMode: "VIDEO",
         numPoses: 1,
@@ -71,14 +72,21 @@ export class BodyLanguageAnalyzer {
     }
     this.lastVideoTime = videoElement.currentTime;
 
+    // Enforce strictly increasing integer timestamp
+    let safeTimestampMs = Math.round(timestampMs);
+    if (safeTimestampMs <= this.lastTimestampMs) {
+      safeTimestampMs = this.lastTimestampMs + 1;
+    }
+    this.lastTimestampMs = safeTimestampMs;
+
     try {
       const faceResult = this.faceLandmarker.detectForVideo(
         videoElement,
-        timestampMs,
+        safeTimestampMs,
       );
       const poseResult = this.poseLandmarker.detectForVideo(
         videoElement,
-        timestampMs,
+        safeTimestampMs,
       );
 
       let eyeContactScore = 50;
