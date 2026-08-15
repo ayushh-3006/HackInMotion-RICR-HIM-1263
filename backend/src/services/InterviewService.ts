@@ -54,14 +54,14 @@ function classifyConfidence(
 
 // Defensive JSON parser helper
 function parseDefensiveJson(result: string): any {
-    try {
-        const jsonMatch = result.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-        const cleanStr = jsonMatch ? jsonMatch[1].trim() : result.trim();
-        return JSON.parse(cleanStr);
-    } catch (e) {
-        console.error("Failed to parse AI JSON response:", result);
-        throw new Error("AI response was not valid JSON");
-    }
+  try {
+    const jsonMatch = result.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    const cleanStr = jsonMatch ? jsonMatch[1].trim() : result.trim();
+    return JSON.parse(cleanStr);
+  } catch (e) {
+    console.error("Failed to parse AI JSON response:", result);
+    throw new Error("AI response was not valid JSON");
+  }
 }
 
 export class InterviewService {
@@ -80,8 +80,11 @@ export class InterviewService {
 
     const ext = path.extname(originalName) || ".webm";
     // Add randomness to prevent collisions
-    const tmpPath = path.join(tmpDir, `interview_${Date.now()}_${Math.random().toString(36).substring(7)}${ext}`);
-    
+    const tmpPath = path.join(
+      tmpDir,
+      `interview_${Date.now()}_${Math.random().toString(36).substring(7)}${ext}`,
+    );
+
     await fs.promises.writeFile(tmpPath, audioBuffer);
 
     try {

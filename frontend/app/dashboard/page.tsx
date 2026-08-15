@@ -97,7 +97,8 @@ export default function DashboardPage() {
     if (user) {
       const syncUser = async () => {
         try {
-          const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+          const baseUrl =
+            process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
           await fetch(`${baseUrl}/users/sync`, {
             method: "POST",
             headers: {

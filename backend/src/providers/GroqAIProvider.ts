@@ -8,7 +8,6 @@ if (!process.env.GROQ_API_KEY) {
 }
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-
 /**
  * SOLID — S (Single Responsibility): Only job is calling Groq AI and returning text.
  * SOLID — D (Dependency Inversion): Implements IAIProvider interface.
@@ -179,7 +178,7 @@ STRICT RULES:
 
     const result = response.choices[0]?.message?.content;
     if (!result) throw new Error("AI returned empty response");
-    
+
     return result.trim();
   }
 

@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { Loader2, Library, Briefcase, ChevronRight, CheckCircle2 } from "lucide-react";
+import {
+  Loader2,
+  Library,
+  Briefcase,
+  ChevronRight,
+  CheckCircle2,
+} from "lucide-react";
 
 interface QuestionDef {
   id: string;
@@ -16,11 +22,11 @@ interface QuestionDef {
 
 export default function QuestionBankPage() {
   const { getToken } = useAuth();
-  
+
   const [industry, setIndustry] = useState("Tech & Software");
   const [targetRole, setTargetRole] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("Medium");
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [questions, setQuestions] = useState<QuestionDef[]>([]);
@@ -35,19 +41,22 @@ export default function QuestionBankPage() {
 
     try {
       const token = await getToken();
-      const res = await fetch("http://localhost:5000/api/interview/questions/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        "http://localhost:5000/api/interview/questions/generate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            industry,
+            targetRole,
+            experienceLevel,
+            questionCount: 5,
+          }),
         },
-        body: JSON.stringify({
-          industry,
-          targetRole,
-          experienceLevel,
-          questionCount: 5,
-        }),
-      });
+      );
 
       const data = await res.json();
       if (!res.ok || !data.success) {
@@ -70,15 +79,21 @@ export default function QuestionBankPage() {
           Industry-Specific Question Bank
         </h1>
         <p className="text-slate-500">
-          Generate tailored interview questions based on your specific industry, role, and experience level.
+          Generate tailored interview questions based on your specific industry,
+          role, and experience level.
         </p>
       </div>
 
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="p-6 md:p-8">
-          <form onSubmit={handleGenerate} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+          <form
+            onSubmit={handleGenerate}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end"
+          >
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Industry</label>
+              <label className="text-sm font-semibold text-slate-700">
+                Industry
+              </label>
               <select
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
@@ -93,7 +108,9 @@ export default function QuestionBankPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Target Role</label>
+              <label className="text-sm font-semibold text-slate-700">
+                Target Role
+              </label>
               <select
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value)}
@@ -101,7 +118,9 @@ export default function QuestionBankPage() {
                 required
               >
                 <option value="">Select a role...</option>
-                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="Full Stack Developer">
+                  Full Stack Developer
+                </option>
                 <option value="Frontend Developer">Frontend Developer</option>
                 <option value="Backend Developer">Backend Developer</option>
                 <option value="Software Engineer">Software Engineer</option>
@@ -109,13 +128,19 @@ export default function QuestionBankPage() {
                 <option value="Product Manager">Product Manager</option>
                 <option value="DevOps Engineer">DevOps Engineer</option>
                 <option value="UI/UX Designer">UI/UX Designer</option>
-                <option value="Mobile App Developer">Mobile App Developer</option>
-                <option value="QA Automation Engineer">QA Automation Engineer</option>
+                <option value="Mobile App Developer">
+                  Mobile App Developer
+                </option>
+                <option value="QA Automation Engineer">
+                  QA Automation Engineer
+                </option>
               </select>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Interview Level</label>
+              <label className="text-sm font-semibold text-slate-700">
+                Interview Level
+              </label>
               <select
                 value={experienceLevel}
                 onChange={(e) => setExperienceLevel(e.target.value)}
@@ -158,34 +183,47 @@ export default function QuestionBankPage() {
 
       {questions.length > 0 && (
         <div className="space-y-6">
-          <h2 className="text-lg font-bold text-slate-900">Your Tailored Question Bank</h2>
+          <h2 className="text-lg font-bold text-slate-900">
+            Your Tailored Question Bank
+          </h2>
           <div className="grid grid-cols-1 gap-6">
             {questions.map((q, i) => (
-              <div key={q.id || i} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-6 hover:border-indigo-200 transition-colors">
+              <div
+                key={q.id || i}
+                className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-6 hover:border-indigo-200 transition-colors"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                       {q.type}
                     </span>
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide ${
-                      q.difficulty === 'Hard' ? 'bg-red-100 text-red-700' :
-                      q.difficulty === 'Medium' ? 'bg-amber-100 text-amber-700' :
-                      'bg-emerald-100 text-emerald-700'
-                    }`}>
+                    <span
+                      className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide ${
+                        q.difficulty === "Hard"
+                          ? "bg-red-100 text-red-700"
+                          : q.difficulty === "Medium"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-emerald-100 text-emerald-700"
+                      }`}
+                    >
                       {q.difficulty}
                     </span>
                   </div>
-                  <span className="text-slate-400 font-medium text-sm">Question {i + 1}</span>
+                  <span className="text-slate-400 font-medium text-sm">
+                    Question {i + 1}
+                  </span>
                 </div>
-                
+
                 <h3 className="text-xl font-bold text-slate-900 mb-3 leading-snug">
                   {q.question}
                 </h3>
-                
+
                 {q.contextOrScenario && (
                   <div className="mb-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <p className="text-sm font-medium text-slate-700 italic">
-                      <span className="font-bold text-slate-900 not-italic">Scenario: </span>
+                      <span className="font-bold text-slate-900 not-italic">
+                        Scenario:{" "}
+                      </span>
                       {q.contextOrScenario}
                     </p>
                   </div>
@@ -199,7 +237,10 @@ export default function QuestionBankPage() {
                     </h4>
                     <ul className="space-y-2">
                       {q.keyPointsExpected.map((kp, idx) => (
-                        <li key={idx} className="text-sm text-slate-600 flex items-start gap-2">
+                        <li
+                          key={idx}
+                          className="text-sm text-slate-600 flex items-start gap-2"
+                        >
                           <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mt-1.5 flex-shrink-0" />
                           <span>{kp}</span>
                         </li>

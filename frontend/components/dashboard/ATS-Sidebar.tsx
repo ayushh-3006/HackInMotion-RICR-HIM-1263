@@ -48,7 +48,8 @@ export function ATSSidebar() {
 
     try {
       const token = await getToken();
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
       const formData = new FormData();
       formData.append("resume", file);
@@ -94,7 +95,10 @@ export function ATSSidebar() {
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <UploadCloud className="w-8 h-8 mb-3 text-slate-400" />
               <p className="mb-2 text-sm text-slate-600">
-                <span className="font-semibold text-indigo-600">Click to upload</span> or drag and drop
+                <span className="font-semibold text-indigo-600">
+                  Click to upload
+                </span>{" "}
+                or drag and drop
               </p>
               <p className="text-xs text-slate-500">
                 {file ? file.name : "Max 5MB"}
@@ -169,7 +173,9 @@ export function ATSSidebar() {
                   strokeWidth="12"
                   fill="transparent"
                   strokeDasharray={351.858}
-                  strokeDashoffset={351.858 - (351.858 * result.matchScore) / 100}
+                  strokeDashoffset={
+                    351.858 - (351.858 * result.matchScore) / 100
+                  }
                   className={`${
                     result.matchScore >= 80
                       ? "text-emerald-500"
@@ -183,7 +189,9 @@ export function ATSSidebar() {
                 <span className="text-3xl font-black text-slate-900 tracking-tight">
                   {result.matchScore}%
                 </span>
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Match</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
+                  Match
+                </span>
               </div>
             </div>
           </div>

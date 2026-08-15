@@ -19,14 +19,16 @@ export function ProgressSummary({
   const latestAts = useMemo(() => {
     if (!atsHistory.length) return null;
     return [...atsHistory].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )[0];
   }, [atsHistory]);
 
   const latestInterview = useMemo(() => {
     if (!interviewsHistory.length) return null;
     return [...interviewsHistory].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )[0];
   }, [interviewsHistory]);
 
@@ -70,10 +72,14 @@ export function ProgressSummary({
             </div>
             <div>
               <p className="text-sm font-bold text-slate-800">Total Activity</p>
-              <p className="text-xs font-medium text-slate-500 mt-0.5">Scans & Interviews</p>
+              <p className="text-xs font-medium text-slate-500 mt-0.5">
+                Scans & Interviews
+              </p>
             </div>
           </div>
-          <span className="text-lg font-black text-slate-900">{totalActivity}</span>
+          <span className="text-lg font-black text-slate-900">
+            {totalActivity}
+          </span>
         </div>
 
         {/* Latest ATS Score */}
@@ -84,13 +90,17 @@ export function ProgressSummary({
                 <Target className="w-5 h-5 text-indigo-500" />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-800">Latest ATS Score</p>
+                <p className="text-sm font-bold text-slate-800">
+                  Latest ATS Score
+                </p>
                 <p className="text-xs font-medium text-slate-500 mt-0.5">
                   {format(parseISO(latestAts.createdAt), "MMM d, yyyy")}
                 </p>
               </div>
             </div>
-            <span className="text-lg font-black text-indigo-700">{latestAts.score}%</span>
+            <span className="text-lg font-black text-indigo-700">
+              {latestAts.score}%
+            </span>
           </div>
         )}
 
@@ -102,7 +112,9 @@ export function ProgressSummary({
                 <Mic className="w-5 h-5 text-purple-500" />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-800">Last Interview</p>
+                <p className="text-sm font-bold text-slate-800">
+                  Last Interview
+                </p>
                 <p className="text-xs font-medium text-slate-500 mt-0.5">
                   {format(parseISO(latestInterview.createdAt), "MMM d, yyyy")}
                 </p>

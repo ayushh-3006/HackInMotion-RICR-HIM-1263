@@ -3,12 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  TrendingUp,
-  CheckCircle2,
-  Zap,
-  ShieldCheck,
-} from "lucide-react";
+import { TrendingUp, CheckCircle2, Zap, ShieldCheck } from "lucide-react";
 import ButtonCTA from "@/components/Buttons/buttonCTA";
 import {
   Status,

@@ -12,20 +12,20 @@ export class PDFParserStrategy implements IDocumentParser {
     try {
       parser = new PDFParse({ data: buffer });
       const result = await parser.getText();
-      
+
       if (!result?.text) {
-          return "";
+        return "";
       }
       return result.text.trim();
     } catch (error: any) {
       console.error("PDFParserStrategy failed:", error);
       throw new Error(`Failed to extract text from PDF: ${error.message}`);
     } finally {
-      if (parser && typeof parser.destroy === 'function') {
+      if (parser && typeof parser.destroy === "function") {
         try {
-            await parser.destroy();
+          await parser.destroy();
         } catch (e) {
-            console.error("Failed to destroy PDF parser:", e);
+          console.error("Failed to destroy PDF parser:", e);
         }
       }
     }

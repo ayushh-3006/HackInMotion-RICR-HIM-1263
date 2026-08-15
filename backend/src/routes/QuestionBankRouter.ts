@@ -27,32 +27,48 @@ export class QuestionBankRouter {
    */
   private generateBank = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { 
-        industry, 
-        targetRole, 
-        experienceLevel, 
-        questionCount, 
-        includeBehavioral, 
-        jobDescription 
+      const {
+        industry,
+        targetRole,
+        experienceLevel,
+        questionCount,
+        includeBehavioral,
+        jobDescription,
       } = req.body;
 
       // Validate required fields
       if (!industry || typeof industry !== "string") {
-        res.status(400).json({ success: false, error: "Missing required string field: industry" });
+        res
+          .status(400)
+          .json({
+            success: false,
+            error: "Missing required string field: industry",
+          });
         return;
       }
       if (!targetRole || typeof targetRole !== "string") {
-        res.status(400).json({ success: false, error: "Missing required string field: targetRole" });
+        res
+          .status(400)
+          .json({
+            success: false,
+            error: "Missing required string field: targetRole",
+          });
         return;
       }
       if (!experienceLevel || typeof experienceLevel !== "string") {
-        res.status(400).json({ success: false, error: "Missing required string field: experienceLevel" });
+        res
+          .status(400)
+          .json({
+            success: false,
+            error: "Missing required string field: experienceLevel",
+          });
         return;
       }
 
       // Default optional fields
       const count = typeof questionCount === "number" ? questionCount : 5;
-      const behavioral = typeof includeBehavioral === "boolean" ? includeBehavioral : true;
+      const behavioral =
+        typeof includeBehavioral === "boolean" ? includeBehavioral : true;
 
       const result = await this.service.generateBank(
         industry,
@@ -60,7 +76,7 @@ export class QuestionBankRouter {
         experienceLevel,
         count,
         behavioral,
-        jobDescription
+        jobDescription,
       );
 
       res.status(200).json({

@@ -1,6 +1,6 @@
 import React from "react";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
-import type { Resume } from "@/types/resume";
+import type { Resume as _Resume } from "@/types/resume";
 
 const styles = StyleSheet.create({
   page: {

@@ -21,4 +21,7 @@ const ATSResultSchema: Schema = new Schema(
   { timestamps: true },
 );
 
-export const ATSResult = mongoose.model<IATSResult>("ATSResult", ATSResultSchema);
+export const ATSResult = mongoose.model<IATSResult>(
+  "ATSResult",
+  ATSResultSchema,
+);

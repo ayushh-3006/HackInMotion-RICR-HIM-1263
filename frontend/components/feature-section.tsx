@@ -210,7 +210,7 @@ function PresenceVisual() {
   );
 }
 
-function CustomLockIcon(props: React.ComponentProps<"svg">) {
+function _CustomLockIcon(props: React.ComponentProps<"svg">) {
   return (
     <svg
       fill="none"

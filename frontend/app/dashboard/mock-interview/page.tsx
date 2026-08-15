@@ -70,8 +70,6 @@ interface SessionData {
   shareToken?: string | null;
 }
 
-
-
 /* ──────── Waveform Bars ──────── */
 function WaveformBars({
   volume,
@@ -319,12 +317,8 @@ export default function MockInterviewPage() {
   const [shareUrl, setShareUrl] = useState("");
   const [isSharing, setIsSharing] = useState(false);
 
-  const {
-    transcript,
-    interimTranscript,
-    startListening,
-    stopListening,
-  } = useSpeechRecognition();
+  const { transcript, interimTranscript, startListening, stopListening } =
+    useSpeechRecognition();
   const { volume, startAnalyzing, stopAnalyzing } = useAudioAnalyzer();
   const mediaRecorder = useMediaRecorder();
 
@@ -658,16 +652,24 @@ export default function MockInterviewPage() {
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-medium text-slate-700 appearance-none bg-white"
                   >
                     <option value="">Select a role...</option>
-                    <option value="Full Stack Developer">Full Stack Developer</option>
-                    <option value="Frontend Developer">Frontend Developer</option>
+                    <option value="Full Stack Developer">
+                      Full Stack Developer
+                    </option>
+                    <option value="Frontend Developer">
+                      Frontend Developer
+                    </option>
                     <option value="Backend Developer">Backend Developer</option>
                     <option value="Software Engineer">Software Engineer</option>
                     <option value="Data Scientist">Data Scientist</option>
                     <option value="Product Manager">Product Manager</option>
                     <option value="DevOps Engineer">DevOps Engineer</option>
                     <option value="UI/UX Designer">UI/UX Designer</option>
-                    <option value="Mobile App Developer">Mobile App Developer</option>
-                    <option value="QA Automation Engineer">QA Automation Engineer</option>
+                    <option value="Mobile App Developer">
+                      Mobile App Developer
+                    </option>
+                    <option value="QA Automation Engineer">
+                      QA Automation Engineer
+                    </option>
                   </select>
                 </div>
 
@@ -753,8 +755,9 @@ export default function MockInterviewPage() {
                 {session.jobRole}
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                {session.questions[currentQuestionIndex]?.type || "Mixed"} · Question{" "}
-                {currentQuestionIndex + 1} of {session.questions.length}
+                {session.questions[currentQuestionIndex]?.type || "Mixed"} ·
+                Question {currentQuestionIndex + 1} of{" "}
+                {session.questions.length}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -902,9 +905,7 @@ export default function MockInterviewPage() {
             <h1 className="text-3xl font-black text-slate-900 mb-1 tracking-tight">
               Interview Complete!
             </h1>
-            <p className="text-slate-500 text-sm">
-              {session.jobRole}
-            </p>
+            <p className="text-slate-500 text-sm">{session.jobRole}</p>
           </div>
 
           {/* Overall Score + Delivery Summary */}

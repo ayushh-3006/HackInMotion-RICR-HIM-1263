@@ -17,8 +17,14 @@ export class ATSService {
     jobDescription: string,
     fileName: string,
   ): Promise<IATSResult> {
-    if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
-      throw new Error("Job description is required and must be a valid string.");
+    if (
+      !jobDescription ||
+      typeof jobDescription !== "string" ||
+      !jobDescription.trim()
+    ) {
+      throw new Error(
+        "Job description is required and must be a valid string.",
+      );
     }
 
     if (!this.aiProvider.matchATS) {
@@ -30,7 +36,7 @@ export class ATSService {
       .replace(/<[^>]*>?/gm, "") // Strip HTML tags
       .replace(/\\n{3,}/g, "\\n\\n") // Normalize whitespace
       .trim();
-      
+
     if (sanitizedJD.length > 20000) {
       sanitizedJD = sanitizedJD.substring(0, 20000); // Prevent overflow
     }
@@ -40,7 +46,9 @@ export class ATSService {
     const resumeText = await parser.extractText(fileBuffer);
 
     if (!resumeText.trim()) {
-      throw new Error("Could not extract any text from the provided resume file.");
+      throw new Error(
+        "Could not extract any text from the provided resume file.",
+      );
     }
 
     // 3. Call the AI Engine for matching

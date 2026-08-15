@@ -38,8 +38,8 @@ export interface IInterviewSession extends Document {
   clerkUserId: string;
   jobRole: string;
   interviewType: string; // e.g. 'Mixed'
-  category: string; 
-  difficulty: string; 
+  category: string;
+  difficulty: string;
   questions: { id: string; text: string; type?: string }[];
   answers: IAnswer[];
   overallScore: number;

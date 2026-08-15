@@ -52,7 +52,7 @@ export const useAudioAnalyzer = () => {
       streamRef.current = null;
     }
     if (audioContextRef.current) {
-      if (audioContextRef.current.state !== 'closed') {
+      if (audioContextRef.current.state !== "closed") {
         audioContextRef.current.close().catch(() => {});
       }
       audioContextRef.current = null;

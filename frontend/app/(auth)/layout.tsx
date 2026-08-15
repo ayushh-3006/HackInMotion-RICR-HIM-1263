@@ -31,7 +31,13 @@ export default function AuthLayout({
           href="/"
           className="absolute top-8 left-8 flex items-center gap-2.5 hover:opacity-80 transition-opacity"
         >
-          <Image src="/logo.png" alt="Resumind Logo" width={32} height={32} className="rounded-lg" />
+          <Image
+            src="/logo.png"
+            alt="Resumind Logo"
+            width={32}
+            height={32}
+            className="rounded-lg"
+          />
           <span className="text-sm font-semibold tracking-tight text-slate-900">
             resumind
           </span>

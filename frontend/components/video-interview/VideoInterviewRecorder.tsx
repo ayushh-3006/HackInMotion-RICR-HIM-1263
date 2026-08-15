@@ -66,7 +66,7 @@ export function VideoInterviewRecorder({
 
         analyzerRef.current = new BodyLanguageAnalyzer();
         await analyzerRef.current.initialize();
-      } catch (err) {
+      } catch (_err) {
         setError(
           "Please allow camera and microphone access to use this feature.",
         );

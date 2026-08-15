@@ -87,7 +87,13 @@ export function Sidebar({ isOpen = false, setIsOpen }: SidebarProps) {
             onClick={closeMenu}
           >
             <div className="group-hover:scale-105 transition-transform">
-              <Image src="/logo.png" alt="Resumind Logo" width={32} height={32} className="object-contain" />
+              <Image
+                src="/logo.png"
+                alt="Resumind Logo"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none">

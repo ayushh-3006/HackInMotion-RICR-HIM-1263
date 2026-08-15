@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { Sparkles } from "lucide-react";
 
 export default function HoverBorderGradientDemo() {
   return (

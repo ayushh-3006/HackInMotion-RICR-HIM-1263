@@ -37,10 +37,12 @@ const app = express();
 // Webhook routes (MUST be before express.json() because it needs raw body)
 app.use("/api/webhooks", webhookRoutes);
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // Database readiness check middleware
@@ -73,7 +75,11 @@ app.get("/api/uploads/:filename", clerkAuth, (req: Request, res: Response) => {
   const filename = req.params.filename as string;
 
   // Block directory traversal attacks
-  if (filename.includes("..") || filename.includes("/") || filename.includes("\\")) {
+  if (
+    filename.includes("..") ||
+    filename.includes("/") ||
+    filename.includes("\\")
+  ) {
     res.status(400).json({ error: "Invalid filename." });
     return;
   }
@@ -91,7 +97,9 @@ import { AIProvider } from "./providers/GroqAIProvider.js";
 
 const groqApiKey = process.env.GROQ_API_KEY;
 if (!groqApiKey) {
-  throw new Error("FATAL: GROQ_API_KEY environment variable is not set. Server cannot start.");
+  throw new Error(
+    "FATAL: GROQ_API_KEY environment variable is not set. Server cannot start.",
+  );
 }
 
 const atsRepository = new ATSRepository();
@@ -104,37 +112,48 @@ const atsController = new ATSController(
   new ATSAnalyzer(groqApiKey), // Keeps old compatibility
   parserFactory,
   atsRepository,
-  atsService
+  atsService,
 );
 app.use("/api/ats", new ATSRouter(atsController).router);
 
 // Real Dashboard Stats Route
-app.get("/api/dashboard/stats", clerkAuth, async (req: Request, res: Response) => {
-  try {
-    const userId = (req as any).userId;
-    const totalDrafts = await ResumeDraft.countDocuments({ userId });
-    const totalInterviews = await InterviewSession.countDocuments({ clerkUserId: userId });
+app.get(
+  "/api/dashboard/stats",
+  clerkAuth,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).userId;
+      const totalDrafts = await ResumeDraft.countDocuments({ userId });
+      const totalInterviews = await InterviewSession.countDocuments({
+        clerkUserId: userId,
+      });
 
-    const completedInterviews = await InterviewSession.find({ clerkUserId: userId, status: 'completed' });
-    let avgInterviewScore = 0;
-    if (completedInterviews.length > 0) {
-      const sum = completedInterviews.reduce((acc, curr) => acc + (curr.overallScore || 0), 0);
-      avgInterviewScore = Math.round(sum / completedInterviews.length);
+      const completedInterviews = await InterviewSession.find({
+        clerkUserId: userId,
+        status: "completed",
+      });
+      let avgInterviewScore = 0;
+      if (completedInterviews.length > 0) {
+        const sum = completedInterviews.reduce(
+          (acc, curr) => acc + (curr.overallScore || 0),
+          0,
+        );
+        avgInterviewScore = Math.round(sum / completedInterviews.length);
+      }
+
+      res.status(200).json({
+        success: true,
+        data: {
+          totalDrafts,
+          totalInterviews,
+          avgInterviewScore,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: "Failed to fetch stats" });
     }
-
-    res.status(200).json({
-      success: true,
-      data: {
-        totalDrafts,
-        totalInterviews,
-        avgInterviewScore,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, error: "Failed to fetch stats" });
-  }
-});
-
+  },
+);
 
 // Interview routes
 const interviewController = new InterviewController();

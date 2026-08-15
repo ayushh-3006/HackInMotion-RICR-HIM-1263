@@ -81,7 +81,13 @@ const Footer = () => {
             {/* Logo Shifted Further Left */}
             <div className="flex items-center justify-start shrink-0 -ml-1 sm:-ml-3 lg:-ml-5">
               <div className="hover:scale-105 transition-all duration-300 cursor-pointer">
-                <Image src="/logo.png" alt="Resumind Logo" width={112} height={112} className="object-contain" />
+                <Image
+                  src="/logo.png"
+                  alt="Resumind Logo"
+                  width={112}
+                  height={112}
+                  className="object-contain"
+                />
               </div>
             </div>
 

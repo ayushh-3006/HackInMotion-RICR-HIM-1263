@@ -10,15 +10,20 @@ export class ATSController {
     private analyzer: ATSAnalyzer,
     private parserFactory: ParserFactory,
     private repository: IATSRepository,
-    private atsService?: ATSService
+    private atsService?: ATSService,
   ) {}
 
   calculateFromText = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { resumeText, jobDescription, jobRole, experience, jobSkills, filters } = req.body;
+      const { resumeText, jobDescription, jobRole, experience, jobSkills } =
+        req.body;
 
       let finalJobDescription = jobDescription;
-      if (!finalJobDescription || typeof finalJobDescription !== "string" || !finalJobDescription.trim()) {
+      if (
+        !finalJobDescription ||
+        typeof finalJobDescription !== "string" ||
+        !finalJobDescription.trim()
+      ) {
         if (!jobRole && !jobSkills) {
           res.status(400).json({
             error: "resumeText and jobDescription (string) are required",
@@ -33,7 +38,7 @@ export class ATSController {
         finalJobDescription,
       );
       const mapped = this.mapResult(result);
-      
+
       const clerkUserId = (req as any).userId || (req as any).auth?.userId;
       if (clerkUserId) {
         await ATSResult.create({
@@ -54,7 +59,7 @@ export class ATSController {
   calculateFromFile = async (req: Request, res: Response): Promise<void> => {
     try {
       const file = (req as any).file;
-      const { jobDescription, jobRole, experience, jobSkills, filters } = req.body;
+      const { jobDescription, jobRole, experience, jobSkills } = req.body;
 
       if (!file) {
         res.status(400).json({ error: "resumeFile is required" });
@@ -62,9 +67,15 @@ export class ATSController {
       }
 
       let finalJobDescription = jobDescription;
-      if (!finalJobDescription || typeof finalJobDescription !== "string" || !finalJobDescription.trim()) {
+      if (
+        !finalJobDescription ||
+        typeof finalJobDescription !== "string" ||
+        !finalJobDescription.trim()
+      ) {
         if (!jobRole && !jobSkills) {
-          res.status(400).json({ error: "jobDescription (string) is required" });
+          res
+            .status(400)
+            .json({ error: "jobDescription (string) is required" });
           return;
         }
         finalJobDescription = `Role: ${jobRole || "Any"}, Experience: ${experience || "Any"}, Skills: ${jobSkills || "None"}`;
@@ -74,21 +85,28 @@ export class ATSController {
       const resumeText = await parser.extractText(file.buffer);
 
       if (!resumeText.trim()) {
-        res.status(400).json({ error: "Could not extract text from the provided file." });
+        res
+          .status(400)
+          .json({ error: "Could not extract text from the provided file." });
         return;
       }
 
       let result;
       try {
-        result = await this.analyzer.analyzeText(resumeText, finalJobDescription);
+        result = await this.analyzer.analyzeText(
+          resumeText,
+          finalJobDescription,
+        );
       } catch (aiError) {
         console.error("AI Error:", aiError);
-        res.status(502).json({ error: "Failed to communicate with AI provider" });
+        res
+          .status(502)
+          .json({ error: "Failed to communicate with AI provider" });
         return;
       }
 
       const mapped = this.mapResult(result);
-      
+
       const clerkUserId = (req as any).userId || (req as any).auth?.userId;
       if (clerkUserId) {
         await ATSResult.create({
@@ -117,7 +135,10 @@ export class ATSController {
       }
 
       let history;
-      if (this.repository && typeof this.repository.findByUserId === "function") {
+      if (
+        this.repository &&
+        typeof this.repository.findByUserId === "function"
+      ) {
         history = await this.repository.findByUserId(clerkUserId);
       } else {
         history = await ATSResult.find({ clerkUserId })
@@ -179,7 +200,11 @@ export class ATSController {
         return;
       }
 
-      if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
+      if (
+        !jobDescription ||
+        typeof jobDescription !== "string" ||
+        !jobDescription.trim()
+      ) {
         res.status(400).json({ error: "jobDescription (string) is required" });
         return;
       }
@@ -195,7 +220,7 @@ export class ATSController {
         file.buffer,
         file.mimetype,
         jobDescription,
-        file.originalname || "Uploaded File"
+        file.originalname || "Uploaded File",
       );
 
       res.status(200).json({ success: true, data: result });

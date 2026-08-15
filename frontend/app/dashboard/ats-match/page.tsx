@@ -15,7 +15,8 @@ export default function ATSMatchPage() {
             ATS Match Engine
           </h1>
           <p className="text-sm text-neutral-500 mt-1">
-            Upload your resume and paste a job description to instantly see your match score, missing skills, and get actionable suggestions.
+            Upload your resume and paste a job description to instantly see your
+            match score, missing skills, and get actionable suggestions.
           </p>
         </div>
       </div>

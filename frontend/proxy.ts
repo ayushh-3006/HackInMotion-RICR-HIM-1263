@@ -22,7 +22,7 @@ export default clerkMiddleware(async (auth, req) => {
       const dashboardUrl = new URL("/dashboard", req.url);
       return NextResponse.redirect(dashboardUrl);
     }
-  } catch (error) {
+  } catch (_error) {
     // Catch Clerk secretKey authentication errors so local dev server does not crash
   }
 });

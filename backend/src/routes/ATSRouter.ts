@@ -3,7 +3,6 @@ import multer from "multer";
 import { ATSController } from "../controllers/ATSController.js";
 import { clerkAuth } from "../middlewares/clerkAuth.js";
 
-
 // SRP: Only sets up routes and middleware
 export class ATSRouter {
   public router: Router;
@@ -13,7 +12,8 @@ export class ATSRouter {
     fileFilter: (req, file, cb) => {
       if (
         file.mimetype === "application/pdf" ||
-        file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        file.mimetype ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       ) {
         cb(null, true);
       } else {
@@ -28,7 +28,11 @@ export class ATSRouter {
   }
 
   private registerRoutes(): void {
-    this.router.post("/calculate", clerkAuth, this.controller.calculateFromText);
+    this.router.post(
+      "/calculate",
+      clerkAuth,
+      this.controller.calculateFromText,
+    );
     this.router.post(
       "/calculate-file",
       clerkAuth,

@@ -36,7 +36,10 @@ export function DashboardOverview({
       </div>
 
       {/* Top Row: 4 Metric Cards */}
-      <MetricCards atsHistory={atsHistory} interviewsHistory={interviewsHistory} />
+      <MetricCards
+        atsHistory={atsHistory}
+        interviewsHistory={interviewsHistory}
+      />
 
       {/* Middle Row: Recent Scans (~66%) & Score Trend (~33%) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
@@ -54,7 +57,11 @@ export function DashboardOverview({
           <RecentInterviews interviewsHistory={interviewsHistory} />
         </div>
         <div className="lg:col-span-1">
-          <ProgressSummary stats={stats} atsHistory={atsHistory} interviewsHistory={interviewsHistory} />
+          <ProgressSummary
+            stats={stats}
+            atsHistory={atsHistory}
+            interviewsHistory={interviewsHistory}
+          />
         </div>
       </div>
     </div>
