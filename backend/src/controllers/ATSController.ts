@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { ATSAnalyzer } from "../services/ATSAnalyzerModule.js";
 import { ParserFactory } from "../parsers/ParserFactory.js";
 import { ATSResult } from "../models/ATSResult.js";
-
+import { IATSRepository } from "../interfaces/IATSRepository.js";
 import { ATSService } from "../services/ATSService.js";
 
 export class ATSController {
@@ -15,30 +15,26 @@ export class ATSController {
 
   calculateFromText = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { resumeText, jobDescription } = req.body;
+      const { resumeText, jobDescription, jobRole, experience, jobSkills, filters } = req.body;
 
-      if (!resumeText || !jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
-        res.status(400).json({
-          error: "resumeText and jobDescription (string) are required",
-        });
-        return;
+      let finalJobDescription = jobDescription;
+      if (!finalJobDescription || typeof finalJobDescription !== "string" || !finalJobDescription.trim()) {
+        if (!jobRole && !jobSkills) {
+          res.status(400).json({
+            error: "resumeText and jobDescription (string) are required",
+          });
+          return;
+        }
+        finalJobDescription = `Role: ${jobRole || "Any"}, Experience: ${experience || "Any"}, Skills: ${jobSkills || "None"}`;
       }
-
-      // Construct a job description for the AI
-      const jobDescription = this.constructJD(
-        jobRole,
-        experience,
-        jobSkills,
-        filters,
-      );
 
       const result = await this.analyzer.analyzeText(
         resumeText,
-        jobDescription,
+        finalJobDescription,
       );
       const mapped = this.mapResult(result);
       
-      const clerkUserId = (req as any).userId;
+      const clerkUserId = (req as any).userId || (req as any).auth?.userId;
       if (clerkUserId) {
         await ATSResult.create({
           clerkUserId,
@@ -58,16 +54,20 @@ export class ATSController {
   calculateFromFile = async (req: Request, res: Response): Promise<void> => {
     try {
       const file = (req as any).file;
-      const { jobDescription } = req.body;
+      const { jobDescription, jobRole, experience, jobSkills, filters } = req.body;
 
       if (!file) {
         res.status(400).json({ error: "resumeFile is required" });
         return;
       }
 
-      if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
-        res.status(400).json({ error: "jobDescription (string) is required" });
-        return;
+      let finalJobDescription = jobDescription;
+      if (!finalJobDescription || typeof finalJobDescription !== "string" || !finalJobDescription.trim()) {
+        if (!jobRole && !jobSkills) {
+          res.status(400).json({ error: "jobDescription (string) is required" });
+          return;
+        }
+        finalJobDescription = `Role: ${jobRole || "Any"}, Experience: ${experience || "Any"}, Skills: ${jobSkills || "None"}`;
       }
 
       const parser = this.parserFactory.getParser(file.mimetype);
@@ -80,28 +80,16 @@ export class ATSController {
 
       let result;
       try {
-        result = await this.analyzer.analyzeText(resumeText, jobDescription);
+        result = await this.analyzer.analyzeText(resumeText, finalJobDescription);
       } catch (aiError) {
         console.error("AI Error:", aiError);
         res.status(502).json({ error: "Failed to communicate with AI provider" });
         return;
       }
 
-      // Construct a job description for the AI
-      const jobDescription = this.constructJD(
-        jobRole,
-        experience,
-        jobSkills,
-        filters,
-      );
-
-      const result = await this.analyzer.analyzeText(
-        resumeText,
-        jobDescription,
-      );
       const mapped = this.mapResult(result);
       
-      const clerkUserId = (req as any).userId;
+      const clerkUserId = (req as any).userId || (req as any).auth?.userId;
       if (clerkUserId) {
         await ATSResult.create({
           clerkUserId,
@@ -120,20 +108,7 @@ export class ATSController {
     }
   };
 
-  getHistory = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const userId = (req as any).auth?.userId || (req as any).userId;
-      if (!userId) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-      }
 
-      const history = await this.repository.findByUserId(userId);
-      res.status(200).json({ success: true, data: history });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message || "Internal Server Error" });
-    }
-  };
 
   private mapResult(result: any) {
     const { finalScore, basicChecks, aiAnalysis } = result;
@@ -168,7 +143,7 @@ export class ATSController {
 
   getHistory = async (req: Request, res: Response): Promise<void> => {
     try {
-      const clerkUserId = (req as any).userId;
+      const clerkUserId = (req as any).userId || (req as any).auth?.userId;
       if (!clerkUserId) {
         res.status(401).json({ error: "Not authenticated" });
         return;
@@ -183,6 +158,49 @@ export class ATSController {
     } catch (err: any) {
       console.error("Error fetching ATS history:", err);
       res.status(500).json({ error: "Failed to fetch history" });
+    }
+  };
+
+  match = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!this.atsService) {
+        res.status(501).json({ error: "ATSService is not configured." });
+        return;
+      }
+
+      const file = (req as any).file;
+      const { jobDescription } = req.body;
+
+      if (!file) {
+        res.status(400).json({ error: "resume file is required" });
+        return;
+      }
+
+      if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
+        res.status(400).json({ error: "jobDescription (string) is required" });
+        return;
+      }
+
+      const userId = (req as any).auth?.userId || (req as any).userId;
+      if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+
+      const result = await this.atsService.matchResumeToJob(
+        userId,
+        file.buffer,
+        file.mimetype,
+        jobDescription,
+        file.originalname || "Uploaded File"
+      );
+
+      res.status(200).json({ success: true, data: result });
+    } catch (err: any) {
+      res.status(err.message?.includes("Unsupported") ? 415 : 500).json({
+        success: false,
+        error: err.message || "Internal Server Error",
+      });
     }
   };
 }
