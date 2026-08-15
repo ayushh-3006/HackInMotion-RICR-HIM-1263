@@ -41,22 +41,20 @@ export default function QuestionBankPage() {
 
     try {
       const token = await getToken();
-      const res = await fetch(
-        "http://localhost:5000/api/interview/questions/generate",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            industry,
-            targetRole,
-            experienceLevel,
-            questionCount: 5,
-          }),
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const res = await fetch(`${baseUrl}/interview/questions/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          industry,
+          targetRole,
+          experienceLevel,
+          questionCount: 5,
+        }),
+      });
 
       const data = await res.json();
       if (!res.ok || !data.success) {

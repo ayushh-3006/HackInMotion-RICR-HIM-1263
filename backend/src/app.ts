@@ -26,11 +26,11 @@ import { QuestionBankRouter } from "./routes/QuestionBankRouter.js";
 import { ResumeDraft } from "./models/ResumeDraft.js";
 import { InterviewSession } from "./models/InterviewSession.js";
 
-// Load environment variables
-dotenv.config();
+// Load environment variables (force override to pick up .env changes during nodemon restarts)
+dotenv.config({ override: true });
 
-// Connect to MongoDB
-await connectDB();
+// Connect to MongoDB (non-blocking)
+connectDB().catch(console.error);
 
 const app = express();
 
@@ -39,7 +39,12 @@ app.use("/api/webhooks", webhookRoutes);
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "http://localhost:3001",
+      "https://resumind-nine-self.vercel.app"
+    ],
     credentials: true,
   }),
 );

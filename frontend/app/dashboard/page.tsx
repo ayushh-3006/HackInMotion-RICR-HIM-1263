@@ -79,8 +79,8 @@ export default function DashboardPage() {
       setStats(statsData);
       setAtsHistory(atsData);
       setInterviewsHistory(interviewsData);
-    } catch {
-      console.warn("Dashboard fetchData network error or backend unavailable.");
+    } catch (err) {
+      console.warn("Dashboard fetchData network error or backend unavailable.", err);
       setStats(null);
       setAtsHistory([]);
       setInterviewsHistory([]);
@@ -99,7 +99,7 @@ export default function DashboardPage() {
         try {
           const baseUrl =
             process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-          await fetch(`${baseUrl}/users/sync`, {
+          const res = await fetch(`${baseUrl}/users/sync`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -112,6 +112,9 @@ export default function DashboardPage() {
               profilePicture: user.imageUrl,
             }),
           });
+          if (!res.ok) {
+            console.warn("User sync failed with status:", res.status);
+          }
         } catch (error) {
           console.warn("Error syncing user:", error);
         }
