@@ -43,6 +43,10 @@ export const useSpeechRecognition = () => {
         };
 
         recognitionRef.current.onerror = (event: any) => {
+          if (event.error === "no-speech") {
+            // Ignore no-speech error
+            return;
+          }
           console.error("Speech recognition error", event.error);
         };
 

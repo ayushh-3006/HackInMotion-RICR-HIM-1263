@@ -4,6 +4,21 @@ import {
   PoseLandmarker,
 } from "@mediapipe/tasks-vision";
 
+// MediaPipe WASM outputs INFO logs to stderr which Emscripten routes to console.error.
+// Next.js intercepts this and shows a crash overlay. We silence it globally here.
+if (typeof console !== "undefined") {
+  const originalConsoleError = console.error;
+  console.error = (...args: any[]) => {
+    if (
+      typeof args[0] === "string" &&
+      args[0].includes("XNNPACK delegate for CPU")
+    ) {
+      return;
+    }
+    originalConsoleError.apply(console, args);
+  };
+}
+
 export interface BodyLanguageMetrics {
   eyeContactScore: number;
   postureScore: number;
@@ -134,7 +149,8 @@ export class BodyLanguageAnalyzer {
         expressionScore: Math.round(expressionScore),
       };
     } catch (e) {
-      console.error("Analysis error:", e);
+      // Use warn instead of error to avoid Next.js error overlay for intermittent frame drops
+      console.warn("Analysis error:", e);
       return null;
     }
   }
