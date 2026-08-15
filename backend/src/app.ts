@@ -43,7 +43,8 @@ app.use(
       process.env.FRONTEND_URL || "http://localhost:3000",
       "http://127.0.0.1:3000",
       "http://localhost:3001",
-      "https://resumind-nine-self.vercel.app"
+      "https://resumind-nine-self.vercel.app",
+      "https://hack-in-motion-ricr-him-1263.vercel.app",
     ],
     credentials: true,
   }),
