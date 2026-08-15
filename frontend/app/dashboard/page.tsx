@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useUser, useAuth } from "@clerk/nextjs";
-import { toast } from "sonner";
+
 import { Loader2 } from "lucide-react";
 import { DashboardOverview } from "@/components/dashboard/overview";
 
@@ -44,7 +44,7 @@ export default function DashboardPage() {
         fetch(`${baseUrl}/ats/history`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch(`${baseUrl}/interviews/history`, {
+        fetch(`${baseUrl}/interview/history`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -79,7 +79,7 @@ export default function DashboardPage() {
       setStats(statsData);
       setAtsHistory(atsData);
       setInterviewsHistory(interviewsData);
-    } catch (err) {
+    } catch {
       console.warn("Dashboard fetchData network error or backend unavailable.");
       setStats(null);
       setAtsHistory([]);

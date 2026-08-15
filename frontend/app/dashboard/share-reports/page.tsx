@@ -4,7 +4,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 import {
   Share2,
-  Link as LinkIcon,
   ExternalLink,
   Copy,
   XCircle,
@@ -53,7 +52,7 @@ export default function ShareReportsPage() {
         );
         setSessions(completed);
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to load interview reports");
     } finally {
       setLoading(false);

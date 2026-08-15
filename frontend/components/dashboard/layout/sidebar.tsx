@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Home,
@@ -12,6 +13,7 @@ import {
   Library,
   History,
   X,
+  ScanSearch,
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -31,7 +33,7 @@ const ADVANCED_TOOLS = [
   {
     name: "ATS Match Engine",
     href: "/dashboard/ats-match",
-    icon: Target,
+    icon: ScanSearch,
   },
   { name: "Question Bank", href: "/dashboard/question-bank", icon: Library },
   { name: "Video Interview", href: "/dashboard/video-interview", icon: Video },
@@ -84,29 +86,13 @@ export function Sidebar({ isOpen = false, setIsOpen }: SidebarProps) {
             className="flex items-center gap-2 group"
             onClick={closeMenu}
           >
-            <div className="bg-indigo-600 p-1.5 rounded-lg text-white shadow-sm shadow-indigo-200 group-hover:scale-105 transition-transform">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-5 h-5"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5Z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
+            <div className="group-hover:scale-105 transition-transform">
+              <Image src="/logo.png" alt="Resumind Logo" width={32} height={32} className="object-contain" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none">
                 Resumind
               </h1>
-              <p className="text-[10px] text-slate-500 font-medium mt-0.5">
-                AI Career Assistant
-              </p>
             </div>
           </Link>
 

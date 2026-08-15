@@ -19,7 +19,7 @@ export default function QuestionBankPage() {
   
   const [industry, setIndustry] = useState("Tech & Software");
   const [targetRole, setTargetRole] = useState("");
-  const [experienceLevel, setExperienceLevel] = useState("Entry-Level / Fresher");
+  const [experienceLevel, setExperienceLevel] = useState("Medium");
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -94,26 +94,36 @@ export default function QuestionBankPage() {
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">Target Role</label>
-              <input
-                type="text"
-                placeholder="e.g. Senior React Developer"
+              <select
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-700"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-700 appearance-none"
                 required
-              />
+              >
+                <option value="">Select a role...</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="Backend Developer">Backend Developer</option>
+                <option value="Software Engineer">Software Engineer</option>
+                <option value="Data Scientist">Data Scientist</option>
+                <option value="Product Manager">Product Manager</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="UI/UX Designer">UI/UX Designer</option>
+                <option value="Mobile App Developer">Mobile App Developer</option>
+                <option value="QA Automation Engineer">QA Automation Engineer</option>
+              </select>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Experience Level</label>
+              <label className="text-sm font-semibold text-slate-700">Interview Level</label>
               <select
                 value={experienceLevel}
                 onChange={(e) => setExperienceLevel(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-700"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-700 appearance-none"
               >
-                <option value="Entry-Level / Fresher">Entry-Level / Fresher</option>
-                <option value="Mid-Level (2-5 yrs)">Mid-Level (2-5 yrs)</option>
-                <option value="Senior / Lead (5+ yrs)">Senior / Lead (5+ yrs)</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
               </select>
             </div>
 

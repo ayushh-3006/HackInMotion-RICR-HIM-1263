@@ -30,7 +30,8 @@ export default function ATSCheckerPage() {
   /* Form state */
   const [file, setFile] = useState<File | null>(null);
   const [jobRole, setJobRole] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
+  const [jobDescription] = useState("");
+  const [jobSkills, setJobSkills] = useState("");
   const [experience, setExperience] = useState("Fresher");
 
   /* UI state */

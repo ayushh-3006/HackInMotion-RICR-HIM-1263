@@ -22,7 +22,7 @@ export default function ShinyText({
   shineColor = "#ffffff",
   spread = 120,
   direction = "left",
-  yoyo = false,
+  yoyo: _yoyo = false,
   pauseOnHover = false,
   disabled = false,
 }: ShinyTextProps) {

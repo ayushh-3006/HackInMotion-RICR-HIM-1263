@@ -55,7 +55,7 @@ function ResetPasswordForm() {
   const [done, setDone] = useState(false);
   const router = useRouter();
   const { add, Toast } = useToast();
-  const { signIn } = useSignIn();
+  const { signIn: _signIn } = useSignIn();
   const clerk = useClerk();
 
   const handleSubmit = async (e: React.FormEvent) => {

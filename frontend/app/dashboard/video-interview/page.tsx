@@ -15,9 +15,9 @@ export default function VideoMockInterviewPage() {
   const [view, setView] = useState<ViewState>("setup");
 
   const [jobRole, setJobRole] = useState("");
-  const [experience, setExperience] = useState("mid");
-  const [category, setCategory] = useState("Technical");
-  const [difficulty, setDifficulty] = useState("Medium");
+  const [experience, setExperience] = useState("medium");
+  const [category] = useState("Technical");
+  const [difficulty] = useState("Medium");
   const [isLoading, setIsLoading] = useState(false);
 
   const [session, setSession] = useState<any>(null);
@@ -80,7 +80,7 @@ export default function VideoMockInterviewPage() {
   const handleRecordingComplete = async (
     audioBlob: Blob,
     sampledFrames: string[],
-    metricsList: BodyLanguageMetrics[],
+    _metricsList: BodyLanguageMetrics[],
   ) => {
     if (!session) return;
     setView("loading");
@@ -188,9 +188,9 @@ export default function VideoMockInterviewPage() {
   };
 
   return (
-    <div className="h-full flex flex-col max-w-6xl mx-auto px-4 py-8">
+    <div className="h-full flex flex-col max-w-6xl mx-auto px-4 pt-2 pb-8">
       {view === "setup" && (
-        <div className="flex-1 flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-500">
+        <div className="flex-1 flex flex-col items-center justify-start mt-8 animate-in fade-in zoom-in-95 duration-500">
           <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-indigo-200">
             <Video className="w-8 h-8 text-white" />
           </div>
@@ -198,37 +198,52 @@ export default function VideoMockInterviewPage() {
             Video Mock Interview
           </h1>
           <p className="text-slate-500 text-center max-w-xl mb-12">
-            Practice with an AI interviewer. We'll analyze both what you say and
-            your body language—eye contact, posture, and facial
-            expressions—using real-time vision AI.
+            Practice with an AI interviewer and get real-time feedback on your
+            answers, eye contact, posture, and facial expressions.
           </p>
 
           <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm w-full max-w-2xl space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                   Target Job Role
                 </label>
-                <input
-                  type="text"
+                <select
                   value={jobRole}
                   onChange={(e) => setJobRole(e.target.value)}
-                  placeholder="e.g. Product Manager"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-slate-700"
-                />
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-slate-700 appearance-none bg-white"
+                >
+                  <option value="">Select a role...</option>
+                  <option value="Full Stack Developer">
+                    Full Stack Developer
+                  </option>
+                  <option value="Frontend Developer">Frontend Developer</option>
+                  <option value="Backend Developer">Backend Developer</option>
+                  <option value="Software Engineer">Software Engineer</option>
+                  <option value="Data Scientist">Data Scientist</option>
+                  <option value="Product Manager">Product Manager</option>
+                  <option value="DevOps Engineer">DevOps Engineer</option>
+                  <option value="UI/UX Designer">UI/UX Designer</option>
+                  <option value="Mobile App Developer">
+                    Mobile App Developer
+                  </option>
+                  <option value="QA Automation Engineer">
+                    QA Automation Engineer
+                  </option>
+                </select>
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                  Experience Level
+                  Interview Level
                 </label>
                 <select
                   value={experience}
                   onChange={(e) => setExperience(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-slate-700"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-slate-700 appearance-none bg-white"
                 >
-                  <option value="entry">Entry Level</option>
-                  <option value="mid">Mid Level</option>
-                  <option value="senior">Senior</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
                 </select>
               </div>
             </div>

@@ -11,7 +11,7 @@ interface ProgressSummaryProps {
 }
 
 export function ProgressSummary({
-  stats,
+  stats: _stats,
   atsHistory = [],
   interviewsHistory = [],
 }: ProgressSummaryProps) {

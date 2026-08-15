@@ -1,7 +1,7 @@
 "use client";
 
 import { ThreeDMarquee } from "@/components/ui/3d-marquee";
-import { BrainCircuit } from "lucide-react";
+
 import Link from "next/link";
 import Image from "next/image";
 

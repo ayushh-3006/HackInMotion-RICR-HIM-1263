@@ -108,7 +108,30 @@ export class ATSController {
     }
   };
 
+  getHistory = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const clerkUserId = (req as any).auth?.userId || (req as any).userId;
+      if (!clerkUserId) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+      }
 
+      let history;
+      if (this.repository && typeof this.repository.findByUserId === "function") {
+        history = await this.repository.findByUserId(clerkUserId);
+      } else {
+        history = await ATSResult.find({ clerkUserId })
+          .sort({ createdAt: -1 })
+          .limit(20)
+          .lean();
+      }
+
+      res.status(200).json({ success: true, data: history });
+    } catch (err: any) {
+      console.error("Error fetching ATS history:", err);
+      res.status(500).json({ error: "Failed to fetch history" });
+    }
+  };
 
   private mapResult(result: any) {
     const { finalScore, basicChecks, aiAnalysis } = result;
@@ -117,7 +140,7 @@ export class ATSController {
     if (aiAnalysis?.matchedKeywords) {
       aiAnalysis.matchedKeywords.forEach((k: string) => {
         keywordDensity[k] = (
-          result.resumeText.match(new RegExp(k, "gi")) || []
+          result.resumeText?.match(new RegExp(k, "gi")) || []
         ).length;
       });
     }
@@ -129,37 +152,17 @@ export class ATSController {
       suggestions: aiAnalysis?.suggestions || [],
       keywordDensity,
       sectionScores: {
-        skills: basicChecks.sections.skills ? 100 : 40,
-        experience: basicChecks.sections.experience ? 100 : 40,
-        education: basicChecks.sections.education ? 100 : 40,
+        skills: basicChecks?.sections?.skills ? 100 : 40,
+        experience: basicChecks?.sections?.experience ? 100 : 40,
+        education: basicChecks?.sections?.education ? 100 : 40,
         projects: 70,
       },
       aiSummary: aiAnalysis
-        ? `Analysis complete. AI Score: ${aiAnalysis.aiScore}/60, Basic Score: ${basicChecks.basicScore}/40.`
+        ? `Analysis complete. AI Score: ${aiAnalysis.aiScore}/60, Basic Score: ${basicChecks?.basicScore}/40.`
         : "AI analysis unavailable. Showing basic rule-based score.",
       atsCompatible: finalScore >= 60,
     };
   }
-
-  getHistory = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const clerkUserId = (req as any).userId || (req as any).auth?.userId;
-      if (!clerkUserId) {
-        res.status(401).json({ error: "Not authenticated" });
-        return;
-      }
-
-      const history = await ATSResult.find({ clerkUserId })
-        .sort({ createdAt: -1 })
-        .limit(20)
-        .lean();
-
-      res.status(200).json({ success: true, data: history });
-    } catch (err: any) {
-      console.error("Error fetching ATS history:", err);
-      res.status(500).json({ error: "Failed to fetch history" });
-    }
-  };
 
   match = async (req: Request, res: Response): Promise<void> => {
     try {

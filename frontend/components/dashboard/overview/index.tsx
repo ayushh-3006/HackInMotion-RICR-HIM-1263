@@ -27,8 +27,8 @@ export function DashboardOverview({
   return (
     <div className="w-full max-w-[1400px] mx-auto space-y-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-          Welcome back, {userName || "there"} 👋
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+          Welcome back, {userName || "there"}
         </h1>
         <p className="text-sm text-slate-500 font-medium mt-1">
           Here is what's happening with your job search prep.

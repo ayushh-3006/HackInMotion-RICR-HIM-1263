@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { ChatInterface } from "@/components/ai-builder/chat-interface";
-import { ResumePreview } from "@/components/ai-builder/resume-preview";
+
 import { Sparkles, Download, Save, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 

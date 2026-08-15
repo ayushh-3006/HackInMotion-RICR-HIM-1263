@@ -9,14 +9,9 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowLeft,
-  Award,
   Clock,
   Mic,
   Target,
-  Zap,
-  AlertTriangle,
-  TrendingUp,
-  Calendar,
 } from "lucide-react";
 
 interface FillerWord {

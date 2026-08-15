@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
 import {
   Mic,
   Play,
   Square,
-  ChevronRight,
   Activity,
   CheckCircle2,
   Loader2,
@@ -15,11 +14,6 @@ import {
   Volume2,
   Clock,
   AlertTriangle,
-  Code,
-  Server,
-  Users,
-  Layers,
-  Pause,
   History,
   RotateCcw,
   TrendingUp,
@@ -67,7 +61,7 @@ interface SessionData {
   interviewType: string;
   category: string;
   difficulty: string;
-  questions: { id: string; text: string }[];
+  questions: { id: string; text: string; type?: string }[];
   answers: AnswerResult[];
   overallScore: number;
   overallFeedback: string;
@@ -296,8 +290,7 @@ export default function MockInterviewPage() {
 
   /* Setup State */
   const [jobRole, setJobRole] = useState("");
-  const [experience, setExperience] = useState("mid");
-  const [interviewMode, setInterviewMode] = useState("Text");
+  const [experience, setExperience] = useState("medium");
   const [isLoading, setIsLoading] = useState(false);
 
   const API_URL =
@@ -327,12 +320,10 @@ export default function MockInterviewPage() {
   const [isSharing, setIsSharing] = useState(false);
 
   const {
-    isListening,
     transcript,
     interimTranscript,
     startListening,
     stopListening,
-    metrics: speechMetrics,
   } = useSpeechRecognition();
   const { volume, startAnalyzing, stopAnalyzing } = useAudioAnalyzer();
   const mediaRecorder = useMediaRecorder();
@@ -656,64 +647,68 @@ export default function MockInterviewPage() {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-3xl mx-auto">
             <div className="space-y-8">
               <div className="space-y-6">
-                {/* Job Role & Experience Level */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                      Target Job Role
-                    </label>
-                    <input
-                      type="text"
-                      value={jobRole}
-                      onChange={(e) => setJobRole(e.target.value)}
-                      placeholder="e.g. Full Stack Developer"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-medium text-slate-700 placeholder:text-slate-400"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                      Experience Level
-                    </label>
-                    <select
-                      value={experience}
-                      onChange={(e) => setExperience(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-medium text-slate-700 appearance-none bg-white"
-                    >
-                      <option value="fresher">Fresher</option>
-                      <option value="entry">Entry Level</option>
-                      <option value="mid">Mid Level</option>
-                      <option value="senior">Senior</option>
-                    </select>
-                  </div>
+                {/* Job Role Dropdown */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    Target Job Role
+                  </label>
+                  <select
+                    value={jobRole}
+                    onChange={(e) => setJobRole(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm font-medium text-slate-700 appearance-none bg-white"
+                  >
+                    <option value="">Select a role...</option>
+                    <option value="Full Stack Developer">Full Stack Developer</option>
+                    <option value="Frontend Developer">Frontend Developer</option>
+                    <option value="Backend Developer">Backend Developer</option>
+                    <option value="Software Engineer">Software Engineer</option>
+                    <option value="Data Scientist">Data Scientist</option>
+                    <option value="Product Manager">Product Manager</option>
+                    <option value="DevOps Engineer">DevOps Engineer</option>
+                    <option value="UI/UX Designer">UI/UX Designer</option>
+                    <option value="Mobile App Developer">Mobile App Developer</option>
+                    <option value="QA Automation Engineer">QA Automation Engineer</option>
+                  </select>
                 </div>
 
-                {/* Interview Mode */}
+                {/* Interview Level Buttons */}
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-                    Interview Mode
+                    Interview Level
                   </label>
                   <div className="flex gap-3">
                     <button
                       type="button"
-                      onClick={() => setInterviewMode("Text")}
+                      onClick={() => setExperience("low")}
                       className={`flex-1 py-3 rounded-xl text-sm font-bold border-2 transition-all flex items-center justify-center gap-2 ${
-                        interviewMode === "Text"
+                        experience === "low"
                           ? "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm"
                           : "border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50"
                       }`}
                     >
-                      <MessageCircle className="w-4 h-4" /> Text
+                      Low
                     </button>
                     <button
                       type="button"
-                      onClick={() => setInterviewMode("Voice")}
+                      onClick={() => setExperience("medium")}
                       className={`flex-1 py-3 rounded-xl text-sm font-bold border-2 transition-all flex items-center justify-center gap-2 ${
-                        interviewMode === "Voice"
+                        experience === "medium"
                           ? "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm"
                           : "border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50"
                       }`}
                     >
-                      <Mic className="w-4 h-4" /> Voice
+                      Medium
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExperience("high")}
+                      className={`flex-1 py-3 rounded-xl text-sm font-bold border-2 transition-all flex items-center justify-center gap-2 ${
+                        experience === "high"
+                          ? "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm"
+                          : "border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      High
                     </button>
                   </div>
                 </div>
