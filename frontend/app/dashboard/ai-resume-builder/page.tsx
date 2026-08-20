@@ -65,6 +65,9 @@ export default function AIResumeBuilderPage() {
         throw new Error(data.error || "Failed to generate resume");
 
       setResumeData(data.data);
+      if (data.data.id) {
+        setDraftId(data.data.id);
+      }
       setMessages([
         ...newMessages,
         {

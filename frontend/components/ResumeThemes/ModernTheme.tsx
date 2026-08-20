@@ -76,32 +76,32 @@ const ModernTheme = ({ data }: { data: any }) => (
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
         <Text style={styles.name}>
-          {data.personalInfo.fullName || "Your Name"}
+          {data.personalInfo?.fullName || "Your Name"}
         </Text>
         <View style={styles.contactInfo}>
-          {data.personalInfo.email && <Text>{data.personalInfo.email}</Text>}
-          {data.personalInfo.phone && <Text>{data.personalInfo.phone}</Text>}
-          {data.personalInfo.linkedin && (
+          {data.personalInfo?.email && <Text>{data.personalInfo.email}</Text>}
+          {data.personalInfo?.phone && <Text>{data.personalInfo.phone}</Text>}
+          {data.personalInfo?.linkedin && (
             <Text>{data.personalInfo.linkedin}</Text>
           )}
-          {data.personalInfo.github && <Text>{data.personalInfo.github}</Text>}
-          {data.personalInfo.twitter && (
+          {data.personalInfo?.github && <Text>{data.personalInfo.github}</Text>}
+          {data.personalInfo?.twitter && (
             <Text>{data.personalInfo.twitter}</Text>
           )}
-          {data.personalInfo.leetcode && (
+          {data.personalInfo?.leetcode && (
             <Text>{data.personalInfo.leetcode}</Text>
           )}
         </View>
       </View>
 
-      {data.careerDetails.objective && (
+      {data.careerDetails?.objective ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About Me</Text>
           <Text style={styles.text}>{data.careerDetails.objective}</Text>
         </View>
-      )}
+      ) : null}
 
-      {data.experience.length > 0 && (
+      {Array.isArray(data.experience) && data.experience.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Experience</Text>
           {(data.experience || []).map((exp: any, index: number) => (
@@ -115,9 +115,9 @@ const ModernTheme = ({ data }: { data: any }) => (
             </View>
           ))}
         </View>
-      )}
+      ) : null}
 
-      {data.education.length > 0 && (
+      {Array.isArray(data.education) && data.education.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Education</Text>
           {(data.education || []).map((edu: any, index: number) => (
@@ -130,9 +130,9 @@ const ModernTheme = ({ data }: { data: any }) => (
             </View>
           ))}
         </View>
-      )}
+      ) : null}
 
-      {data.projects.length > 0 && (
+      {Array.isArray(data.projects) && data.projects.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Side Projects</Text>
           {(data.projects || []).map((proj: any, index: number) => (
@@ -145,9 +145,9 @@ const ModernTheme = ({ data }: { data: any }) => (
             </View>
           ))}
         </View>
-      )}
+      ) : null}
 
-      {data.certifications.length > 0 && (
+      {Array.isArray(data.certifications) && data.certifications.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Certifications</Text>
           {(data.certifications || []).map((cert: any, index: number) => (
@@ -160,7 +160,7 @@ const ModernTheme = ({ data }: { data: any }) => (
             </View>
           ))}
         </View>
-      )}
+      ) : null}
     </Page>
   </Document>
 );

@@ -41,6 +41,7 @@ export class ATSController {
 
       const clerkUserId = (req as any).userId || (req as any).auth?.userId;
       if (clerkUserId) {
+        // Legacy save
         await ATSResult.create({
           clerkUserId,
           jobRole: jobRole || "General",
@@ -48,6 +49,18 @@ export class ATSController {
           matchedSkills: mapped.matchedSkills,
           missingSkills: mapped.missingSkills,
         });
+
+        // Save for dashboard stats and history list
+        if (this.repository) {
+          await this.repository.save({
+            userId: clerkUserId,
+            score: mapped.score,
+            jobRole: jobRole || "General",
+            fileName: "Pasted Text",
+            missingSkills: mapped.missingSkills,
+            actionableSuggestions: mapped.suggestions,
+          });
+        }
       }
 
       res.status(200).json(mapped);
@@ -109,6 +122,7 @@ export class ATSController {
 
       const clerkUserId = (req as any).userId || (req as any).auth?.userId;
       if (clerkUserId) {
+        // Legacy save
         await ATSResult.create({
           clerkUserId,
           jobRole: jobRole || "General",
@@ -116,6 +130,18 @@ export class ATSController {
           matchedSkills: mapped.matchedSkills,
           missingSkills: mapped.missingSkills,
         });
+
+        // Save for dashboard stats and history list
+        if (this.repository) {
+          await this.repository.save({
+            userId: clerkUserId,
+            score: mapped.score,
+            jobRole: jobRole || "General",
+            fileName: file?.originalname || "Uploaded Resume",
+            missingSkills: mapped.missingSkills,
+            actionableSuggestions: mapped.suggestions,
+          });
+        }
       }
 
       res.status(200).json(mapped);

@@ -33,7 +33,11 @@ export class InterviewController {
         interviewType: "Mixed",
         category: "Mixed",
         difficulty: difficulty || "Medium",
-        questions: aiResponse.questions,
+        questions: aiResponse.questions.map((q: any) => ({
+          id: q.id,
+          text: q.question || q.text,
+          type: q.type || "Technical"
+        })),
         answers: [],
         status: "in-progress",
       });

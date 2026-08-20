@@ -60,16 +60,17 @@ export class ATSRepository implements IATSRepository {
 
   async findByUserId(userId: string): Promise<any[]> {
     const records = await ATSRecordModel.find({ userId })
-      .select("score jobRole fileName createdAt")
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .exec();
 
-    // Map _id to id to match Prisma output
+    // Map _id to id to match Prisma output and return all necessary fields
     return records.map((r) => ({
       id: r._id.toString(),
       score: r.score,
       jobRole: r.jobRole,
       fileName: r.fileName,
+      missingSkills: r.missingSkills || [],
+      actionableSuggestions: r.actionableSuggestions || [],
       createdAt: r.createdAt,
     }));
   }

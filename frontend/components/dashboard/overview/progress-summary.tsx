@@ -16,23 +16,25 @@ export function ProgressSummary({
   interviewsHistory = [],
 }: ProgressSummaryProps) {
   // Sort and grab latest data safely
+  const safeAtsHistory = atsHistory || [];
   const latestAts = useMemo(() => {
-    if (!atsHistory.length) return null;
-    return [...atsHistory].sort(
+    if (!safeAtsHistory.length) return null;
+    return [...safeAtsHistory].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )[0];
-  }, [atsHistory]);
+  }, [safeAtsHistory]);
 
+  const safeInterviewsHistory = interviewsHistory || [];
   const latestInterview = useMemo(() => {
-    if (!interviewsHistory.length) return null;
-    return [...interviewsHistory].sort(
+    if (!safeInterviewsHistory.length) return null;
+    return [...safeInterviewsHistory].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )[0];
-  }, [interviewsHistory]);
+  }, [safeInterviewsHistory]);
 
-  const totalActivity = atsHistory.length + interviewsHistory.length;
+  const totalActivity = safeAtsHistory.length + safeInterviewsHistory.length;
 
   // Render empty state if no data available
   if (totalActivity === 0) {

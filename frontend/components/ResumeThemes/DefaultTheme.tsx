@@ -88,41 +88,41 @@ const DefaultTheme = ({ data }: { data: any }) => (
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.name}>
-          {data.personalInfo.fullName || "Your Name"}
+          {data.personalInfo?.fullName || "Your Name"}
         </Text>
         <View style={styles.contactInfo}>
-          {data.personalInfo.email && (
+          {data.personalInfo?.email && (
             <Text style={styles.contactItem}>{data.personalInfo.email}</Text>
           )}
-          {data.personalInfo.phone && (
+          {data.personalInfo?.phone && (
             <Text style={styles.contactItem}>{data.personalInfo.phone}</Text>
           )}
-          {data.personalInfo.linkedin && (
+          {data.personalInfo?.linkedin && (
             <Text style={styles.contactItem}>
               LinkedIn: {data.personalInfo.linkedin}
             </Text>
           )}
-          {data.personalInfo.github && (
+          {data.personalInfo?.github && (
             <Text style={styles.contactItem}>
               GitHub: {data.personalInfo.github}
             </Text>
           )}
-          {data.personalInfo.twitter && (
+          {data.personalInfo?.twitter && (
             <Text style={styles.contactItem}>
               Twitter: {data.personalInfo.twitter}
             </Text>
           )}
-          {data.personalInfo.leetcode && (
+          {data.personalInfo?.leetcode && (
             <Text style={styles.contactItem}>
               LeetCode: {data.personalInfo.leetcode}
             </Text>
           )}
-          {data.personalInfo.codeforces && (
+          {data.personalInfo?.codeforces && (
             <Text style={styles.contactItem}>
               CodeForces: {data.personalInfo.codeforces}
             </Text>
           )}
-          {data.personalInfo.portfolio && (
+          {data.personalInfo?.portfolio && (
             <Text style={styles.contactItem}>
               {data.personalInfo.portfolio}
             </Text>
@@ -131,15 +131,15 @@ const DefaultTheme = ({ data }: { data: any }) => (
       </View>
 
       {/* Professional Summary */}
-      {data.careerDetails.objective && (
+      {data.careerDetails?.objective ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Professional Summary</Text>
           <Text style={styles.text}>{data.careerDetails.objective}</Text>
         </View>
-      )}
+      ) : null}
 
       {/* Experience */}
-      {data.experience.length > 0 && (
+      {Array.isArray(data.experience) && data.experience.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Experience</Text>
           {(data.experience || []).map((exp: any, index: number) => (
@@ -153,10 +153,10 @@ const DefaultTheme = ({ data }: { data: any }) => (
             </View>
           ))}
         </View>
-      )}
+      ) : null}
 
       {/* Education */}
-      {data.education.length > 0 && (
+      {Array.isArray(data.education) && data.education.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Education</Text>
           {(data.education || []).map((edu: any, index: number) => (
@@ -169,10 +169,10 @@ const DefaultTheme = ({ data }: { data: any }) => (
             </View>
           ))}
         </View>
-      )}
+      ) : null}
 
       {/* Projects */}
-      {data.projects.length > 0 && (
+      {Array.isArray(data.projects) && data.projects.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Projects</Text>
           {(data.projects || []).map((proj: any, index: number) => (
@@ -185,10 +185,10 @@ const DefaultTheme = ({ data }: { data: any }) => (
             </View>
           ))}
         </View>
-      )}
+      ) : null}
 
       {/* Certifications */}
-      {data.certifications.length > 0 && (
+      {Array.isArray(data.certifications) && data.certifications.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Certifications</Text>
           {(data.certifications || []).map((cert: any, index: number) => (
@@ -201,7 +201,7 @@ const DefaultTheme = ({ data }: { data: any }) => (
             </View>
           ))}
         </View>
-      )}
+      ) : null}
     </Page>
   </Document>
 );

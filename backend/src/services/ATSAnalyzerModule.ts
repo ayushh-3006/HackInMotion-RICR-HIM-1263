@@ -169,6 +169,9 @@ export class BasicChecker {
   }
 }
 
+import { aiPrompts } from "../config/aiPrompts.js";
+import { parseDefensiveJson } from "../utils/aiUtils.js";
+
 /**
  * Uses Groq AI to score resume against a job description
  */
@@ -189,46 +192,36 @@ export class GroqScorer {
     resumeText: string,
     jobDescription: string,
   ): Promise<AIAnalysisResult> {
+    const config = aiPrompts.atsMatch;
     try {
       const response = await this.client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        temperature: 0,
-        max_tokens: 1000,
+        model: config.model,
+        temperature: config.temperature,
+        max_tokens: config.max_tokens,
         messages: [
-          {
-            role: "system",
-            content:
-              "You are an expert ATS scoring engine. Your job is to deeply analyze the provided resume against the provided full Job Description (JD). Identify exact and semantic keyword matches. Always respond with valid JSON only. No explanation, no markdown, no code blocks.",
-          },
-          {
-            role: "user",
-            content: `Score this resume against the FULL job description provided. Be rigorous.
-                     Resume: ${resumeText}
-                     
-                     Job Description: ${jobDescription}
-                     
-                     Return ONLY this JSON:
-                     {
-                       "aiScore": <int 0-60>,
-                       "matchedKeywords": [...],
-                       "missingKeywords": [...],
-                       "sectionFeedback": {
-                         "experience": "<feedback>",
-                         "education": "<feedback>",
-                         "skills": "<feedback>",
-                         "summary": "<feedback>"
-                       },
-                       "suggestions": [<max 5 short actionable points>]
-                     }`,
-          },
+          { role: "system", content: config.systemPrompt },
+          { role: "user", content: `Score this resume against the FULL job description provided. Be rigorous.\nResume: ${resumeText}\nJob Description: ${jobDescription}` },
         ],
+        response_format: config.response_format as any,
       });
 
-      const content = response.choices[0]?.message?.content || "";
-      const cleanedJson = content.replace(/```json|```/g, "").trim();
+      const content = response.choices[0]?.message?.content;
+      if (!content) throw new GroqAPIError("AI returned empty response");
 
       try {
-        return JSON.parse(cleanedJson) as AIAnalysisResult;
+        const parsed = parseDefensiveJson(content);
+        return {
+          aiScore: parsed.matchScore || 0,
+          matchedKeywords: parsed.matchedSkills || [],
+          missingKeywords: parsed.missingSkills || [],
+          sectionFeedback: {
+            experience: "Check actionable suggestions for details.",
+            education: "Check actionable suggestions for details.",
+            skills: "Check actionable suggestions for details.",
+            summary: "Check actionable suggestions for details."
+          },
+          suggestions: parsed.actionableSuggestions || []
+        } as AIAnalysisResult;
       } catch (parseError) {
         throw new GroqAPIError("Failed to parse AI response as JSON");
       }

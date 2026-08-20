@@ -52,17 +52,9 @@ function classifyConfidence(
   return "Moderate";
 }
 
-// Defensive JSON parser helper
-function parseDefensiveJson(result: string): any {
-  try {
-    const jsonMatch = result.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-    const cleanStr = jsonMatch ? jsonMatch[1].trim() : result.trim();
-    return JSON.parse(cleanStr);
-  } catch (e) {
-    console.error("Failed to parse AI JSON response:", result);
-    throw new Error("AI response was not valid JSON");
-  }
-}
+// Defensive JSON parser helper imported from utils
+import { aiPrompts } from "../config/aiPrompts.js";
+import { parseDefensiveJson } from "../utils/aiUtils.js";
 
 export class InterviewService {
   /* ── Audio → Text via Groq Whisper ── */
@@ -116,27 +108,20 @@ export class InterviewService {
     difficulty?: string,
   ): Promise<any> {
     const diffLabel = difficulty || "Medium";
+    const config = aiPrompts.questionBank;
 
-    const prompt = `You are an expert interviewer.
-Generate EXACTLY 3 ${diffLabel}-difficulty interview questions for a ${experience} level ${jobRole}.
-The questions should be a mix of Technical and Behavioral questions tailored to the candidate's target job role.
-
-Return a JSON object with an array of "questions".
-SCHEMA:
-{
-  "questions": [
-    { "id": "q1", "text": "Question text here...", "type": "Technical" },
-    { "id": "q2", "text": "Question text here...", "type": "Behavioral" },
-    { "id": "q3", "text": "Question text here...", "type": "Technical" }
-  ]
-}
-`;
+    const userPrompt = `Generate EXACTLY 3 ${diffLabel}-difficulty interview questions for a ${experience} level ${jobRole}.
+The questions should be a mix of Technical and Behavioral questions tailored to the candidate's target job role.`;
 
     const response = await client.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      messages: [{ role: "system", content: prompt }],
-      temperature: 0.7,
-      response_format: { type: "json_object" },
+      model: config.model,
+      messages: [
+        { role: "system", content: config.systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      temperature: config.temperature,
+      max_tokens: config.max_tokens,
+      response_format: config.response_format as any,
     });
 
     const content = response.choices[0]?.message?.content;
@@ -163,42 +148,25 @@ SCHEMA:
     const fillerWords = scanFillerWords(transcribedText);
     const fillerTotal = fillerWords.reduce((sum, f) => sum + f.count, 0);
 
-    const prompt = `You are an expert technical interviewer evaluating a candidate's verbal response.
-
-QUESTION: "${questionText}"
+    const config = aiPrompts.interviewEvaluation;
+    
+    const userPrompt = `QUESTION: "${questionText}"
 CANDIDATE ANSWER (Transcribed Speech): "${transcribedText}"
 
 SPEECH METRICS (already calculated — do NOT recalculate):
 - Words Per Minute (WPM): ${wpm} (Ideal range: 130-160. <110 = slow/hesitant, >170 = too fast)
 - Total Filler Words detected: ${fillerTotal}
-- Audio Duration: ${audioDurationSeconds}s
-
-Evaluate across these dimensions:
-
-1. **Content Quality** (0-100): Technical accuracy, STAR method adherence (Situation-Task-Action-Result for behavioral), completeness, and missing key points.
-2. **Tone & Delivery** (0-100): Based on speech metrics, text coherence, and response structure. Consider the WPM and filler word count.
-
-Also provide:
-- "strengths": Array of 2-4 specific strong points
-- "improvements": Array of 2-4 actionable improvement tips
-- "feedback": A 2-3 sentence summary of performance
-- "idealAnswer": A concise model answer (3-5 sentences) the candidate could learn from
-
-Return ONLY valid JSON matching this exact schema:
-{
-  "contentScore": 85,
-  "toneScore": 78,
-  "strengths": ["Clear explanation", "Good pacing"],
-  "improvements": ["Mention time complexity", "Reduce filler words"],
-  "feedback": "Great structured response! Work on minimizing pauses.",
-  "idealAnswer": "A strong answer would cover X, Y, Z..."
-}`;
+- Audio Duration: ${audioDurationSeconds}s`;
 
     const response = await client.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      messages: [{ role: "system", content: prompt }],
-      temperature: 0.3,
-      response_format: { type: "json_object" },
+      model: config.model,
+      messages: [
+        { role: "system", content: config.systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      temperature: config.temperature,
+      max_tokens: config.max_tokens,
+      response_format: config.response_format as any,
     });
 
     const content = response.choices[0]?.message?.content;

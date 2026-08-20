@@ -13,7 +13,7 @@ export function RecentInterviews({
   interviewsHistory = [],
 }: RecentInterviewsProps) {
   // Sort chronologically descending and take top 5
-  const recentInterviews = [...interviewsHistory]
+  const recentInterviews = [...(interviewsHistory || [])]
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

@@ -67,16 +67,19 @@ export default function HistoryPage() {
       const baseUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-      // Parallel fetch
+      // Parallel fetch with cache-busting to ensure fresh history
       const [atsRes, mockRes, resumeRes] = await Promise.all([
         fetch(`${baseUrl}/ats/history`, {
           headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
         }).catch(() => null),
         fetch(`${baseUrl}/interview/history`, {
           headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
         }).catch(() => null),
         fetch(`${baseUrl}/resume-builder/list`, {
           headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
         }).catch(() => null),
       ]);
 
@@ -551,8 +554,8 @@ export default function HistoryPage() {
                     <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
                       <p className="text-xs font-bold text-slate-400">Name</p>
                       <p className="text-sm font-semibold text-slate-800">
-                        {data.data?.personalInfo?.firstName || "N/A"}{" "}
-                        {data.data?.personalInfo?.lastName || ""}
+                        {data.data?.personalInfo?.fullName || 
+                         (data.data?.personalInfo?.firstName ? `${data.data.personalInfo.firstName} ${data.data.personalInfo.lastName || ""}` : "N/A")}
                       </p>
                     </div>
                     <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">

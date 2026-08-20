@@ -39,13 +39,21 @@ app.use("/api/webhooks", webhookRoutes);
 
 app.use(
   cors({
-    origin: [
-      process.env.FRONTEND_URL || "http://localhost:3000",
-      "http://127.0.0.1:3000",
-      "http://localhost:3001",
-      "https://resumind-nine-self.vercel.app",
-      "https://hack-in-motion-ricr-him-1263.vercel.app"
-    ],
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        process.env.FRONTEND_URL || "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://localhost:5173",
+        "https://resumind-nine-self.vercel.app",
+        "https://hack-in-motion-ricr-him-1263.vercel.app"
+      ];
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   }),
 );
@@ -172,6 +180,7 @@ app.use("/api/interview/questions", new QuestionBankRouter().router);
 app.get("/api/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok", message: "Server is healthy" });
 });
+app.get("/health", (req: Request, res: Response) => res.status(200).send("OK"));
 
 // Server start
 const PORT = process.env.PORT || 5000;

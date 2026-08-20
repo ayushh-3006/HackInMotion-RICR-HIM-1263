@@ -11,7 +11,7 @@ interface RecentScansProps {
 
 export function RecentScans({ atsHistory = [] }: RecentScansProps) {
   // Sort chronologically descending and take top 5
-  const recentScans = [...atsHistory]
+  const recentScans = [...(atsHistory || [])]
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

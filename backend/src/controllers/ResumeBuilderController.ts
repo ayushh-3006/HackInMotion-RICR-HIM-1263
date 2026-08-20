@@ -28,12 +28,42 @@ export class ResumeBuilderController {
           .json({ success: false, error: "chatHistory is required" });
         return;
       }
-
+      const userId = (req as any).auth?.userId || (req as any).userId;
+      
       const newResume = await this.builderService.generateResume(
         chatHistory,
         currentData || {},
       );
-      res.status(200).json({ success: true, data: newResume });
+
+      // Auto-save draft
+      let savedDraftId = null;
+      if (userId) {
+        const title = newResume.personalInfo?.fullName
+          ? `${newResume.personalInfo.fullName}'s Resume`
+          : "My Resume";
+          
+        if (currentData?.id) {
+          const result = await this.builderService.updateDraft(currentData.id, userId, {
+            title,
+            theme: currentData.theme || "default",
+            data: newResume,
+          });
+          savedDraftId = result.id;
+        } else {
+          const result = await this.builderService.saveDraft(
+            userId,
+            title,
+            newResume,
+            "default",
+          );
+          savedDraftId = result.id;
+        }
+      }
+
+      res.status(200).json({ 
+        success: true, 
+        data: { ...newResume, id: savedDraftId } 
+      });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
     }
@@ -69,7 +99,7 @@ export class ResumeBuilderController {
 
   saveDraft = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).auth?.userId || (req as any).userId;
       const { id: draftId, title, theme, ...data } = req.body;
 
       if (draftId && draftId !== "1") {
@@ -99,7 +129,7 @@ export class ResumeBuilderController {
 
   getDrafts = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).auth?.userId || (req as any).userId;
       const drafts = await this.builderService.listDrafts(userId);
       res.status(200).json({ success: true, data: drafts });
     } catch (err: any) {
@@ -109,7 +139,7 @@ export class ResumeBuilderController {
 
   getDraftById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).auth?.userId || (req as any).userId;
       const { id } = req.params;
       const draft = await this.builderService.getDraft(id as string, userId);
       res.status(200).json({ success: true, data: draft });
@@ -120,7 +150,7 @@ export class ResumeBuilderController {
 
   deleteDraft = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).auth?.userId || (req as any).userId;
       const { id } = req.params;
       await this.builderService.deleteDraft(id as string, userId);
       res.status(200).json({ success: true, message: "Draft deleted" });

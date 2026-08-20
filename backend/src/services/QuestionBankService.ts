@@ -26,22 +26,8 @@ export interface QuestionBankResult {
   questions: QuestionDef[];
 }
 
-/**
- * Defensive JSON parser that extracts JSON out of Markdown code blocks.
- */
-function parseDefensiveJson(raw: string): any {
-  const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-  const cleaned = jsonMatch ? jsonMatch[1].trim() : raw.trim();
-  try {
-    return JSON.parse(cleaned);
-  } catch (e) {
-    console.error(
-      "[QuestionBankService] Failed to parse AI JSON response:",
-      cleaned,
-    );
-    throw new Error("AI response was not valid JSON");
-  }
-}
+import { aiPrompts } from "../config/aiPrompts.js";
+import { parseDefensiveJson } from "../utils/aiUtils.js";
 
 /**
  * Fallback questions grouped by broad industry categories.
@@ -167,49 +153,26 @@ export class QuestionBankService {
     includeBehavioral: boolean = true,
     jobDescription?: string,
   ): Promise<QuestionBankResult> {
-    const systemPrompt = `You are an expert technical interviewer and hiring manager in the "${industry}" industry.
-Your task is to generate a highly tailored, industry-specific interview question bank for a "${targetRole}" at the "${experienceLevel}" level.
-
-STRICT RULES:
-1. Return ONLY valid JSON. No markdown wrappers or conversational text.
-2. Generate exactly ${questionCount} questions.
-3. ${includeBehavioral ? "Ensure a mix of Technical, Situational, and Behavioral questions." : "Focus entirely on Technical and System Design / Domain-specific questions."}
-4. Each question must include 'keyPointsExpected' (what an ideal answer must contain) and 'suggestedAnswerStructure' (how the candidate should frame their answer, e.g., STAR method).
-5. Ensure the difficulty aligns perfectly with the "${experienceLevel}" level.
-
-REQUIRED JSON SCHEMA:
-{
-  "industry": "string",
-  "targetRole": "string",
-  "difficulty": "string",
-  "questions": [
-    {
-      "id": "uuid string",
-      "type": "Technical | Behavioral | Situational | System Design",
-      "question": "string",
-      "contextOrScenario": "string (optional background context)",
-      "keyPointsExpected": ["string", "string"],
-      "suggestedAnswerStructure": "string",
-      "difficulty": "Easy | Medium | Hard"
-    }
-  ]
-}`;
+    const config = aiPrompts.questionBank;
 
     const userPrompt = `Generate the question bank now.
 Industry: ${industry}
 Target Role: ${targetRole}
 Experience Level: ${experienceLevel}
+Generate exactly ${questionCount} questions.
+${includeBehavioral ? "Ensure a mix of Technical, Situational, and Behavioral questions." : "Focus entirely on Technical and System Design / Domain-specific questions."}
 ${jobDescription ? `Job Description / Context:\n${jobDescription}` : ""}`;
 
     try {
       const response = await client.chat.completions.create({
-        model: "llama-3.1-8b-instant",
+        model: config.model,
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: config.systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.7,
-        response_format: { type: "json_object" },
+        temperature: config.temperature,
+        max_tokens: config.max_tokens,
+        response_format: config.response_format as any,
       });
 
       const content = response.choices[0]?.message?.content;

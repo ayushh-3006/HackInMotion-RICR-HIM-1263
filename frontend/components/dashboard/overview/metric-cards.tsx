@@ -38,24 +38,27 @@ export function MetricCards({
   interviewsHistory = [],
 }: MetricCardsProps) {
   // Calculations
-  const resumesScanned = atsHistory.length;
+  const safeAtsHistory = atsHistory || [];
+  const safeInterviewsHistory = interviewsHistory || [];
+
+  const resumesScanned = safeAtsHistory.length;
 
   const avgAtsScore = useMemo(() => {
     if (resumesScanned === 0) return 0;
-    const sum = atsHistory.reduce((acc, curr) => acc + (curr.score || 0), 0);
+    const sum = safeAtsHistory.reduce((acc, curr) => acc + (curr.score || 0), 0);
     return Math.round(sum / resumesScanned);
-  }, [atsHistory, resumesScanned]);
+  }, [safeAtsHistory, resumesScanned]);
 
-  const mockInterviews = interviewsHistory.length;
+  const mockInterviews = safeInterviewsHistory.length;
 
   const avgInterviewScore = useMemo(() => {
     if (mockInterviews === 0) return 0;
-    const sum = interviewsHistory.reduce(
+    const sum = safeInterviewsHistory.reduce(
       (acc, curr) => acc + (curr.overallScore || 0),
       0,
     );
     return Math.round(sum / mockInterviews);
-  }, [interviewsHistory, mockInterviews]);
+  }, [safeInterviewsHistory, mockInterviews]);
 
   // Color helpers
   const getScoreStatus = (score: number): string => {
